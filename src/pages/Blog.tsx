@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
@@ -8,7 +7,7 @@ import { toast } from 'sonner';
 import BlogHeader from '@/components/blog/BlogHeader';
 import ArticleGrid from '@/components/blog/ArticleGrid';
 import BlogPagination from '@/components/blog/BlogPagination';
-import BlogFooter from '@/components/blog/BlogFooter';
+import Footer from '@/components/layout/Footer';
 
 const Blog = () => {
   const [page, setPage] = useState(1);
@@ -86,7 +85,7 @@ const Blog = () => {
           </div>
         </main>
         
-        <BlogFooter />
+        <Footer />
       </div>
     </>
   );

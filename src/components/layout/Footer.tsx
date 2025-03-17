@@ -1,7 +1,7 @@
 
 import React from 'react';
 
-const BlogFooter = () => {
+const Footer = () => {
   return (
     <footer className="bg-muted py-10">
       <div className="container mx-auto px-4">
@@ -26,4 +26,4 @@ const BlogFooter = () => {
   );
 };
 
-export default BlogFooter;
+export default Footer;
