@@ -1,17 +1,17 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getArticle, getStrapiMedia, StrapiBlock, transformArticlesToSimpleFormat } from '@/services/strapi';
+import { getArticle, getStrapiMedia } from '@/services/strapi';
 import Header from '@/components/layout/Header';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, Calendar, User, Tag } from 'lucide-react';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import ArticleHeader from '@/components/blog/ArticleHeader';
+import ArticleBody from '@/components/blog/ArticleBody';
+import ArticleSkeleton from '@/components/blog/ArticleSkeleton';
+import ArticleErrorState from '@/components/blog/ArticleErrorState';
 
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -41,68 +41,6 @@ const BlogArticle = () => {
       error: 'Erreur lors du chargement de l\'article'
     });
   };
-  
-  const renderBlock = (block: StrapiBlock) => {
-    switch (block.__component) {
-      case 'shared.rich-text':
-        return (
-          <div className="prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: block.body }} />
-        );
-      
-      case 'shared.media':
-        return (
-          <figure className="my-8">
-            <img 
-              src={getStrapiMedia(block.file.data.attributes.url)} 
-              alt={block.file.data.attributes.alternativeText || 'Image'} 
-              className="w-full h-auto rounded-lg"
-            />
-          </figure>
-        );
-      
-      case 'shared.quote':
-        return (
-          <blockquote className="border-l-4 border-primary pl-6 my-8 italic">
-            {block.title && <p className="font-semibold text-xl mb-2">{block.title}</p>}
-            <p className="text-muted-foreground">{block.body}</p>
-          </blockquote>
-        );
-      
-      case 'shared.slider':
-        return (
-          <div className="my-8">
-            <div className="flex overflow-x-auto gap-4 pb-4 scrollbar-hide">
-              {block.files.data.map((file) => (
-                <img 
-                  key={file.id}
-                  src={getStrapiMedia(file.attributes.url)} 
-                  alt={file.attributes.alternativeText || 'Image'} 
-                  className="h-60 w-auto rounded-lg object-cover"
-                />
-              ))}
-            </div>
-          </div>
-        );
-      
-      default:
-        return null;
-    }
-  };
-  
-  if (error) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 pt-24 pb-16 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-3xl font-bold mb-4">Article non trouvé</h1>
-            <p className="text-muted-foreground mb-6">L'article que vous recherchez n'existe pas ou a été supprimé.</p>
-            <Button onClick={() => navigate('/blog')}>Retour au blog</Button>
-          </div>
-        </main>
-      </div>
-    );
-  }
   
   const structuredData = articleData ? {
     "@context": "https://schema.org",
@@ -151,79 +89,16 @@ const BlogArticle = () => {
             </div>
             
             {isLoading ? (
-              <div className="space-y-8">
-                <Skeleton className="h-10 w-3/4 mx-auto" />
-                <Skeleton className="h-6 w-2/3 mx-auto" />
-                <div className="flex justify-center gap-6 my-8">
-                  <Skeleton className="h-5 w-24" />
-                  <Skeleton className="h-5 w-24" />
-                  <Skeleton className="h-5 w-24" />
-                </div>
-                <Skeleton className="w-full h-96 rounded-xl" />
-                <div className="space-y-4 mt-8">
-                  <Skeleton className="h-6 w-full" />
-                  <Skeleton className="h-6 w-full" />
-                  <Skeleton className="h-6 w-3/4" />
-                </div>
-              </div>
+              <ArticleSkeleton />
+            ) : error ? (
+              <ArticleErrorState onRetry={handleRetry} />
             ) : articleData ? (
               <article className="max-w-4xl mx-auto">
-                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4">
-                  {articleData.attributes.title}
-                </h1>
-                
-                <p className="text-xl text-muted-foreground text-center mb-8">
-                  {articleData.attributes.description}
-                </p>
-                
-                <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mb-10">
-                  <div className="flex items-center">
-                    <Calendar className="mr-2 h-4 w-4" />
-                    <time dateTime={articleData.attributes.publishedAt}>
-                      {format(new Date(articleData.attributes.publishedAt), 'dd MMMM yyyy', { locale: fr })}
-                    </time>
-                  </div>
-                  
-                  {articleData.attributes.author?.data && (
-                    <div className="flex items-center">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>{articleData.attributes.author.data.attributes.name}</span>
-                    </div>
-                  )}
-                  
-                  {articleData.attributes.category?.data && (
-                    <div className="flex items-center">
-                      <Tag className="mr-2 h-4 w-4" />
-                      <span>{articleData.attributes.category.data.attributes.name}</span>
-                    </div>
-                  )}
-                </div>
-                
-                <Separator className="my-8" />
-                
-                {articleData.attributes.cover?.data && (
-                  <figure className="my-8">
-                    <img 
-                      src={getStrapiMedia(articleData.attributes.cover.data.attributes.url)} 
-                      alt={articleData.attributes.cover.data.attributes.alternativeText || articleData.attributes.title}
-                      className="w-full h-auto rounded-xl"
-                    />
-                  </figure>
-                )}
-                
-                <div className="mt-10 space-y-8">
-                  {articleData.attributes.blocks?.map((block, index) => (
-                    <div key={index}>
-                      {renderBlock(block)}
-                    </div>
-                  ))}
-                </div>
+                <ArticleHeader article={articleData} />
+                <ArticleBody article={articleData} />
               </article>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">Article non trouvé</p>
-                <Button onClick={() => navigate('/blog')}>Retour au blog</Button>
-              </div>
+              <ArticleErrorState />
             )}
           </div>
         </main>
