@@ -2,15 +2,13 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useQuery } from '@tanstack/react-query';
-import { getArticles, transformArticlesToSimpleFormat, Article } from '@/services/strapi';
+import { getArticles, transformArticlesToSimpleFormat } from '@/services/strapi';
 import Header from '@/components/layout/Header';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
+import BlogHeader from '@/components/blog/BlogHeader';
+import ArticleGrid from '@/components/blog/ArticleGrid';
+import BlogPagination from '@/components/blog/BlogPagination';
+import BlogFooter from '@/components/blog/BlogFooter';
 
 const Blog = () => {
   const [page, setPage] = useState(1);
@@ -69,150 +67,26 @@ const Blog = () => {
         
         <main className="flex-1 pt-24 pb-16">
           <div className="container mx-auto px-4">
-            <section className="mb-12">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">Blog</h1>
-              <p className="text-xl text-muted-foreground">
-                Découvrez nos derniers articles et conseils pour bien choisir votre forfait mobile ou box internet.
-              </p>
-            </section>
+            <BlogHeader />
             
-            <Separator className="my-8" />
+            <ArticleGrid 
+              articles={data?.articles} 
+              isLoading={isLoading} 
+              error={error} 
+              onRetry={handleRetry} 
+            />
             
-            {isLoading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {Array.from({ length: 6 }).map((_, index) => (
-                  <div key={index} className="rounded-xl overflow-hidden border border-border">
-                    <Skeleton className="w-full h-48" />
-                    <div className="p-6">
-                      <Skeleton className="h-6 w-3/4 mb-2" />
-                      <Skeleton className="h-4 w-full mb-4" />
-                      <Skeleton className="h-4 w-2/3" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : error ? (
-              <div className="text-center py-12">
-                <p className="text-red-500 mb-4">Une erreur est survenue lors du chargement des articles.</p>
-                <Button onClick={handleRetry} className="bg-blue-500 hover:bg-blue-600">
-                  Réessayer
-                </Button>
-              </div>
-            ) : data?.articles && data.articles.length > 0 ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {data.articles.map((article: Article) => (
-                    <Link 
-                      to={`/blog/${article.slug}`} 
-                      key={article.id}
-                      className="group rounded-xl overflow-hidden border border-border transition-all duration-300 hover:shadow-md flex flex-col h-full"
-                    >
-                      <div className="relative h-48 overflow-hidden">
-                        {article.cover?.url ? (
-                          <img 
-                            src={article.cover.url} 
-                            alt={article.title}
-                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-muted flex items-center justify-center">
-                            <span className="text-muted-foreground">Aucune image</span>
-                          </div>
-                        )}
-                        {article.category && (
-                          <span className="absolute top-3 right-3 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-md">
-                            {article.category.name}
-                          </span>
-                        )}
-                      </div>
-                      <div className="p-6 flex-1 flex flex-col">
-                        <h2 className="text-xl font-semibold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                          {article.title}
-                        </h2>
-                        <p className="text-muted-foreground text-sm mb-4 line-clamp-3 flex-1">
-                          {article.description}
-                        </p>
-                        <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50">
-                          <div className="flex items-center">
-                            {article.author && (
-                              <span className="text-xs text-muted-foreground">
-                                Par {article.author.name}
-                              </span>
-                            )}
-                          </div>
-                          <time className="text-xs text-muted-foreground">
-                            {format(new Date(article.publishedAt), 'dd MMM yyyy', { locale: fr })}
-                          </time>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-                
-                {data.pagination.pageCount > 1 && (
-                  <div className="flex justify-center mt-12">
-                    <div className="flex items-center gap-2">
-                      <Button 
-                        variant="outline" 
-                        disabled={page === 1}
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                      >
-                        Précédent
-                      </Button>
-                      
-                      <div className="flex items-center gap-1">
-                        {Array.from({ length: data.pagination.pageCount }).map((_, i) => (
-                          <Button 
-                            key={i}
-                            variant={page === i + 1 ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => setPage(i + 1)}
-                            className="w-9 h-9"
-                          >
-                            {i + 1}
-                          </Button>
-                        ))}
-                      </div>
-                      
-                      <Button 
-                        variant="outline"
-                        disabled={page === data.pagination.pageCount}
-                        onClick={() => setPage(p => Math.min(data.pagination.pageCount, p + 1))}
-                      >
-                        Suivant
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">Aucun article disponible pour le moment.</p>
-              </div>
+            {data?.pagination && (
+              <BlogPagination 
+                currentPage={page} 
+                pageCount={data.pagination.pageCount} 
+                onPageChange={setPage} 
+              />
             )}
           </div>
         </main>
         
-        <footer className="bg-muted py-10">
-          <div className="container mx-auto px-4">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <div className="mb-6 md:mb-0">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-blue-purple flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">C</span>
-                  </div>
-                  <div className="font-bold text-xl">
-                    <span className="text-gradient-blue-purple">Compare</span>
-                    <span className="text-gradient-purple-pink">Prix</span>
-                  </div>
-                </div>
-              </div>
-              <div className="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} ComparePrix. Tous droits réservés.
-              </div>
-            </div>
-          </div>
-        </footer>
+        <BlogFooter />
       </div>
     </>
   );
