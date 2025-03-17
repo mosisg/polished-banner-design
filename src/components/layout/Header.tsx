@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Phone, Wifi, Home, Fire, Package, Smartphone } from 'lucide-react';
+import { Menu, Phone, Wifi, Home, Flame, Package, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { cn } from '@/lib/utils';
@@ -15,7 +15,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Forfait Mobile', href: '/mobile', icon: <Smartphone className="w-4 h-4 mr-2" /> },
   { label: 'Box Internet', href: '/internet', icon: <Wifi className="w-4 h-4 mr-2" /> },
-  { label: 'Promos', href: '/promos', icon: <Fire className="w-4 h-4 mr-2" /> },
+  { label: 'Promos', href: '/promos', icon: <Flame className="w-4 h-4 mr-2" /> },
   { label: 'Box + Mobile', href: '/packages', icon: <Package className="w-4 h-4 mr-2" /> },
   { label: 'Opérateurs', href: '/operators', icon: <Phone className="w-4 h-4 mr-2" /> },
 ];
