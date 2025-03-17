@@ -7,7 +7,7 @@ import {
   Article 
 } from './types';
 
-// Improved fetch API with proper error handling
+// Improved fetch API with proper error handling and CORS support
 export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
   console.log('Attempting to fetch from Strapi API');
   
@@ -20,7 +20,10 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${getStrapiAPIKey()}`,
+        'Origin': window.location.origin,
+        'Accept': 'application/json',
       },
+      credentials: 'include', // Include credentials for CORS
       // Extend timeout for potentially slow connections
       signal: AbortSignal.timeout(30000),
     });
