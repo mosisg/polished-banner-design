@@ -18,9 +18,11 @@ const NotFound = () => {
   return (
     <>
       <Helmet>
+        <html lang="fr" />
         <title>Page non trouvée | ComparePrix</title>
         <meta name="description" content="La page que vous recherchez n'existe pas ou a été déplacée." />
         <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href="https://compareprix.fr" />
       </Helmet>
       
       <div className="min-h-screen flex items-center justify-center bg-gray-100">

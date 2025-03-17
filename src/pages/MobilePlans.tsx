@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link } from 'react-router-dom';
 import { 
   Filter, Sliders, Smartphone, Wifi, Phone, Euro, Check, 
   Signal, MapPin, Percent, Info, ChevronDown, ChevronUp
@@ -153,6 +152,29 @@ const MobilePlans = () => {
   // All available operators from the data
   const operators = Array.from(new Set(mobilePlans.map(plan => plan.operator)));
 
+  // Generate structured data for all mobile plans
+  const generateStructuredData = () => {
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": filteredPlans.map((plan, index) => ({
+        "@type": "ListItem",
+        "position": index + 1,
+        "item": {
+          "@type": "Product",
+          "name": `${plan.operator} ${plan.name}`,
+          "description": `Forfait mobile ${plan.data} avec ${plan.coverage}`,
+          "offers": {
+            "@type": "Offer",
+            "price": parseFloat(plan.price.match(/\d+\.\d+/)?.[0] || '0'),
+            "priceCurrency": "EUR",
+            "availability": "https://schema.org/InStock"
+          }
+        }
+      }))
+    };
+  };
+
   const handleOperatorChange = (operator: string) => {
     setSelectedOperators(prev => {
       if (prev.includes(operator)) {
@@ -220,9 +242,14 @@ const MobilePlans = () => {
   return (
     <>
       <Helmet>
+        <html lang="fr" />
         <title>Forfaits Mobiles - Comparez les meilleures offres | ComparePrix</title>
         <meta name="description" content="Comparez les forfaits mobiles des principaux opérateurs. Trouvez le meilleur rapport qualité-prix pour votre forfait 4G/5G avec notre comparateur." />
-        <link rel="canonical" href="/mobile" />
+        <link rel="canonical" href="https://compareprix.fr/mobile" />
+        <meta name="robots" content="index, follow" />
+        <script type="application/ld+json">
+          {JSON.stringify(generateStructuredData())}
+        </script>
       </Helmet>
 
       <div className="flex flex-col min-h-screen">
