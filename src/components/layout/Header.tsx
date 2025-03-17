@@ -15,7 +15,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: 'Forfait Mobile', href: '/mobile', icon: <Smartphone className="w-4 h-4 mr-2" /> },
   { label: 'Box Internet', href: '/internet', icon: <Wifi className="w-4 h-4 mr-2" /> },
-  { label: 'Promos', href: '/promos', icon: <Flame className="w-4 h-4 mr-2" /> },
+  { label: 'Téléphones', href: '/telephones', icon: <Phone className="w-4 h-4 mr-2" /> },
   { label: 'Box + Mobile', href: '/packages', icon: <Package className="w-4 h-4 mr-2" /> },
   { label: 'Opérateurs', href: '/operators', icon: <Phone className="w-4 h-4 mr-2" /> },
 ];
