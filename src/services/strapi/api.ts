@@ -7,15 +7,19 @@ import {
   Article 
 } from './types';
 
-// Improved fetch API with proper error handling and CORS support
+// Improved fetch API with proper error handling, CORS support, and cache busting
 export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
   console.log('Attempting to fetch from Strapi API');
   
   try {
-    const apiUrl = `${getStrapiURL()}/api/${endpoint}`;
+    // Add a cache-busting parameter to prevent browser caching
+    const cacheBuster = `_cb=${Date.now()}`;
+    const separator = endpoint.includes('?') ? '&' : '?';
+    const apiUrl = `${getStrapiURL()}/api/${endpoint}${separator}${cacheBuster}`;
+    
     console.log(`Fetching from Strapi API: ${apiUrl}`);
     
-    // Vérifiez si l'origine actuelle est autorisée
+    // Get current origin for CORS
     const currentOrigin = window.location.origin;
     console.log(`Current origin: ${currentOrigin}`);
     
@@ -26,10 +30,16 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
         'Authorization': `Bearer ${getStrapiAPIKey()}`,
         'Origin': currentOrigin,
         'Accept': 'application/json',
+        // Add cache control headers
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
       },
       credentials: 'include', // Include credentials for CORS
       // Extend timeout for potentially slow connections
       signal: AbortSignal.timeout(30000),
+      // Add cache: 'no-store' to prevent caching
+      cache: 'no-store'
     });
 
     if (!response.ok) {
