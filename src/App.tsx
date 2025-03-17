@@ -8,6 +8,8 @@ import { HelmetProvider } from 'react-helmet-async';
 import Index from "./pages/Index";
 import MobilePlans from "./pages/MobilePlans";
 import InternetBoxes from "./pages/InternetBoxes";
+import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +25,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/mobile" element={<MobilePlans />} />
             <Route path="/internet" element={<InternetBoxes />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogArticle />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
