@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Phone, Wifi, Home, Flame, Package, Smartphone } from 'lucide-react';
+import { Menu, Phone, Wifi, Home, Flame, Package, Smartphone, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { cn } from '@/lib/utils';
@@ -17,7 +17,7 @@ const navItems: NavItem[] = [
   { label: 'Box Internet', href: '/internet', icon: <Wifi className="w-4 h-4 mr-2" /> },
   { label: 'Téléphones', href: '/telephones', icon: <Phone className="w-4 h-4 mr-2" /> },
   { label: 'Box + Mobile', href: '/packages', icon: <Package className="w-4 h-4 mr-2" /> },
-  { label: 'Opérateurs', href: '/operators', icon: <Phone className="w-4 h-4 mr-2" /> },
+  { label: 'Blog', href: '/blog', icon: <FileText className="w-4 h-4 mr-2" /> },
 ];
 
 const Header = () => {
