@@ -1,9 +1,9 @@
 // Constants - you can change these to point to your actual Strapi instance
-const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "https://api.compareprix.fr";
+const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
 const STRAPI_API_KEY = import.meta.env.VITE_STRAPI_API_KEY || "809930bddfb8e60de2fa673ac8098121dcff48ae6adc3dbabcfa40b6d8b65c359e57a0a49d04e36a32a9abe517fd00961b8f12f7d22cff4e9e423bd1b1ed034f4e2645b3867da6731bee1dfad1209fce787b57f112e1540bbdcf13427b62658d53533f7d3b85336d9ff955ae1a27fd4baee3a7f496c0d1a5a27d90b111ee073b";
 
-// Set to true to use mock data instead of real API calls
-const USE_MOCK_DATA = import.meta.env.DEV || true;
+// Set to false to use real API calls instead of mock data
+const USE_MOCK_DATA = false;
 
 // Interface definitions
 export interface StrapiMeta {
@@ -290,9 +290,9 @@ const MOCK_ARTICLES: StrapiArticle[] = [
   }
 ];
 
-// Fetch API with error handling and mock data support
+// Fetch API with error handling and fall back to mock data if needed
 const fetchAPI = async <T>(endpoint: string): Promise<T> => {
-  // Use mock data in development mode
+  // Use mock data in development mode ONLY if USE_MOCK_DATA is true
   if (USE_MOCK_DATA && endpoint.startsWith('articles')) {
     console.log('Using mock data for Strapi API:', endpoint);
     
@@ -356,16 +356,80 @@ const fetchAPI = async <T>(endpoint: string): Promise<T> => {
     const response = await fetch(`${STRAPI_URL}/api/${endpoint}`, {
       headers: {
         Authorization: `Bearer ${STRAPI_API_KEY}`,
+        'Content-Type': 'application/json',
       },
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch from Strapi: ${response.statusText}`);
+      throw new Error(`Failed to fetch from Strapi: ${response.status} ${response.statusText}`);
     }
 
     return await response.json();
   } catch (error) {
     console.error("Error fetching from Strapi:", error);
+    
+    // If USE_MOCK_DATA is false, we should not fallback to mock data
+    if (!USE_MOCK_DATA) {
+      throw error;
+    }
+    
+    // Fall back to mock data as a last resort if USE_MOCK_DATA is true
+    console.warn("Falling back to mock data due to API error");
+    if (endpoint.startsWith('articles')) {
+      // Simulate network delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Parse the endpoint to determine what to return
+      if (endpoint.includes('filters[slug]')) {
+        // Extract slug from endpoint 
+        const slugMatch = endpoint.match(/filters\[slug\]\[\$eq\]=([^&]+)/);
+        const slug = slugMatch ? slugMatch[1] : '';
+        
+        // Find the article with matching slug
+        const article = MOCK_ARTICLES.find(a => a.attributes.slug === slug);
+        
+        if (!article) {
+          throw new Error("Article not found");
+        }
+        
+        return {
+          data: [article],
+          meta: {
+            pagination: {
+              page: 1,
+              pageSize: 1,
+              pageCount: 1,
+              total: 1
+            }
+          }
+        } as unknown as T;
+      }
+      
+      // Handle pagination
+      const pageMatch = endpoint.match(/pagination\[page\]=(\d+)/);
+      const pageSizeMatch = endpoint.match(/pagination\[pageSize\]=(\d+)/);
+      
+      const page = pageMatch ? parseInt(pageMatch[1]) : 1;
+      const pageSize = pageSizeMatch ? parseInt(pageSizeMatch[1]) : 6;
+      
+      // Mock pagination logic
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedArticles = MOCK_ARTICLES.slice(startIndex, endIndex);
+      
+      return {
+        data: paginatedArticles,
+        meta: {
+          pagination: {
+            page,
+            pageSize,
+            pageCount: Math.ceil(MOCK_ARTICLES.length / pageSize),
+            total: MOCK_ARTICLES.length
+          }
+        }
+      } as unknown as T;
+    }
+    
     throw error;
   }
 };
