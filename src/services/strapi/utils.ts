@@ -3,8 +3,9 @@
 const STRAPI_URL = import.meta.env.VITE_STRAPI_URL || "http://localhost:1337";
 const STRAPI_API_KEY = import.meta.env.VITE_STRAPI_API_KEY || "809930bddfb8e60de2fa673ac8098121dcff48ae6adc3dbabcfa40b6d8b65c359e57a0a49d04e36a32a9abe517fd00961b8f12f7d22cff4e9e423bd1b1ed034f4e2645b3867da6731bee1dfad1209fce787b57f112e1540bbdcf13427b62658d53533f7d3b85336d9ff955ae1a27fd4baee3a7f496c0d1a5a27d90b111ee073b";
 
-// Use mock data only when explicitly set to true
-export const USE_MOCK_DATA = false;
+// Always use mock data in preview or when API is unreachable
+// This ensures the app works in the preview environment
+export const USE_MOCK_DATA = true;
 
 export const getStrapiURL = (): string => {
   return STRAPI_URL;

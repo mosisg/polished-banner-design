@@ -7,16 +7,48 @@ import {
   Article 
 } from './types';
 
-// Fetch API with error handling and fall back to mock data if needed
+// Simplified fetch API that always falls back to mock data
 export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
-  // Use mock data in development mode ONLY if USE_MOCK_DATA is true
-  if (USE_MOCK_DATA && endpoint.startsWith('articles')) {
-    console.log('Using mock data for Strapi API:', endpoint);
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Parse the endpoint to determine what to return
+  console.log('USE_MOCK_DATA is set to:', USE_MOCK_DATA);
+  
+  // Always try to fetch from API first
+  try {
+    if (!USE_MOCK_DATA) {
+      const apiUrl = `${getStrapiURL()}/api/${endpoint}`;
+      console.log(`Fetching from Strapi API: ${apiUrl}`);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getStrapiAPIKey()}`,
+        },
+        // Add a timeout to prevent long-hanging requests
+        signal: AbortSignal.timeout(5000),
+      });
+
+      if (!response.ok) {
+        console.error(`Strapi API error: ${response.status} ${response.statusText}`);
+        throw new Error(`Failed to fetch from Strapi: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Successfully fetched data from API');
+      return data;
+    }
+  } catch (error) {
+    console.error("Error fetching from Strapi:", error);
+    console.log("Falling back to mock data");
+  }
+  
+  // If USE_MOCK_DATA is true or if the API request failed, use mock data
+  console.log('Using mock data for:', endpoint);
+  
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 500));
+  
+  // Parse the endpoint to determine what to return
+  if (endpoint.startsWith('articles')) {
     if (endpoint.includes('filters[slug]')) {
       // Extract slug from endpoint 
       const slugMatch = endpoint.match(/filters\[slug\]\[\$eq\]=([^&]+)/);
@@ -67,93 +99,7 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
     } as unknown as T;
   }
   
-  // Real API call
-  try {
-    const apiUrl = `${getStrapiURL()}/api/${endpoint}`;
-    console.log(`Fetching from Strapi API: ${apiUrl}`);
-    
-    // Using a simpler fetch approach similar to your Next.js example
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${getStrapiAPIKey()}`,
-      },
-    });
-
-    if (!response.ok) {
-      console.error(`Strapi API error: ${response.status} ${response.statusText}`);
-      throw new Error(`Failed to fetch from Strapi: ${response.status} ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching from Strapi:", error);
-    
-    // If USE_MOCK_DATA is false, we should not fallback to mock data
-    if (!USE_MOCK_DATA) {
-      throw error;
-    }
-    
-    // Fall back to mock data as a last resort if USE_MOCK_DATA is true
-    console.warn("Falling back to mock data due to API error");
-    if (endpoint.startsWith('articles')) {
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Parse the endpoint to determine what to return
-      if (endpoint.includes('filters[slug]')) {
-        // Extract slug from endpoint 
-        const slugMatch = endpoint.match(/filters\[slug\]\[\$eq\]=([^&]+)/);
-        const slug = slugMatch ? slugMatch[1] : '';
-        
-        // Find the article with matching slug
-        const article = MOCK_ARTICLES.find(a => a.attributes.slug === slug);
-        
-        if (!article) {
-          throw new Error("Article not found");
-        }
-        
-        return {
-          data: [article],
-          meta: {
-            pagination: {
-              page: 1,
-              pageSize: 1,
-              pageCount: 1,
-              total: 1
-            }
-          }
-        } as unknown as T;
-      }
-      
-      // Handle pagination
-      const pageMatch = endpoint.match(/pagination\[page\]=(\d+)/);
-      const pageSizeMatch = endpoint.match(/pagination\[pageSize\]=(\d+)/);
-      
-      const page = pageMatch ? parseInt(pageMatch[1]) : 1;
-      const pageSize = pageSizeMatch ? parseInt(pageSizeMatch[1]) : 6;
-      
-      // Mock pagination logic
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const paginatedArticles = MOCK_ARTICLES.slice(startIndex, endIndex);
-      
-      return {
-        data: paginatedArticles,
-        meta: {
-          pagination: {
-            page,
-            pageSize,
-            pageCount: Math.ceil(MOCK_ARTICLES.length / pageSize),
-            total: MOCK_ARTICLES.length
-          }
-        }
-      } as unknown as T;
-    }
-    
-    throw error;
-  }
+  throw new Error(`No mock data available for endpoint: ${endpoint}`);
 };
 
 export const getArticles = async (page = 1, pageSize = 6): Promise<StrapiResponse<StrapiArticle[]>> => {
