@@ -6,6 +6,9 @@ const STRAPI_API_KEY = import.meta.env.VITE_STRAPI_API_KEY || "cf7ca29cb2e91b040
 // Enable mock data as fallback when the API is unavailable
 export const USE_MOCK_DATA = true;
 
+// Allowed origins for CORS
+export const ALLOWED_ORIGINS = ['http://localhost:8080', 'https://preview--polished-banner-design.lovable.app', window.location.origin];
+
 export const getStrapiURL = (): string => {
   return STRAPI_URL;
 };

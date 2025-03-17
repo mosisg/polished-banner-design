@@ -1,5 +1,5 @@
 
-import { getStrapiURL, getStrapiAPIKey, getStrapiMedia, USE_MOCK_DATA } from './utils';
+import { getStrapiURL, getStrapiAPIKey, getStrapiMedia, USE_MOCK_DATA, ALLOWED_ORIGINS } from './utils';
 import { MOCK_ARTICLES } from './mockData';
 import { 
   StrapiResponse, 
@@ -35,7 +35,7 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
     }
 
     const data = await response.json();
-    console.log('Successfully fetched data from API');
+    console.log('Successfully fetched data from API', data);
     return data;
   } catch (error) {
     console.error("Error fetching from Strapi:", error);
@@ -100,6 +100,7 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
   }
 };
 
+// Adjust getArticles to handle the direct response structure from Strapi
 export const getArticles = async (page = 1, pageSize = 6): Promise<StrapiResponse<StrapiArticle[]>> => {
   return fetchAPI<StrapiResponse<StrapiArticle[]>>(
     `articles?populate=cover,author.avatar,category&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=publishedAt:desc`
