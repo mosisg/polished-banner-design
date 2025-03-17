@@ -1,4 +1,3 @@
-
 import { getStrapiURL, getStrapiAPIKey, getStrapiMedia, USE_MOCK_DATA } from './utils';
 import { MOCK_ARTICLES } from './mockData';
 import { 
@@ -7,13 +6,13 @@ import {
   Article 
 } from './types';
 
-// Simplified fetch API that always falls back to mock data
+// Simplified fetch API that falls back to mock data if needed
 export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
   console.log('USE_MOCK_DATA is set to:', USE_MOCK_DATA);
   
-  // Always try to fetch from API first
-  try {
-    if (!USE_MOCK_DATA) {
+  // Try to fetch from API first if mock data is disabled
+  if (!USE_MOCK_DATA) {
+    try {
       const apiUrl = `${getStrapiURL()}/api/${endpoint}`;
       console.log(`Fetching from Strapi API: ${apiUrl}`);
       
@@ -24,21 +23,20 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
           'Authorization': `Bearer ${getStrapiAPIKey()}`,
         },
         // Add a timeout to prevent long-hanging requests
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(10000),
       });
 
       if (!response.ok) {
-        console.error(`Strapi API error: ${response.status} ${response.statusText}`);
         throw new Error(`Failed to fetch from Strapi: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
       console.log('Successfully fetched data from API');
       return data;
+    } catch (error) {
+      console.error("Error fetching from Strapi:", error);
+      console.log("Falling back to mock data");
     }
-  } catch (error) {
-    console.error("Error fetching from Strapi:", error);
-    console.log("Falling back to mock data");
   }
   
   // If USE_MOCK_DATA is true or if the API request failed, use mock data
