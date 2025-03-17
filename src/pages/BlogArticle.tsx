@@ -3,7 +3,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getArticle, getStrapiMedia, StrapiBlock } from '@/services/strapi';
+import { getArticle, getStrapiMedia, StrapiBlock, transformArticlesToSimpleFormat } from '@/services/strapi';
 import Header from '@/components/layout/Header';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,17 +11,36 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, Calendar, User, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 const BlogArticle = () => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   
-  const { data: articleData, isLoading, error } = useQuery({
+  const { data: articleData, isLoading, error, refetch } = useQuery({
     queryKey: ['article', slug],
-    queryFn: () => getArticle(slug || ''),
+    queryFn: async () => {
+      try {
+        const response = await getArticle(slug || '');
+        if (response.data.length === 0) {
+          throw new Error("Article not found");
+        }
+        return response.data[0];
+      } catch (error) {
+        console.error("Error fetching article:", error);
+        throw error;
+      }
+    },
+    retry: 1,
   });
   
-  const article = articleData?.data[0];
+  const handleRetry = () => {
+    toast.promise(refetch(), {
+      loading: 'Chargement de l\'article...',
+      success: 'L\'article a été chargé avec succès',
+      error: 'Erreur lors du chargement de l\'article'
+    });
+  };
   
   const renderBlock = (block: StrapiBlock) => {
     switch (block.__component) {
@@ -85,19 +104,19 @@ const BlogArticle = () => {
     );
   }
   
-  const structuredData = article ? {
+  const structuredData = articleData ? {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    "headline": article.attributes.title,
-    "description": article.attributes.description,
-    "datePublished": article.attributes.publishedAt,
-    "dateModified": article.attributes.updatedAt,
+    "headline": articleData.attributes.title,
+    "description": articleData.attributes.description,
+    "datePublished": articleData.attributes.publishedAt,
+    "dateModified": articleData.attributes.updatedAt,
     "author": {
       "@type": "Person",
-      "name": article.attributes.author?.data?.attributes.name || "ComparePrix"
+      "name": articleData.attributes.author?.data?.attributes.name || "ComparePrix"
     },
-    "image": article.attributes.cover?.data?.attributes.url
-      ? getStrapiMedia(article.attributes.cover.data.attributes.url)
+    "image": articleData.attributes.cover?.data?.attributes.url
+      ? getStrapiMedia(articleData.attributes.cover.data.attributes.url)
       : undefined
   } : null;
 
@@ -105,11 +124,11 @@ const BlogArticle = () => {
     <>
       <Helmet>
         <html lang="fr" />
-        {article && (
+        {articleData && (
           <>
-            <title>{article.attributes.title} | Blog ComparePrix</title>
-            <meta name="description" content={article.attributes.description} />
-            <link rel="canonical" href={`https://compareprix.fr/blog/${article.attributes.slug}`} />
+            <title>{articleData.attributes.title} | Blog ComparePrix</title>
+            <meta name="description" content={articleData.attributes.description} />
+            <link rel="canonical" href={`https://compareprix.fr/blog/${articleData.attributes.slug}`} />
             {structuredData && (
               <script type="application/ld+json">
                 {JSON.stringify(structuredData)}
@@ -147,53 +166,53 @@ const BlogArticle = () => {
                   <Skeleton className="h-6 w-3/4" />
                 </div>
               </div>
-            ) : article ? (
+            ) : articleData ? (
               <article className="max-w-4xl mx-auto">
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4">
-                  {article.attributes.title}
+                  {articleData.attributes.title}
                 </h1>
                 
                 <p className="text-xl text-muted-foreground text-center mb-8">
-                  {article.attributes.description}
+                  {articleData.attributes.description}
                 </p>
                 
                 <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mb-10">
                   <div className="flex items-center">
                     <Calendar className="mr-2 h-4 w-4" />
-                    <time dateTime={article.attributes.publishedAt}>
-                      {format(new Date(article.attributes.publishedAt), 'dd MMMM yyyy', { locale: fr })}
+                    <time dateTime={articleData.attributes.publishedAt}>
+                      {format(new Date(articleData.attributes.publishedAt), 'dd MMMM yyyy', { locale: fr })}
                     </time>
                   </div>
                   
-                  {article.attributes.author?.data && (
+                  {articleData.attributes.author?.data && (
                     <div className="flex items-center">
                       <User className="mr-2 h-4 w-4" />
-                      <span>{article.attributes.author.data.attributes.name}</span>
+                      <span>{articleData.attributes.author.data.attributes.name}</span>
                     </div>
                   )}
                   
-                  {article.attributes.category?.data && (
+                  {articleData.attributes.category?.data && (
                     <div className="flex items-center">
                       <Tag className="mr-2 h-4 w-4" />
-                      <span>{article.attributes.category.data.attributes.name}</span>
+                      <span>{articleData.attributes.category.data.attributes.name}</span>
                     </div>
                   )}
                 </div>
                 
                 <Separator className="my-8" />
                 
-                {article.attributes.cover?.data && (
+                {articleData.attributes.cover?.data && (
                   <figure className="my-8">
                     <img 
-                      src={getStrapiMedia(article.attributes.cover.data.attributes.url)} 
-                      alt={article.attributes.cover.data.attributes.alternativeText || article.attributes.title}
+                      src={getStrapiMedia(articleData.attributes.cover.data.attributes.url)} 
+                      alt={articleData.attributes.cover.data.attributes.alternativeText || articleData.attributes.title}
                       className="w-full h-auto rounded-xl"
                     />
                   </figure>
                 )}
                 
                 <div className="mt-10 space-y-8">
-                  {article.attributes.blocks?.map((block, index) => (
+                  {articleData.attributes.blocks?.map((block, index) => (
                     <div key={index}>
                       {renderBlock(block)}
                     </div>
@@ -203,7 +222,7 @@ const BlogArticle = () => {
             ) : (
               <div className="text-center py-12">
                 <p className="text-muted-foreground mb-4">Article non trouvé</p>
-                <Button as={Link} to="/blog">Retour au blog</Button>
+                <Button onClick={() => navigate('/blog')}>Retour au blog</Button>
               </div>
             )}
           </div>

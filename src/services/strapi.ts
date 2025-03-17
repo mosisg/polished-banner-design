@@ -101,18 +101,43 @@ export interface StrapiArticle {
   };
 }
 
+// Simplified Article interface for frontend use
+export interface Article {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  cover: {
+    url: string;
+  };
+  publishedAt: string;
+  author?: {
+    name: string;
+    avatar?: string;
+  };
+  category?: {
+    name: string;
+    slug: string;
+  };
+}
+
 const fetchAPI = async <T>(endpoint: string): Promise<T> => {
-  const response = await fetch(`${STRAPI_URL}/api/${endpoint}`, {
-    headers: {
-      Authorization: `Bearer ${STRAPI_API_KEY}`,
-    },
-  });
+  try {
+    const response = await fetch(`${STRAPI_URL}/api/${endpoint}`, {
+      headers: {
+        Authorization: `Bearer ${STRAPI_API_KEY}`,
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch from Strapi: ${response.statusText}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch from Strapi: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching from Strapi:", error);
+    throw error;
   }
-
-  return await response.json();
 };
 
 export const getArticles = async (page = 1, pageSize = 6): Promise<StrapiResponse<StrapiArticle[]>> => {
@@ -135,4 +160,30 @@ export const getStrapiMedia = (url: string | null | undefined): string => {
   }
   
   return `${STRAPI_URL}${url}`;
+};
+
+// Helper function to transform StrapiArticle[] to simplified Article[]
+export const transformArticlesToSimpleFormat = (articles: StrapiArticle[]): Article[] => {
+  return articles.map(article => ({
+    id: article.id.toString(),
+    title: article.attributes.title,
+    slug: article.attributes.slug,
+    description: article.attributes.description,
+    cover: {
+      url: article.attributes.cover?.data 
+        ? getStrapiMedia(article.attributes.cover.data.attributes.url)
+        : "",
+    },
+    publishedAt: article.attributes.publishedAt,
+    author: article.attributes.author?.data ? {
+      name: article.attributes.author.data.attributes.name,
+      avatar: article.attributes.author.data.attributes.avatar?.data
+        ? getStrapiMedia(article.attributes.author.data.attributes.avatar.data.attributes.url)
+        : undefined,
+    } : undefined,
+    category: article.attributes.category?.data ? {
+      name: article.attributes.category.data.attributes.name,
+      slug: article.attributes.category.data.attributes.slug,
+    } : undefined,
+  }));
 };
