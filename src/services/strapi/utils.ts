@@ -6,7 +6,15 @@ const STRAPI_API_KEY = import.meta.env.VITE_STRAPI_API_KEY || "809930bddfb8e60de
 // Set to false to use real API calls instead of mock data
 export const USE_MOCK_DATA = false;
 
+// Add CORS proxy for development environment to avoid CORS issues
+const useCorsProxy = import.meta.env.DEV && !import.meta.env.VITE_DISABLE_CORS_PROXY;
+
 export const getStrapiURL = (): string => {
+  // If in development and CORS proxy is enabled, use a CORS proxy
+  if (useCorsProxy) {
+    // Using a public CORS proxy for development only
+    return `https://cors-anywhere.herokuapp.com/${STRAPI_URL}`;
+  }
   return STRAPI_URL;
 };
 

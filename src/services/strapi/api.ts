@@ -69,15 +69,25 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
   
   // Real API call
   try {
-    console.log(`Fetching from Strapi API: ${getStrapiURL()}/api/${endpoint}`);
-    const response = await fetch(`${getStrapiURL()}/api/${endpoint}`, {
+    const apiUrl = `${getStrapiURL()}/api/${endpoint}`;
+    console.log(`Fetching from Strapi API: ${apiUrl}`);
+    
+    const response = await fetch(apiUrl, {
+      method: 'GET',
       headers: {
-        Authorization: `Bearer ${getStrapiAPIKey()}`,
+        'Authorization': `Bearer ${getStrapiAPIKey()}`,
         'Content-Type': 'application/json',
+        // Add additional headers to help with CORS
+        'Accept': 'application/json',
       },
+      // Include credentials if you're using cookies/sessions
+      credentials: 'include',
+      // Set mode to cors explicitly
+      mode: 'cors',
     });
 
     if (!response.ok) {
+      console.error(`Strapi API error: ${response.status} ${response.statusText}`);
       throw new Error(`Failed to fetch from Strapi: ${response.status} ${response.statusText}`);
     }
 
