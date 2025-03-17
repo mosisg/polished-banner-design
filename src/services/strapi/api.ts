@@ -1,3 +1,4 @@
+
 import { getStrapiURL, getStrapiAPIKey, getStrapiMedia, USE_MOCK_DATA } from './utils';
 import { MOCK_ARTICLES } from './mockData';
 import { 
@@ -71,11 +72,12 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
     const apiUrl = `${getStrapiURL()}/api/${endpoint}`;
     console.log(`Fetching from Strapi API: ${apiUrl}`);
     
-    // Simple fetch without credentials or mode options for direct access
+    // Using a simpler fetch approach similar to your Next.js example
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${getStrapiAPIKey()}`,
       },
     });
 
