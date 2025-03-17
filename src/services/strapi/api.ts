@@ -1,5 +1,5 @@
 
-import { getStrapiURL, getStrapiAPIKey, getStrapiMedia, USE_MOCK_DATA, ALLOWED_ORIGINS } from './utils';
+import { getStrapiURL, getStrapiAPIKey, getStrapiMedia, USE_MOCK_DATA } from './utils';
 import { MOCK_ARTICLES } from './mockData';
 import { 
   StrapiResponse, 
@@ -7,29 +7,17 @@ import {
   Article 
 } from './types';
 
-// Simplified direct fetch approach for Strapi API
+// Direct fetch approach for Strapi API - simplified based on successful curl test
 export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
-  console.log('Attempting to fetch from Strapi API');
+  console.log(`Fetching from Strapi API: ${getStrapiURL()}/api/${endpoint}`);
   
   try {
-    // Add a cache-busting parameter to prevent browser caching
-    const cacheBuster = `_cb=${Date.now()}`;
-    const separator = endpoint.includes('?') ? '&' : '?';
-    const apiUrl = `${getStrapiURL()}/api/${endpoint}${separator}${cacheBuster}`;
-    
-    console.log(`Fetching from Strapi API: ${apiUrl}`);
-    
-    // Get current origin for CORS
-    const currentOrigin = window.location.origin;
-    console.log(`Current origin: ${currentOrigin}`);
-    
-    const response = await fetch(apiUrl, {
+    const response = await fetch(`${getStrapiURL()}/api/${endpoint}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${getStrapiAPIKey()}`,
       },
-      // Don't use credentials or other complex CORS settings since Strapi is configured correctly
       cache: 'no-store'
     });
 
@@ -105,14 +93,13 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
   }
 };
 
-// Use fetchAPI again for articles - simplified based on your successful curl request
+// Simplified API calls using the fetchAPI function
 export const getArticles = async (page = 1, pageSize = 6): Promise<StrapiResponse<StrapiArticle[]>> => {
   return fetchAPI<StrapiResponse<StrapiArticle[]>>(
     `articles?populate=*&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=publishedAt:desc`
   );
 };
 
-// Use fetchAPI again for a single article - simplified based on your successful curl request
 export const getArticle = async (slug: string): Promise<StrapiResponse<StrapiArticle[]>> => {
   return fetchAPI<StrapiResponse<StrapiArticle[]>>(
     `articles?filters[slug][$eq]=${slug}&populate=*`
