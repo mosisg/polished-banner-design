@@ -1,4 +1,3 @@
-
 import { getStrapiURL, getStrapiAPIKey, getStrapiMedia, USE_MOCK_DATA } from './utils';
 import { MOCK_ARTICLES } from './mockData';
 import { 
@@ -72,18 +71,12 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
     const apiUrl = `${getStrapiURL()}/api/${endpoint}`;
     console.log(`Fetching from Strapi API: ${apiUrl}`);
     
+    // Simple fetch without credentials or mode options for direct access
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${getStrapiAPIKey()}`,
         'Content-Type': 'application/json',
-        // Add additional headers to help with CORS
-        'Accept': 'application/json',
       },
-      // Include credentials if you're using cookies/sessions
-      credentials: 'include',
-      // Set mode to cors explicitly
-      mode: 'cors',
     });
 
     if (!response.ok) {
