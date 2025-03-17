@@ -37,8 +37,6 @@ export const getStrapiMedia = (url: string | null | undefined): string => {
     return url;
   }
   
-  // Add cache buster to prevent caching of media assets
-  const cacheBuster = `_cb=${Date.now()}`;
-  const separator = url.includes('?') ? '&' : '?';
-  return `${STRAPI_URL}${url}${separator}${cacheBuster}`;
+  // Return clean URL without cache buster to prevent issues with media
+  return `${STRAPI_URL}${url}`;
 };

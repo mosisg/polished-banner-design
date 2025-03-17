@@ -28,17 +28,8 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${getStrapiAPIKey()}`,
-        'Origin': currentOrigin,
-        'Accept': 'application/json',
-        // Add cache control headers
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
       },
-      credentials: 'include', // Include credentials for CORS
-      // Extend timeout for potentially slow connections
-      signal: AbortSignal.timeout(30000),
-      // Add cache: 'no-store' to prevent caching
+      // Don't use credentials or other complex CORS settings since Strapi is configured correctly
       cache: 'no-store'
     });
 
@@ -114,106 +105,18 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
   }
 };
 
-// Simplified approach for fetching articles directly
+// Use fetchAPI again for articles - simplified based on your successful curl request
 export const getArticles = async (page = 1, pageSize = 6): Promise<StrapiResponse<StrapiArticle[]>> => {
-  try {
-    const apiUrl = `${getStrapiURL()}/api/articles`;
-    console.log(`Direct fetch from: ${apiUrl}`);
-    
-    const response = await fetch(`${apiUrl}?populate=*&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=publishedAt:desc`, {
-      headers: {
-        'Authorization': `Bearer ${getStrapiAPIKey()}`,
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-      cache: 'no-store'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch articles: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log('Successfully fetched articles directly', data);
-    return data;
-  } catch (error) {
-    console.error("Error in direct article fetch:", error);
-    
-    if (USE_MOCK_DATA) {
-      console.log("Using mock data as fallback for getArticles");
-      
-      // Create a mock response with pagination
-      const startIndex = (page - 1) * pageSize;
-      const endIndex = startIndex + pageSize;
-      const paginatedArticles = MOCK_ARTICLES.slice(startIndex, endIndex);
-      
-      return {
-        data: paginatedArticles,
-        meta: {
-          pagination: {
-            page,
-            pageSize,
-            pageCount: Math.ceil(MOCK_ARTICLES.length / pageSize),
-            total: MOCK_ARTICLES.length
-          }
-        }
-      };
-    }
-    
-    throw error;
-  }
+  return fetchAPI<StrapiResponse<StrapiArticle[]>>(
+    `articles?populate=*&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=publishedAt:desc`
+  );
 };
 
-// Using the same direct fetch approach for a single article
+// Use fetchAPI again for a single article - simplified based on your successful curl request
 export const getArticle = async (slug: string): Promise<StrapiResponse<StrapiArticle[]>> => {
-  try {
-    const apiUrl = `${getStrapiURL()}/api/articles`;
-    console.log(`Direct fetch article with slug ${slug} from: ${apiUrl}`);
-    
-    const response = await fetch(`${apiUrl}?filters[slug][$eq]=${slug}&populate=*`, {
-      headers: {
-        'Authorization': `Bearer ${getStrapiAPIKey()}`,
-        'Content-Type': 'application/json',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-      },
-      cache: 'no-store'
-    });
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch article: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log('Successfully fetched article directly', data);
-    return data;
-  } catch (error) {
-    console.error("Error in direct article fetch:", error);
-    
-    if (USE_MOCK_DATA) {
-      console.log("Using mock data as fallback for getArticle");
-      
-      // Find article with matching slug
-      const article = MOCK_ARTICLES.find(a => a.attributes.slug === slug);
-      
-      if (!article) {
-        throw new Error("Article not found");
-      }
-      
-      return {
-        data: [article],
-        meta: {
-          pagination: {
-            page: 1,
-            pageSize: 1,
-            pageCount: 1,
-            total: 1
-          }
-        }
-      };
-    }
-    
-    throw error;
-  }
+  return fetchAPI<StrapiResponse<StrapiArticle[]>>(
+    `articles?filters[slug][$eq]=${slug}&populate=*`
+  );
 };
 
 // Helper function to transform StrapiArticle[] to simplified Article[]
