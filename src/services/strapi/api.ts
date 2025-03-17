@@ -7,7 +7,7 @@ import {
   Article 
 } from './types';
 
-// Improved fetch API with proper error handling, CORS support, and cache busting
+// Simplified direct fetch approach for Strapi API
 export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
   console.log('Attempting to fetch from Strapi API');
   
@@ -114,17 +114,106 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
   }
 };
 
-// Adjust getArticles to handle the direct response structure from Strapi
+// Simplified approach for fetching articles directly
 export const getArticles = async (page = 1, pageSize = 6): Promise<StrapiResponse<StrapiArticle[]>> => {
-  return fetchAPI<StrapiResponse<StrapiArticle[]>>(
-    `articles?populate=cover,author.avatar,category&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=publishedAt:desc`
-  );
+  try {
+    const apiUrl = `${getStrapiURL()}/api/articles`;
+    console.log(`Direct fetch from: ${apiUrl}`);
+    
+    const response = await fetch(`${apiUrl}?populate=*&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=publishedAt:desc`, {
+      headers: {
+        'Authorization': `Bearer ${getStrapiAPIKey()}`,
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+      cache: 'no-store'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch articles: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('Successfully fetched articles directly', data);
+    return data;
+  } catch (error) {
+    console.error("Error in direct article fetch:", error);
+    
+    if (USE_MOCK_DATA) {
+      console.log("Using mock data as fallback for getArticles");
+      
+      // Create a mock response with pagination
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedArticles = MOCK_ARTICLES.slice(startIndex, endIndex);
+      
+      return {
+        data: paginatedArticles,
+        meta: {
+          pagination: {
+            page,
+            pageSize,
+            pageCount: Math.ceil(MOCK_ARTICLES.length / pageSize),
+            total: MOCK_ARTICLES.length
+          }
+        }
+      };
+    }
+    
+    throw error;
+  }
 };
 
+// Using the same direct fetch approach for a single article
 export const getArticle = async (slug: string): Promise<StrapiResponse<StrapiArticle[]>> => {
-  return fetchAPI<StrapiResponse<StrapiArticle[]>>(
-    `articles?filters[slug][$eq]=${slug}&populate=cover,author.avatar,category,blocks.file,blocks.files`
-  );
+  try {
+    const apiUrl = `${getStrapiURL()}/api/articles`;
+    console.log(`Direct fetch article with slug ${slug} from: ${apiUrl}`);
+    
+    const response = await fetch(`${apiUrl}?filters[slug][$eq]=${slug}&populate=*`, {
+      headers: {
+        'Authorization': `Bearer ${getStrapiAPIKey()}`,
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+      },
+      cache: 'no-store'
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch article: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('Successfully fetched article directly', data);
+    return data;
+  } catch (error) {
+    console.error("Error in direct article fetch:", error);
+    
+    if (USE_MOCK_DATA) {
+      console.log("Using mock data as fallback for getArticle");
+      
+      // Find article with matching slug
+      const article = MOCK_ARTICLES.find(a => a.attributes.slug === slug);
+      
+      if (!article) {
+        throw new Error("Article not found");
+      }
+      
+      return {
+        data: [article],
+        meta: {
+          pagination: {
+            page: 1,
+            pageSize: 1,
+            pageCount: 1,
+            total: 1
+          }
+        }
+      };
+    }
+    
+    throw error;
+  }
 };
 
 // Helper function to transform StrapiArticle[] to simplified Article[]
