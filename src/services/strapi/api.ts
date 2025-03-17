@@ -1,3 +1,4 @@
+
 import { getStrapiURL, getStrapiAPIKey, getStrapiMedia, USE_MOCK_DATA } from './utils';
 import { MOCK_ARTICLES } from './mockData';
 import { 
@@ -23,7 +24,7 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
           'Authorization': `Bearer ${getStrapiAPIKey()}`,
         },
         // Add a timeout to prevent long-hanging requests
-        signal: AbortSignal.timeout(10000),
+        signal: AbortSignal.timeout(15000),
       });
 
       if (!response.ok) {
@@ -36,6 +37,7 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
     } catch (error) {
       console.error("Error fetching from Strapi:", error);
       console.log("Falling back to mock data");
+      // Don't throw - fall back to mock data
     }
   }
   
