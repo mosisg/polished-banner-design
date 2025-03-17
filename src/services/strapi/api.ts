@@ -15,12 +15,16 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
     const apiUrl = `${getStrapiURL()}/api/${endpoint}`;
     console.log(`Fetching from Strapi API: ${apiUrl}`);
     
+    // Vérifiez si l'origine actuelle est autorisée
+    const currentOrigin = window.location.origin;
+    console.log(`Current origin: ${currentOrigin}`);
+    
     const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${getStrapiAPIKey()}`,
-        'Origin': window.location.origin,
+        'Origin': currentOrigin,
         'Accept': 'application/json',
       },
       credentials: 'include', // Include credentials for CORS
