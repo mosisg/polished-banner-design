@@ -51,11 +51,11 @@ const Header = () => {
             className="flex items-center space-x-2 group transition-all"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-blue-purple flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-105">
-              <span className="text-white font-bold text-lg">B</span>
+              <span className="text-white font-bold text-lg">C</span>
             </div>
             <div className="font-bold text-2xl tracking-tight transition-colors">
-              <span className="text-gradient-blue-purple">Bon</span>
-              <span className="text-gradient-purple-pink">Forfait</span>
+              <span className="text-gradient-blue-purple">Compare</span>
+              <span className="text-gradient-purple-pink">Prix</span>
             </div>
           </Link>
 
