@@ -1,5 +1,5 @@
-
 import React, { useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { 
   Filter, Sliders, Smartphone, Wifi, Phone, Euro, Check, 
@@ -218,217 +218,225 @@ const MobilePlans = () => {
   }, [dataRange, priceRange, networkType, selectedOperators, sortOption]);
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
+    <>
+      <Helmet>
+        <title>Forfaits Mobiles - Comparez les meilleures offres | ComparePrix</title>
+        <meta name="description" content="Comparez les forfaits mobiles des principaux opérateurs. Trouvez le meilleur rapport qualité-prix pour votre forfait 4G/5G avec notre comparateur." />
+        <link rel="canonical" href="/mobile" />
+      </Helmet>
 
-      {/* Hero Section */}
-      <section className="w-full py-24 md:py-32 lg:py-40 bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900">
-        <div className="container px-4 md:px-6 mx-auto">
-          <div className="flex flex-col items-center space-y-4 text-center">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="space-y-2"
-            >
-              <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none text-white">
-                Trouvez le Meilleur Forfait Mobile
-              </h1>
-              <p className="mx-auto max-w-[700px] text-gray-300 md:text-xl">
-                Comparez les offres des principaux opérateurs et trouvez le forfait adapté à vos besoins.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <div className="flex flex-col min-h-screen">
+        <Header />
 
-      <main className="flex-1 mt-8 container mx-auto px-4 md:px-6 pb-16">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filters Panel */}
-          <div className="lg:col-span-1">
-            <Collapsible
-              open={filtersOpen}
-              onOpenChange={setFiltersOpen}
-              className="bg-card border border-border rounded-lg shadow-sm overflow-hidden mb-6 lg:mb-0 lg:sticky lg:top-24"
-            >
-              <div className="flex items-center justify-between p-4 border-b border-border">
-                <div className="flex items-center space-x-2">
-                  <Filter className="h-5 w-5 text-primary" />
-                  <h2 className="text-lg font-semibold">Filtres</h2>
-                </div>
-                <CollapsibleTrigger asChild className="lg:hidden">
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                    {filtersOpen ? (
-                      <ChevronUp className="h-4 w-4" />
-                    ) : (
-                      <ChevronDown className="h-4 w-4" />
-                    )}
-                  </Button>
-                </CollapsibleTrigger>
-              </div>
-
-              <CollapsibleContent className="p-4 space-y-6">
-                {/* Data Amount Slider */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Wifi className="h-4 w-4 text-primary" />
-                      <h3 className="font-medium">Volume de données</h3>
-                    </div>
-                    <Badge variant="outline" className="font-semibold">
-                      {dataRange[0]} Go max
-                    </Badge>
-                  </div>
-                  <Slider
-                    defaultValue={[100]}
-                    max={300}
-                    step={10}
-                    value={dataRange}
-                    onValueChange={setDataRange}
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>0 Go</span>
-                    <span>100 Go</span>
-                    <span>200 Go</span>
-                    <span>300 Go</span>
-                  </div>
-                </div>
-
-                {/* Price Range Slider */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <Euro className="h-4 w-4 text-primary" />
-                      <h3 className="font-medium">Budget maximum</h3>
-                    </div>
-                    <Badge variant="outline" className="font-semibold">
-                      {priceRange[0]}€/mois
-                    </Badge>
-                  </div>
-                  <Slider
-                    defaultValue={[20]}
-                    max={50}
-                    step={1}
-                    value={priceRange}
-                    onValueChange={setPriceRange}
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>0€</span>
-                    <span>10€</span>
-                    <span>25€</span>
-                    <span>50€</span>
-                  </div>
-                </div>
-
-                {/* Network Type */}
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Signal className="h-4 w-4 text-primary" />
-                    <h3 className="font-medium">Type de réseau</h3>
-                  </div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <Button
-                      variant={networkType === 'all' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setNetworkType('all')}
-                    >
-                      Tous
-                    </Button>
-                    <Button
-                      variant={networkType === '4G' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setNetworkType('4G')}
-                    >
-                      4G
-                    </Button>
-                    <Button
-                      variant={networkType === '5G' ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => setNetworkType('5G')}
-                    >
-                      5G
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Operators Checkboxes */}
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-2">
-                    <Phone className="h-4 w-4 text-primary" />
-                    <h3 className="font-medium">Opérateurs</h3>
-                  </div>
-                  <div className="space-y-2">
-                    {operators.map((operator) => (
-                      <div key={operator} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`operator-${operator}`}
-                          checked={selectedOperators.includes(operator)}
-                          onCheckedChange={() => handleOperatorChange(operator)}
-                        />
-                        <label
-                          htmlFor={`operator-${operator}`}
-                          className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {operator}
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
-          </div>
-
-          {/* Results Panel */}
-          <div className="lg:col-span-3 space-y-6">
-            {/* Results Header */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-card p-4 rounded-lg border border-border">
-              <div>
-                <h2 className="text-xl font-semibold">
-                  {filteredPlans.length} forfaits trouvés
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  Comparaison mise à jour le {new Date().toLocaleDateString('fr-FR')}
+        {/* Hero Section */}
+        <section className="w-full py-24 md:py-32 lg:py-40 bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900">
+          <div className="container px-4 md:px-6 mx-auto">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="space-y-2"
+              >
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none text-white">
+                  Trouvez le Meilleur Forfait Mobile
+                </h1>
+                <p className="mx-auto max-w-[700px] text-gray-300 md:text-xl">
+                  Comparez les offres des principaux opérateurs et trouvez le forfait adapté à vos besoins.
                 </p>
-              </div>
-              <div className="flex items-center space-x-2 w-full md:w-auto">
-                <Select 
-                  value={sortOption} 
-                  onValueChange={setSortOption}
-                >
-                  <SelectTrigger className="w-full md:w-[200px]">
-                    <SelectValue placeholder="Trier par" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="price-asc">Prix (croissant)</SelectItem>
-                    <SelectItem value="price-desc">Prix (décroissant)</SelectItem>
-                    <SelectItem value="data-asc">Données (croissant)</SelectItem>
-                    <SelectItem value="data-desc">Données (décroissant)</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        <main className="flex-1 mt-8 container mx-auto px-4 md:px-6 pb-16">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            {/* Filters Panel */}
+            <div className="lg:col-span-1">
+              <Collapsible
+                open={filtersOpen}
+                onOpenChange={setFiltersOpen}
+                className="bg-card border border-border rounded-lg shadow-sm overflow-hidden mb-6 lg:mb-0 lg:sticky lg:top-24"
+              >
+                <div className="flex items-center justify-between p-4 border-b border-border">
+                  <div className="flex items-center space-x-2">
+                    <Filter className="h-5 w-5 text-primary" />
+                    <h2 className="text-lg font-semibold">Filtres</h2>
+                  </div>
+                  <CollapsibleTrigger asChild className="lg:hidden">
+                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                      {filtersOpen ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </CollapsibleTrigger>
+                </div>
+
+                <CollapsibleContent className="p-4 space-y-6">
+                  {/* Data Amount Slider */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Wifi className="h-4 w-4 text-primary" />
+                        <h3 className="font-medium">Volume de données</h3>
+                      </div>
+                      <Badge variant="outline" className="font-semibold">
+                        {dataRange[0]} Go max
+                      </Badge>
+                    </div>
+                    <Slider
+                      defaultValue={[100]}
+                      max={300}
+                      step={10}
+                      value={dataRange}
+                      onValueChange={setDataRange}
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>0 Go</span>
+                      <span>100 Go</span>
+                      <span>200 Go</span>
+                      <span>300 Go</span>
+                    </div>
+                  </div>
+
+                  {/* Price Range Slider */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Euro className="h-4 w-4 text-primary" />
+                        <h3 className="font-medium">Budget maximum</h3>
+                      </div>
+                      <Badge variant="outline" className="font-semibold">
+                        {priceRange[0]}€/mois
+                      </Badge>
+                    </div>
+                    <Slider
+                      defaultValue={[20]}
+                      max={50}
+                      step={1}
+                      value={priceRange}
+                      onValueChange={setPriceRange}
+                    />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>0€</span>
+                      <span>10€</span>
+                      <span>25€</span>
+                      <span>50€</span>
+                    </div>
+                  </div>
+
+                  {/* Network Type */}
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Signal className="h-4 w-4 text-primary" />
+                      <h3 className="font-medium">Type de réseau</h3>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button
+                        variant={networkType === 'all' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setNetworkType('all')}
+                      >
+                        Tous
+                      </Button>
+                      <Button
+                        variant={networkType === '4G' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setNetworkType('4G')}
+                      >
+                        4G
+                      </Button>
+                      <Button
+                        variant={networkType === '5G' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setNetworkType('5G')}
+                      >
+                        5G
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Operators Checkboxes */}
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <Phone className="h-4 w-4 text-primary" />
+                      <h3 className="font-medium">Opérateurs</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {operators.map((operator) => (
+                        <div key={operator} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`operator-${operator}`}
+                            checked={selectedOperators.includes(operator)}
+                            onCheckedChange={() => handleOperatorChange(operator)}
+                          />
+                          <label
+                            htmlFor={`operator-${operator}`}
+                            className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {operator}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             </div>
 
-            {/* Plan Cards */}
-            <div className="space-y-6">
-              {filteredPlans.length > 0 ? (
-                filteredPlans.map((plan) => (
-                  <PlanCard key={plan.id} plan={plan} />
-                ))
-              ) : (
-                <div className="flex flex-col items-center justify-center p-8 bg-muted/30 rounded-lg">
-                  <Info className="h-12 w-12 text-muted-foreground mb-2" />
-                  <h3 className="text-lg font-medium">Aucun forfait trouvé</h3>
-                  <p className="text-muted-foreground text-center mt-1">
-                    Essayez d'élargir vos critères de recherche
+            {/* Results Panel */}
+            <div className="lg:col-span-3 space-y-6">
+              {/* Results Header */}
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-card p-4 rounded-lg border border-border">
+                <div>
+                  <h2 className="text-xl font-semibold">
+                    {filteredPlans.length} forfaits trouvés
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Comparaison mise à jour le {new Date().toLocaleDateString('fr-FR')}
                   </p>
                 </div>
-              )}
+                <div className="flex items-center space-x-2 w-full md:w-auto">
+                  <Select 
+                    value={sortOption} 
+                    onValueChange={setSortOption}
+                  >
+                    <SelectTrigger className="w-full md:w-[200px]">
+                      <SelectValue placeholder="Trier par" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="price-asc">Prix (croissant)</SelectItem>
+                      <SelectItem value="price-desc">Prix (décroissant)</SelectItem>
+                      <SelectItem value="data-asc">Données (croissant)</SelectItem>
+                      <SelectItem value="data-desc">Données (décroissant)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Plan Cards */}
+              <div className="space-y-6">
+                {filteredPlans.length > 0 ? (
+                  filteredPlans.map((plan) => (
+                    <PlanCard key={plan.id} plan={plan} />
+                  ))
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-8 bg-muted/30 rounded-lg">
+                    <Info className="h-12 w-12 text-muted-foreground mb-2" />
+                    <h3 className="text-lg font-medium">Aucun forfait trouvé</h3>
+                    <p className="text-muted-foreground text-center mt-1">
+                      Essayez d'élargir vos critères de recherche
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 };
 
