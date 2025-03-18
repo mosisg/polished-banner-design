@@ -23,6 +23,12 @@ const MobileSection = () => {
             <p className="text-muted-foreground mb-8 text-base leading-relaxed">
               Comparez les meilleurs forfaits mobiles et trouvez l'offre parfaite avec le bon équilibre entre data, appels et prix. Économisez jusqu'à 40% sur votre forfait mensuel.
             </p>
+            
+            <div className="flex flex-wrap gap-4 mb-8">
+              <img src="/logo-bouygues.svg" alt="Bouygues Telecom" className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
+              <img src="/logo-coriolis.svg" alt="Coriolis" className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
+            </div>
+            
             <Button asChild size="lg" className="group shadow-lg hover:shadow-xl transition-all">
               <Link to="/mobile" className="inline-flex items-center">
                 Découvrir les offres
