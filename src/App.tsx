@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import { lazy, Suspense } from 'react';
 import { Skeleton } from "@/components/ui/skeleton";
+import { Analytics } from "@vercel/analytics/react";
 
 // Chargement dynamique des pages
 const Index = lazy(() => import("./pages/Index"));
@@ -70,6 +71,7 @@ const App = () => (
             </Routes>
           </Suspense>
         </BrowserRouter>
+        <Analytics />
       </TooltipProvider>
     </HelmetProvider>
   </QueryClientProvider>
