@@ -11,6 +11,7 @@ import MobileSection from '@/components/home/MobileSection';
 import InternetSection from '@/components/home/InternetSection';
 import ComparisonSection from '@/components/home/ComparisonSection';
 import BlogSection from '@/components/home/BlogSection';
+import PartnersSection from '@/components/home/PartnersSection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 
 const Index = () => {
@@ -61,6 +62,7 @@ const Index = () => {
           <InternetSection />
           <ComparisonSection />
           <BlogSection />
+          <PartnersSection />
           <TestimonialsSection />
         </main>
         
