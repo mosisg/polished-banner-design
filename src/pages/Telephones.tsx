@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
@@ -102,7 +101,7 @@ const Telephones = () => {
       <div className="flex flex-col min-h-screen">
         <Header />
 
-        <main className="flex-1 container mx-auto px-4 md:px-6 py-8">
+        <main className="flex-1 container mx-auto px-4 md:px-6 py-12">
           {isError ? (
             <div className="text-center py-12">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">

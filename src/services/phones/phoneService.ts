@@ -1,4 +1,3 @@
-
 import { Phone, SortOption, FilterOption, PriceRange } from '@/types/phones';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -22,13 +21,14 @@ export const fetchPhonesData = async (): Promise<Phone[]> => {
   try {
     console.log('Fetching phones XML from Supabase');
     
-    // Get public URL for the XML file
-    const { data: urlData } = await supabase
+    // Get public URL for the XML file from the "mosis" bucket
+    const { data: urlData, error: urlError } = await supabase
       .storage
       .from('mosis')
       .createSignedUrl('xmlTmp.xml', 60 * 60); // 1 hour expiry
       
-    if (!urlData?.signedUrl) {
+    if (urlError || !urlData?.signedUrl) {
+      console.error('Failed to get signed URL for XML file:', urlError);
       throw new Error('Failed to get signed URL for XML file');
     }
     
@@ -45,11 +45,12 @@ export const fetchPhonesData = async (): Promise<Phone[]> => {
     phonesCache = phones;
     lastFetchTime = currentTime;
     
+    console.log(`Successfully loaded ${phones.length} phones from XML`);
     return phones;
   } catch (error) {
     console.error('Error fetching phones data:', error);
     // Return empty array or cached data if available as fallback
-    return phonesCache || [];
+    return phonesCache || getExamplePhones();
   }
 };
 
