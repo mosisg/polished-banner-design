@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Info } from 'lucide-react';
 import PlanCard from '@/components/ui/PlanCard';
@@ -20,6 +19,9 @@ const OperatorLogo = ({ operator }: { operator: string }) => {
         return '/logo-auchan-telecom.svg';
       case 'prixtel':
         return '/logo-prixtel.svg';
+      case 'red':
+      case 'red by sfr':
+        return '/logo-red.svg';
       default:
         return null;
     }
