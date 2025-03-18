@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const PhoneEmptyState = () => {
   return (
@@ -14,6 +15,9 @@ const PhoneEmptyState = () => {
           Aucun téléphone ne correspond à vos critères de recherche.
           Essayez de modifier ou de réinitialiser vos filtres.
         </p>
+        <Button variant="outline" onClick={() => window.location.reload()}>
+          Réinitialiser les filtres
+        </Button>
       </div>
     </div>
   );

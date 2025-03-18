@@ -29,17 +29,26 @@ export const fetchPhonesData = async (): Promise<Phone[]> => {
       
     if (urlError || !urlData?.signedUrl) {
       console.error('Failed to get signed URL for XML file:', urlError);
-      throw new Error('Failed to get signed URL for XML file');
+      console.log('Falling back to example phones data');
+      return getExamplePhones();
     }
     
     // Fetch the XML file
     const response = await fetch(urlData.signedUrl);
     if (!response.ok) {
-      throw new Error(`Failed to fetch XML file: ${response.statusText}`);
+      console.error(`Failed to fetch XML file: ${response.statusText}`);
+      console.log('Falling back to example phones data');
+      return getExamplePhones();
     }
     
     const xmlText = await response.text();
     const phones = parseXmlToPhones(xmlText);
+    
+    // If no phones parsed successfully, use example data
+    if (phones.length === 0) {
+      console.log('No phones found in XML, using example data');
+      return getExamplePhones();
+    }
     
     // Update cache
     phonesCache = phones;
@@ -49,7 +58,8 @@ export const fetchPhonesData = async (): Promise<Phone[]> => {
     return phones;
   } catch (error) {
     console.error('Error fetching phones data:', error);
-    // Return empty array or cached data if available as fallback
+    // Return cached data or example phones as fallback
+    console.log('Error occurred, falling back to example phones data');
     return phonesCache || getExamplePhones();
   }
 };
@@ -370,47 +380,275 @@ export const getPriceRange = (phones: Phone[]): PriceRange => {
   };
 };
 
-// Export a small set of example phones for testing
+// Export a more extensive set of example phones for testing
 export const getExamplePhones = (): Phone[] => [
   {
     id: "example-1",
     ean: "1234567890123",
-    title: "Samsung Galaxy S21 - 128 Go - Noir",
+    title: "Samsung Galaxy S23 Ultra - 256 Go - Noir",
     trademark: "Samsung",
-    description: "Galaxy S21 5G - écran 6,2\" Dynamic AMOLED 2X - 8 Go RAM - 128 Go",
-    price: 699,
-    originalPrice: 849,
-    discount: 150,
-    image: "https://example.com/s21.jpg",
+    description: "Galaxy S23 Ultra 5G - écran 6,8\" Dynamic AMOLED 2X - 12 Go RAM - 256 Go - S Pen inclus",
+    fullDescription: "Le Galaxy S23 Ultra est doté d'un appareil photo de 200MP pour des prises de vue nocturnes époustouflantes, du S Pen intégré, et d'une batterie qui dure plus d'une journée.",
+    price: 899,
+    originalPrice: 1199,
+    discount: 300,
+    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/2302/gallery/fr-galaxy-s23-ultra-s918-sm-s918bzkcfxp-534863638",
+    additionalImages: [],
     category: "Smartphones",
-    merchant: "Amazon",
+    merchant: "Samsung Shop",
     condition: "new",
     operatingSystem: "Android",
     color: "Noir",
-    storage: "128 Go",
+    storage: "256 Go",
     shipping: "Livraison gratuite",
-    installmentPrice: 29,
+    installmentPrice: 39,
     installmentMonths: 24,
+    promotion: "Galaxy Buds2 Pro OFFERTS",
     isEcoFriendly: true,
-    inStock: true
+    inStock: true,
+    rating: 4.8,
+    reviewCount: 423
   },
   {
     id: "example-2",
     ean: "2345678901234",
-    title: "iPhone 14 Pro - 256 Go - Argent",
+    title: "iPhone 14 Pro - 256 Go - Violet Intense",
     trademark: "Apple",
-    description: "iPhone 14 Pro - écran 6,1\" Super Retina XDR - 256 Go",
-    price: 1199,
-    image: "https://example.com/iphone14.jpg",
+    description: "iPhone 14 Pro - écran 6,1\" Super Retina XDR - 256 Go - Dynamic Island - Puce A16 Bionic",
+    fullDescription: "L'iPhone 14 Pro introduit Dynamic Island et l'écran toujours activé. Appareil photo 48Mpx pour une résolution 4x supérieure. Détection des accidents. A16 Bionic, la puce de smartphone la plus rapide au monde.",
+    price: 1099,
+    originalPrice: 1329,
+    discount: 230,
+    image: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-14-pro-model-unselect-gallery-1-202209",
     category: "Smartphones",
     merchant: "Apple Store",
     condition: "new",
     operatingSystem: "iOS",
-    color: "Argent",
+    color: "Violet Intense",
     storage: "256 Go",
     shipping: "Livraison sous 24h",
-    rating: 4.8,
-    reviewCount: 423,
+    promotion: "",
+    rating: 4.9,
+    reviewCount: 512,
+    inStock: true
+  },
+  {
+    id: "example-3",
+    ean: "3456789012345",
+    title: "Google Pixel 7 Pro - 128 Go - Vert Sauge",
+    trademark: "Google",
+    description: "Pixel 7 Pro - écran 6,7\" QHD+ LTPO OLED 120 Hz - 128 Go - Processeur Google Tensor G2",
+    fullDescription: "Le Google Pixel 7 Pro est le smartphone le plus avancé de Google à ce jour. Il est équipé de la puce Google Tensor G2 et du système Titan M2, qui le rendent plus rapide, plus efficace et plus sécurisé.",
+    price: 649,
+    originalPrice: 899,
+    discount: 250,
+    image: "https://lh3.googleusercontent.com/uSGjbg5FYWX01alVH1x6s6JZlvl5YS_H9frL0a2-mjMYZHTWAaJqXpVvrOIkSHQkIxEHLX7FDbBz9jv3cGOsUfhbYGaf-zdI",
+    category: "Smartphones",
+    merchant: "Google Store",
+    condition: "new",
+    operatingSystem: "Android",
+    color: "Vert Sauge",
+    storage: "128 Go",
+    shipping: "Livraison gratuite",
+    rating: 4.6,
+    reviewCount: 368,
+    inStock: true,
+    isEcoFriendly: true
+  },
+  {
+    id: "example-4",
+    ean: "4567890123456",
+    title: "Xiaomi 13 - 256 Go - Blanc",
+    trademark: "Xiaomi",
+    description: "Xiaomi 13 - écran 6,36\" AMOLED 120 Hz - Snapdragon 8 Gen 2 - 256 Go - Co-développé avec Leica",
+    price: 699,
+    originalPrice: 999,
+    discount: 300,
+    image: "https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-13-2.jpg",
+    category: "Smartphones",
+    merchant: "Mi Store",
+    condition: "new",
+    operatingSystem: "Android",
+    color: "Blanc",
+    storage: "256 Go",
+    shipping: "Livraison en 48h",
+    installmentPrice: 29,
+    installmentMonths: 24,
+    rating: 4.5,
+    reviewCount: 215,
+    inStock: true
+  },
+  {
+    id: "example-5",
+    ean: "5678901234567",
+    title: "iPhone 13 - 128 Go - Rouge - Reconditionné",
+    trademark: "Apple",
+    description: "iPhone 13 reconditionné - écran 6,1\" Super Retina XDR - 128 Go - Grade A+",
+    price: 599,
+    image: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-product-red-select-2021",
+    category: "Smartphones",
+    merchant: "Back Market",
+    condition: "refurbished",
+    operatingSystem: "iOS",
+    color: "Rouge",
+    storage: "128 Go",
+    shipping: "Livraison gratuite",
+    rating: 4.7,
+    reviewCount: 432,
+    isEcoFriendly: true,
+    inStock: true
+  },
+  {
+    id: "example-6",
+    ean: "6789012345678",
+    title: "Samsung Galaxy Z Flip4 - 256 Go - Lavande",
+    trademark: "Samsung",
+    description: "Galaxy Z Flip4 - écran principal 6,7\" Dynamic AMOLED 2X - écran externe 1,9\" - 256 Go",
+    price: 799,
+    originalPrice: 1199,
+    discount: 400,
+    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/galaxy-z-flip4/feature/fr-feature-flex-your-world-with-a-foldable-phone-531153153",
+    category: "Smartphones",
+    merchant: "Darty",
+    condition: "new",
+    operatingSystem: "Android",
+    color: "Lavande",
+    storage: "256 Go",
+    shipping: "Livraison gratuite",
+    installmentPrice: 33,
+    installmentMonths: 24,
+    rating: 4.6,
+    reviewCount: 187,
+    inStock: true
+  },
+  {
+    id: "example-7",
+    ean: "7890123456789",
+    title: "OnePlus 11 - 256 Go - Noir",
+    trademark: "OnePlus",
+    description: "OnePlus 11 5G - écran 6,7\" AMOLED LTPO3 120 Hz - Snapdragon 8 Gen 2 - 256 Go",
+    price: 699,
+    originalPrice: 919,
+    discount: 220,
+    image: "https://oasis.opstatics.com/content/dam/oasis/page/2023/operation/mar/0306/EU-IN_green_pdp_carousel_2_img.jpg",
+    category: "Smartphones",
+    merchant: "OnePlus Store",
+    condition: "new",
+    operatingSystem: "Android",
+    color: "Noir",
+    storage: "256 Go",
+    shipping: "Livraison sous 48h",
+    rating: 4.5,
+    reviewCount: 156,
+    inStock: true
+  },
+  {
+    id: "example-8",
+    ean: "8901234567890",
+    title: "Nothing Phone (1) - 128 Go - Blanc",
+    trademark: "Nothing",
+    description: "Nothing Phone (1) - écran 6,55\" OLED 120 Hz - 128 Go - Interface Glyph - Snapdragon 778G+",
+    price: 349,
+    originalPrice: 469,
+    discount: 120,
+    image: "https://cdn.shopify.com/s/files/1/0597/9421/5509/products/Phone1-Black-Front.jpg",
+    category: "Smartphones",
+    merchant: "Amazon",
+    condition: "new",
+    operatingSystem: "Android",
+    color: "Blanc",
+    storage: "128 Go",
+    shipping: "Livraison gratuite",
+    rating: 4.3,
+    reviewCount: 142,
+    isEcoFriendly: true,
+    inStock: true
+  },
+  {
+    id: "example-9",
+    ean: "9012345678901",
+    title: "Samsung Galaxy A54 - 128 Go - Bleu",
+    trademark: "Samsung",
+    description: "Galaxy A54 5G - écran 6,4\" Super AMOLED 120 Hz - 128 Go - Batterie 5000 mAh",
+    price: 299,
+    originalPrice: 499,
+    discount: 200,
+    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/sm-a546blbdxef/gallery/fr-galaxy-a54-5g-sm-a546-sm-a546blbdxef-536036031",
+    category: "Smartphones",
+    merchant: "Boulanger",
+    condition: "new",
+    operatingSystem: "Android",
+    color: "Bleu",
+    storage: "128 Go",
+    shipping: "Livraison gratuite",
+    installmentPrice: 12,
+    installmentMonths: 24,
+    rating: 4.4,
+    reviewCount: 278,
+    inStock: true
+  },
+  {
+    id: "example-10",
+    ean: "0123456789012",
+    title: "iPhone 14 - 128 Go - Bleu",
+    trademark: "Apple",
+    description: "iPhone 14 - écran 6,1\" Super Retina XDR - 128 Go - Détection des accidents",
+    price: 769,
+    originalPrice: 869,
+    discount: 100,
+    image: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-14-finish-select-202209-6-1inch-blue",
+    category: "Smartphones",
+    merchant: "FNAC",
+    condition: "new",
+    operatingSystem: "iOS",
+    color: "Bleu",
+    storage: "128 Go",
+    shipping: "Livraison gratuite",
+    rating: 4.7,
+    reviewCount: 386,
+    inStock: true
+  },
+  {
+    id: "example-11",
+    ean: "1092837465001",
+    title: "Samsung Galaxy S22 Ultra - 256 Go - Bordeaux - Reconditionné",
+    trademark: "Samsung",
+    description: "Galaxy S22 Ultra reconditionné - Grade A - écran 6,8\" Dynamic AMOLED 2X - 256 Go - S Pen inclus",
+    price: 599,
+    originalPrice: 1099,
+    discount: 500,
+    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/sm-s908bdrgeub/gallery/fr-galaxy-s22-ultra-s908-sm-s908bdrgeub-530750523",
+    category: "Smartphones",
+    merchant: "CertiDeal",
+    condition: "refurbished",
+    operatingSystem: "Android",
+    color: "Bordeaux",
+    storage: "256 Go",
+    shipping: "Livraison gratuite",
+    rating: 4.5,
+    reviewCount: 324,
+    isEcoFriendly: true,
+    inStock: true
+  },
+  {
+    id: "example-12",
+    ean: "1092837465002",
+    title: "Motorola Edge 40 Pro - 256 Go - Noir",
+    trademark: "Motorola",
+    description: "Motorola Edge 40 Pro - écran 6,67\" pOLED 165 Hz - Snapdragon 8 Gen 2 - 256 Go",
+    price: 599,
+    originalPrice: 899,
+    discount: 300,
+    image: "https://mobilecontent.costco.com/live/resource/img/ca-static-pages/d-motorola-edge-40-pro-cosmic.jpg",
+    category: "Smartphones",
+    merchant: "Cdiscount",
+    condition: "new",
+    operatingSystem: "Android",
+    color: "Noir",
+    storage: "256 Go",
+    shipping: "Livraison en 24h",
+    rating: 4.4,
+    reviewCount: 112,
     inStock: true
   }
 ];
