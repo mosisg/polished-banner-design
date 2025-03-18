@@ -1,13 +1,11 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import Header from '@/components/layout/Header';
 import PhoneFilterPanel from '@/components/phones/PhoneFilterPanel';
 import PhoneResultsPanel from '@/components/phones/PhoneResultsPanel';
 import { fetchPhonesData, getExamplePhones, filterPhones, sortPhones } from '@/services/phones/phoneService';
-import { Phone, SortOption } from '@/types/phones';
+import { SortOption } from '@/types/phones';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Smartphone, Search, ShoppingCart } from 'lucide-react';
