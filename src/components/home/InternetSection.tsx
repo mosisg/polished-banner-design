@@ -11,7 +11,7 @@ const InternetSection = () => {
   const featuredBoxes = internetBoxes.slice(0, 3);
   
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white dark:bg-slate-800">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row-reverse items-center justify-between mb-10 gap-8">
           <div className="mb-6 md:mb-0 md:w-1/2">

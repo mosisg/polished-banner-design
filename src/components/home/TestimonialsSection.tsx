@@ -50,7 +50,7 @@ const testimonials: Testimonial[] = [
 
 const TestimonialsSection = () => {
   return (
-    <section className="py-16 bg-slate-50">
+    <section className="py-16 bg-slate-50 dark:bg-slate-900">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
@@ -73,16 +73,16 @@ const TestimonialsSection = () => {
             <CarouselContent>
               {testimonials.map((testimonial) => (
                 <CarouselItem key={testimonial.id} className="md:basis-1/2 p-1">
-                  <div className="bg-white p-6 rounded-lg shadow-sm h-full border border-border">
+                  <div className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm h-full border border-border">
                     <div className="flex mb-3">
                       {[...Array(5)].map((_, i) => (
                         <Star 
                           key={i} 
-                          className={`h-5 w-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} 
+                          className={`h-5 w-5 ${i < testimonial.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 dark:text-gray-600'}`} 
                         />
                       ))}
                     </div>
-                    <p className="mb-4 italic text-gray-700">"{testimonial.comment}"</p>
+                    <p className="mb-4 italic text-gray-700 dark:text-gray-300">"{testimonial.comment}"</p>
                     <div className="flex justify-between items-center">
                       <p className="font-semibold">{testimonial.name}</p>
                       <p className="text-xs text-muted-foreground">{testimonial.date}</p>
@@ -104,7 +104,7 @@ const TestimonialsSection = () => {
             { title: "Économisez de l'argent", value: "219€", description: "d'économie moyenne annuelle" },
             { title: "Utilisateurs satisfaits", value: "98%", description: "de satisfaction client" }
           ].map((stat, index) => (
-            <div key={index} className="bg-white p-6 rounded-lg shadow-sm text-center border border-border">
+            <div key={index} className="bg-white dark:bg-slate-800 p-6 rounded-lg shadow-sm text-center border border-border">
               <h3 className="font-semibold mb-2">{stat.title}</h3>
               <p className="text-3xl font-bold text-primary mb-1">{stat.value}</p>
               <p className="text-sm text-muted-foreground">{stat.description}</p>

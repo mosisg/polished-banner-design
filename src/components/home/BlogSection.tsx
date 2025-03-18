@@ -25,7 +25,7 @@ const BlogSection = () => {
   });
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white dark:bg-slate-800">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between mb-10">
           <div className="mb-6 md:mb-0">

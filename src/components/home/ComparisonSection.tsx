@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 const ComparisonSection = () => {
   return (
-    <section className="py-16 bg-slate-50">
+    <section className="py-16 bg-slate-50 dark:bg-slate-900">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
@@ -19,7 +19,7 @@ const ComparisonSection = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-border">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-border">
             <div className="flex items-center gap-3 mb-4">
               <Smartphone className="h-6 w-6 text-primary" />
               <h3 className="text-xl font-semibold">Forfaits Mobiles</h3>
@@ -35,7 +35,7 @@ const ComparisonSection = () => {
             </Button>
           </div>
           
-          <div className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-border">
+          <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow border border-border">
             <div className="flex items-center gap-3 mb-4">
               <Wifi className="h-6 w-6 text-primary" />
               <h3 className="text-xl font-semibold">Box Internet</h3>

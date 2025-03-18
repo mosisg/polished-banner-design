@@ -11,7 +11,7 @@ const MobileSection = () => {
   const featuredPlans = mobilePlans.slice(0, 3);
 
   return (
-    <section className="py-16 bg-slate-50">
+    <section className="py-16 bg-slate-50 dark:bg-slate-900">
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-8">
           <div className="mb-6 md:mb-0 md:w-1/2">
