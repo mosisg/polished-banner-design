@@ -34,16 +34,14 @@ const Sitemap = () => {
     );
   }
 
+  // Forcer le type de contenu à application/xml
   return (
     <>
       <Helmet>
         <title>Sitemap | ComparePrix</title>
         <meta name="robots" content="noindex, follow" />
-        <meta http-equiv="Content-Type" content="application/xml; charset=utf-8" />
+        <meta httpEquiv="Content-Type" content="application/xml; charset=utf-8" />
       </Helmet>
-      <pre style={{ display: 'none' }}>
-        {sitemapContent}
-      </pre>
       <div 
         dangerouslySetInnerHTML={{ __html: sitemapContent }} 
         style={{ 

@@ -61,7 +61,10 @@ const App = () => (
               <Route path="/mentions-legales" element={<MentionsLegales />} />
               <Route path="/cgv" element={<CGV />} />
               
+              {/* Sitemap route - Using both .xml extension and without extension */}
               <Route path="/sitemap.xml" element={<Sitemap />} />
+              <Route path="/sitemap" element={<Sitemap />} />
+              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

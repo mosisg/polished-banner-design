@@ -8,9 +8,11 @@
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   
-  # Servir sitemap.xml directement s'il existe
-  RewriteCond %{REQUEST_URI} !^/sitemap\.xml$
-  
-  # Sinon, rediriger vers index.html pour que React Router prenne le relais
+  # Rediriger toutes les demandes vers index.html
   RewriteRule ^ index.html [QSA,L]
+</IfModule>
+
+# Définir le type MIME pour sitemap.xml
+<IfModule mod_mime.c>
+  AddType application/xml .xml
 </IfModule>
