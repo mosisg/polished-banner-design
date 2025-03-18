@@ -26,7 +26,8 @@ const ThemeToggle = () => {
     }
   }, [isDarkMode]);
 
-  const toggleTheme = () => {
+  const toggleTheme = (e) => {
+    e.preventDefault(); // Prevent default behavior that might cause navigation
     setIsDarkMode(!isDarkMode);
   };
 
@@ -37,6 +38,7 @@ const ThemeToggle = () => {
       onClick={toggleTheme}
       className="rounded-full w-9 h-9 transition-all duration-300 ease-in-out hover:bg-muted/50"
       aria-label="Toggle theme"
+      type="button" // Explicitly set type to button to prevent form submission behavior
     >
       {isDarkMode ? (
         <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />

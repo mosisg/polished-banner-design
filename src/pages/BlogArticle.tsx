@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useParams, useNavigate } from 'react-router-dom';
@@ -42,6 +43,11 @@ const BlogArticle = () => {
     });
   };
   
+  const handleBackClick = (e) => {
+    e.preventDefault();
+    navigate('/blog');
+  };
+  
   const structuredData = articleData ? {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -82,7 +88,12 @@ const BlogArticle = () => {
         <main className="flex-1 pt-24 pb-16">
           <div className="container mx-auto px-4">
             <div className="mb-6">
-              <Button variant="ghost" onClick={() => navigate('/blog')} className="group">
+              <Button 
+                variant="ghost" 
+                onClick={handleBackClick} 
+                className="group"
+                type="button"
+              >
                 <ChevronLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
                 Retour au blog
               </Button>
