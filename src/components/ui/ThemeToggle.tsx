@@ -26,8 +26,9 @@ const ThemeToggle = () => {
     }
   }, [isDarkMode]);
 
-  const toggleTheme = (e) => {
+  const toggleTheme = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent default behavior that might cause navigation
+    e.stopPropagation(); // Stop event propagation
     setIsDarkMode(!isDarkMode);
   };
 

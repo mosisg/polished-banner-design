@@ -43,6 +43,13 @@ const Header = () => {
     }
   }, [isMobile, isMobileMenuOpen]);
 
+  // Handle mobile menu toggle separately to prevent navigation
+  const handleMobileMenuToggle = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent any default navigation
+    e.stopPropagation(); // Stop event propagation
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
   return (
     <header 
       className={cn(
@@ -91,7 +98,7 @@ const Header = () => {
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              onClick={handleMobileMenuToggle}
               className="md:hidden"
               aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
               type="button"
