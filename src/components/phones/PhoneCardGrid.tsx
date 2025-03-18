@@ -73,7 +73,7 @@ const PhoneCardGrid = ({
               <span className="text-sm font-medium text-gray-500">À partir de</span>
             </div>
             <span className="text-2xl font-bold">
-              1<sup>€</sup>
+              {formatPrice(phone.price)}
             </span>
             
             {phone.installmentPrice && phone.installmentMonths && (
@@ -107,6 +107,7 @@ const PhoneCardGrid = ({
             <div className="mt-3 pt-3 border-t border-gray-100">
               <Button 
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white transition-all shadow-sm"
+                onClick={() => window.open(phone.productUrl, '_blank')}
               >
                 Voir l'offre
                 <ExternalLink className="h-4 w-4 ml-1" />

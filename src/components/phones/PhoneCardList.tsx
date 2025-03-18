@@ -121,7 +121,11 @@ const PhoneCardList = ({
           </div>
           
           <div className="w-full mt-4">
-            <Button size="sm" className="w-full bg-purple-600 hover:bg-purple-700 text-white transition-all shadow-sm">
+            <Button 
+              size="sm" 
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white transition-all shadow-sm"
+              onClick={() => window.open(phone.productUrl, '_blank')}
+            >
               Voir l'offre
               <ExternalLink className="h-4 w-4 ml-1" />
             </Button>

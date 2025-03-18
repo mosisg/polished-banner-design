@@ -1,3 +1,4 @@
+
 import { Phone } from '@/types/phones';
 
 // Export a more extensive set of example phones for testing
@@ -12,7 +13,7 @@ export const getExamplePhones = (): Phone[] => [
     price: 899,
     originalPrice: 1199,
     discount: 300,
-    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/2302/gallery/fr-galaxy-s23-ultra-s918-sm-s918bzkcfxp-534863638",
+    image: "https://www.bouyguestelecom.fr/catalogue/image-resize/full/media/catalog/product/v/i/vig-samsung-galaxy-s23-plus-noir-face_2.png",
     additionalImages: [],
     category: "Smartphones",
     merchant: "Samsung Shop",
@@ -27,7 +28,8 @@ export const getExamplePhones = (): Phone[] => [
     isEcoFriendly: true,
     inStock: true,
     rating: 4.8,
-    reviewCount: 423
+    reviewCount: 423,
+    productUrl: "https://www.samsung.com/fr/smartphones/galaxy-s23-ultra/"
   },
   {
     id: "example-2",
@@ -39,7 +41,7 @@ export const getExamplePhones = (): Phone[] => [
     price: 1099,
     originalPrice: 1329,
     discount: 230,
-    image: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-14-pro-model-unselect-gallery-1-202209",
+    image: "https://www.bouyguestelecom.fr/catalogue/image-resize/full/media/catalog/product/v/i/vig-apple-iphone-14-pro-violet-intense-face.png",
     category: "Smartphones",
     merchant: "Apple Store",
     condition: "new",
@@ -50,7 +52,8 @@ export const getExamplePhones = (): Phone[] => [
     promotion: "",
     rating: 4.9,
     reviewCount: 512,
-    inStock: true
+    inStock: true,
+    productUrl: "https://www.apple.com/fr/iphone-14-pro/"
   },
   {
     id: "example-3",
@@ -73,7 +76,8 @@ export const getExamplePhones = (): Phone[] => [
     rating: 4.6,
     reviewCount: 368,
     inStock: true,
-    isEcoFriendly: true
+    isEcoFriendly: true,
+    productUrl: "https://store.google.com/fr/product/pixel_7_pro"
   },
   {
     id: "example-4",
@@ -96,50 +100,54 @@ export const getExamplePhones = (): Phone[] => [
     installmentMonths: 24,
     rating: 4.5,
     reviewCount: 215,
-    inStock: true
+    inStock: true,
+    productUrl: "https://www.mi.com/fr/product/xiaomi-13/"
   },
   {
     id: "example-5",
     ean: "5678901234567",
-    title: "iPhone 13 - 128 Go - Rouge - Reconditionné",
+    title: "iPhone 15 - 128 Go - Noir",
     trademark: "Apple",
-    description: "iPhone 13 reconditionné - écran 6,1\" Super Retina XDR - 128 Go - Grade A+",
-    price: 599,
-    image: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-13-product-red-select-2021",
+    description: "iPhone 15 - écran 6,1\" Super Retina XDR - 128 Go - Puce A16 Bionic",
+    price: 799,
+    image: "https://www.bouyguestelecom.fr/catalogue/image-resize/full/media/catalog/product/v/i/vig-apple-iphone-15-noir-face.png",
     category: "Smartphones",
-    merchant: "Back Market",
-    condition: "refurbished",
+    merchant: "Apple Store",
+    condition: "new",
     operatingSystem: "iOS",
-    color: "Rouge",
+    color: "Noir",
     storage: "128 Go",
     shipping: "Livraison gratuite",
     rating: 4.7,
     reviewCount: 432,
     isEcoFriendly: true,
-    inStock: true
+    inStock: true,
+    productUrl: "https://www.apple.com/fr/iphone-15/"
   },
   {
     id: "example-6",
     ean: "6789012345678",
-    title: "Samsung Galaxy Z Flip4 - 256 Go - Lavande",
+    title: "Samsung Galaxy S25 Plus - 256 Go - Bleu Nuit",
     trademark: "Samsung",
-    description: "Galaxy Z Flip4 - écran principal 6,7\" Dynamic AMOLED 2X - écran externe 1,9\" - 256 Go",
-    price: 799,
+    description: "Galaxy S25 Plus - écran 6,7\" Dynamic AMOLED 2X - 12 Go RAM - 256 Go",
+    price: 999,
     originalPrice: 1199,
-    discount: 400,
-    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/galaxy-z-flip4/feature/fr-feature-flex-your-world-with-a-foldable-phone-531153153",
+    discount: 200,
+    image: "https://www.bouyguestelecom.fr/catalogue/image-resize/full/media/catalog/product/v/i/vig-samsung-galaxy-s25-plus-bleu-nuit-et-tab-s6-lite-offerte.png",
     category: "Smartphones",
-    merchant: "Darty",
+    merchant: "Samsung Shop",
     condition: "new",
     operatingSystem: "Android",
-    color: "Lavande",
+    color: "Bleu Nuit",
     storage: "256 Go",
     shipping: "Livraison gratuite",
     installmentPrice: 33,
     installmentMonths: 24,
-    rating: 4.6,
+    rating: 4.8,
     reviewCount: 187,
-    inStock: true
+    inStock: true,
+    promotion: "Galaxy Tab S6 Lite OFFERTE",
+    productUrl: "https://www.samsung.com/fr/smartphones/galaxy-s25-plus/"
   },
   {
     id: "example-7",
@@ -160,73 +168,77 @@ export const getExamplePhones = (): Phone[] => [
     shipping: "Livraison sous 48h",
     rating: 4.5,
     reviewCount: 156,
-    inStock: true
+    inStock: true,
+    productUrl: "https://www.oneplus.com/fr/oneplus-11"
   },
   {
     id: "example-8",
     ean: "8901234567890",
-    title: "Nothing Phone (1) - 128 Go - Blanc",
-    trademark: "Nothing",
-    description: "Nothing Phone (1) - écran 6,55\" OLED 120 Hz - 128 Go - Interface Glyph - Snapdragon 778G+",
-    price: 349,
-    originalPrice: 469,
-    discount: 120,
-    image: "https://cdn.shopify.com/s/files/1/0597/9421/5509/products/Phone1-Black-Front.jpg",
+    title: "iPhone 16 Pro - 256 Go - Titane Sable",
+    trademark: "Apple",
+    description: "iPhone 16 Pro - écran 6,3\" Super Retina XDR Always-On - Puce A18 Pro - 256 Go",
+    price: 1199,
+    originalPrice: 1399,
+    discount: 200,
+    image: "https://www.bouyguestelecom.fr/catalogue/image-resize/full/media/catalog/product/v/i/vig-apple-iphone-16-pro-titane-sable-face_1.png",
     category: "Smartphones",
-    merchant: "Amazon",
+    merchant: "Apple Store",
     condition: "new",
-    operatingSystem: "Android",
-    color: "Blanc",
-    storage: "128 Go",
+    operatingSystem: "iOS",
+    color: "Titane Sable",
+    storage: "256 Go",
     shipping: "Livraison gratuite",
-    rating: 4.3,
+    rating: 4.9,
     reviewCount: 142,
     isEcoFriendly: true,
-    inStock: true
+    inStock: true,
+    productUrl: "https://www.apple.com/fr/iphone-16-pro/"
   },
   {
     id: "example-9",
     ean: "9012345678901",
-    title: "Samsung Galaxy A54 - 128 Go - Bleu",
+    title: "Samsung Galaxy A26 5G - 128 Go - Noir",
     trademark: "Samsung",
-    description: "Galaxy A54 5G - écran 6,4\" Super AMOLED 120 Hz - 128 Go - Batterie 5000 mAh",
+    description: "Galaxy A26 5G - écran 6,5\" Super AMOLED 120 Hz - 128 Go - Batterie 5000 mAh",
     price: 299,
-    originalPrice: 499,
-    discount: 200,
-    image: "https://images.samsung.com/is/image/samsung/p6pim/fr/sm-a546blbdxef/gallery/fr-galaxy-a54-5g-sm-a546-sm-a546blbdxef-536036031",
+    originalPrice: 399,
+    discount: 100,
+    image: "https://www.bouyguestelecom.fr/catalogue/image-resize/full/media/catalog/product/v/i/vig-samsung-galaxy-a26-5g-noir-face.png",
     category: "Smartphones",
     merchant: "Boulanger",
     condition: "new",
     operatingSystem: "Android",
-    color: "Bleu",
+    color: "Noir",
     storage: "128 Go",
     shipping: "Livraison gratuite",
     installmentPrice: 12,
     installmentMonths: 24,
     rating: 4.4,
     reviewCount: 278,
-    inStock: true
+    inStock: true,
+    productUrl: "https://www.samsung.com/fr/smartphones/galaxy-a/galaxy-a26-5g/"
   },
   {
     id: "example-10",
     ean: "0123456789012",
-    title: "iPhone 14 - 128 Go - Bleu",
+    title: "iPhone 15 Plus - 128 Go - Noir",
     trademark: "Apple",
-    description: "iPhone 14 - écran 6,1\" Super Retina XDR - 128 Go - Détection des accidents",
-    price: 769,
-    originalPrice: 869,
-    discount: 100,
-    image: "https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/iphone-14-finish-select-202209-6-1inch-blue",
+    description: "iPhone 15 Plus - écran 6,7\" Super Retina XDR - 128 Go - Puce A16 Bionic",
+    price: 899,
+    originalPrice: 1069,
+    discount: 170,
+    image: "https://www.bouyguestelecom.fr/catalogue/image-resize/full/media/catalog/product/v/i/vig-apple-iphone-15-plus-noir-face.png",
     category: "Smartphones",
     merchant: "FNAC",
     condition: "new",
     operatingSystem: "iOS",
-    color: "Bleu",
+    color: "Noir",
     storage: "128 Go",
     shipping: "Livraison gratuite",
     rating: 4.7,
     reviewCount: 386,
-    inStock: true
+    inStock: true,
+    productUrl: "https://www.apple.com/fr/iphone-15-plus/"
   },
   {
     id: "example-11",
@@ -248,7 +260,8 @@ export const getExamplePhones = (): Phone[] => [
     rating: 4.5,
     reviewCount: 324,
     isEcoFriendly: true,
-    inStock: true
+    inStock: true,
+    productUrl: "https://www.certideal.com/fr/samsung-galaxy-s22-ultra-reconditionne"
   },
   {
     id: "example-12",
@@ -269,6 +282,7 @@ export const getExamplePhones = (): Phone[] => [
     shipping: "Livraison en 24h",
     rating: 4.4,
     reviewCount: 112,
-    inStock: true
+    inStock: true,
+    productUrl: "https://www.motorola.fr/smartphones-motorola-edge-40-pro/p"
   }
 ];
