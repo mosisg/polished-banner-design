@@ -1,0 +1,16 @@
+
+# Réécriture des URL pour SPA (Single Page Application)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # Si le fichier ou répertoire existe, utiliser celui-ci
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  
+  # Servir sitemap.xml directement s'il existe
+  RewriteCond %{REQUEST_URI} !^/sitemap\.xml$
+  
+  # Sinon, rediriger vers index.html pour que React Router prenne le relais
+  RewriteRule ^ index.html [QSA,L]
+</IfModule>

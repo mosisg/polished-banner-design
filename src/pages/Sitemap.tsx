@@ -1,45 +1,58 @@
 
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { generateSitemap } from '@/api/sitemap';
+import { Helmet } from 'react-helmet-async';
 
 /**
  * Cette page sert le sitemap en format XML
  */
 const Sitemap = () => {
-  const navigate = useNavigate();
+  const [sitemapContent, setSitemapContent] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const serveSitemap = async () => {
+    const fetchSitemap = async () => {
       try {
         const sitemapXML = await generateSitemap();
-        
-        // Créer un Blob avec le contenu XML
-        const blob = new Blob([sitemapXML], { type: 'application/xml' });
-        const url = URL.createObjectURL(blob);
-        
-        // Ouvrir le XML directement dans le navigateur
-        window.location.href = url;
-        
-        // Alternative: télécharger le fichier
-        // const link = document.createElement('a');
-        // link.href = url;
-        // link.download = 'sitemap.xml';
-        // link.click();
-        // URL.revokeObjectURL(url);
+        setSitemapContent(sitemapXML);
       } catch (error) {
         console.error('Erreur lors de la génération du sitemap:', error);
-        navigate('/');
+        setSitemapContent('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>');
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    serveSitemap();
-  }, [navigate]);
+    fetchSitemap();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p>Génération du sitemap en cours...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex h-screen items-center justify-center">
-      <p>Génération du sitemap en cours...</p>
-    </div>
+    <>
+      <Helmet>
+        <title>Sitemap | ComparePrix</title>
+        <meta name="robots" content="noindex, follow" />
+        <meta http-equiv="Content-Type" content="application/xml; charset=utf-8" />
+      </Helmet>
+      <pre style={{ display: 'none' }}>
+        {sitemapContent}
+      </pre>
+      <div 
+        dangerouslySetInnerHTML={{ __html: sitemapContent }} 
+        style={{ 
+          whiteSpace: 'pre', 
+          fontFamily: 'monospace',
+          padding: '20px'
+        }} 
+      />
+    </>
   );
 };
 
