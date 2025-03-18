@@ -29,6 +29,9 @@ const OperatorLogo = ({ operator }: { operator: string }) => {
         return '/logo-sosh.svg';
       case 'youprice':
         return '/logo-youprice.svg';
+      case 'free':
+      case 'free mobile':
+        return '/logo-free.svg';
       default:
         return null;
     }
