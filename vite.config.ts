@@ -25,9 +25,9 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-          // Sépare les bibliothèques React en leur propre chunk
+          // Separate React libraries into their own chunk
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          // Sépare les composants UI en leur propre chunk
+          // Separate UI components into their own chunk
           'ui-components': [
             '@radix-ui/react-accordion',
             '@radix-ui/react-dialog',
@@ -39,9 +39,9 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-separator',
             '@radix-ui/react-toast',
           ],
-          // Sépare les dépendances d'animation
+          // Separate animation dependencies
           'animation': ['framer-motion'],
-          // Sépare les fonctionnalités de recherche et gestion d'état
+          // Separate search and state management features
           'data-management': ['@tanstack/react-query'],
         }
       }
