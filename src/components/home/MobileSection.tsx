@@ -28,6 +28,7 @@ const MobileSection = () => {
               <img src="/logo-bouygues.svg" alt="Bouygues Telecom" className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
               <img src="/logo-coriolis.svg" alt="Coriolis" className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
               <img src="/logo-orange.svg" alt="Orange" className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
+              <img src="/logo-auchan-telecom.svg" alt="Auchan Telecom" className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
             </div>
             
             <Button asChild size="lg" className="group shadow-lg hover:shadow-xl transition-all">
