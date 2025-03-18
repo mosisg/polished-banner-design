@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Star, Leaf, Info } from 'lucide-react';
+import { Star, Leaf, Info, Package2, Sparkles } from 'lucide-react';
 
 interface PhoneCardProps {
   phone: PhoneType;
@@ -19,7 +19,6 @@ const PhoneCard = ({
   isInComparison,
   onCompareToggle 
 }: PhoneCardProps) => {
-  // Format price with Euro symbol
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
@@ -28,7 +27,6 @@ const PhoneCard = ({
     }).format(price);
   };
   
-  // Generate stars for rating
   const renderRating = (rating: number = 0, reviewCount: number = 0) => {
     return (
       <div className="flex items-center">
@@ -53,7 +51,6 @@ const PhoneCard = ({
     );
   };
   
-  // Extract promotion tag from description
   const getPromotionTag = () => {
     if (phone.description.includes("OFFERTE")) {
       return "GALAXY TABS6 LITE 2024 OFFERTE";
@@ -72,7 +69,6 @@ const PhoneCard = ({
     return null;
   };
   
-  // Color options display (simplified)
   const renderColorOptions = () => {
     const colors = ['black', 'white', 'blue', 'green'];
     
@@ -98,7 +94,6 @@ const PhoneCard = ({
   
   return viewType === 'grid' ? (
     <Card className="overflow-hidden h-full flex flex-col border border-gray-200 hover:border-gray-300">
-      {/* Promotion banner */}
       {promotionTag && (
         <div className={`text-center text-white text-xs font-semibold py-1 px-2 ${
           promotionTag.includes('OFFERTE') ? 'bg-blue-700' : 'bg-orange-500'
@@ -114,7 +109,6 @@ const PhoneCard = ({
       )}
       
       <div className="p-4 flex-1 flex flex-col">
-        {/* Title & Rating */}
         <h3 className="font-semibold text-lg mb-1">{phone.title}</h3>
         
         {phone.rating && (
@@ -123,7 +117,6 @@ const PhoneCard = ({
           </div>
         )}
         
-        {/* Image section */}
         <div className="relative flex-grow flex items-center justify-center py-4">
           {phone.isEcoFriendly && (
             <div className="absolute top-0 right-0">
@@ -143,7 +136,6 @@ const PhoneCard = ({
           {renderColorOptions()}
         </div>
         
-        {/* Price block */}
         <div className="mt-auto pt-4">
           <div className="flex flex-col">
             <div className="flex items-baseline">
@@ -153,7 +145,6 @@ const PhoneCard = ({
               1<sup>€</sup>
             </span>
             
-            {/* Installment price */}
             {phone.installmentPrice && phone.installmentMonths && (
               <div className="text-sm text-gray-600 mt-1">
                 +{phone.installmentPrice}€/mois x {phone.installmentMonths} mois
@@ -163,7 +154,6 @@ const PhoneCard = ({
               </div>
             )}
             
-            {/* Mobile value and bonus */}
             <div className="flex items-center mt-2 py-2 border-t border-gray-100">
               <div className="flex-shrink-0">
                 <img 
@@ -183,7 +173,6 @@ const PhoneCard = ({
               </div>
             </div>
             
-            {/* Compare checkbox */}
             <div className="flex items-center justify-center mt-3 pt-3 border-t border-gray-100">
               <Checkbox 
                 id={`compare-${phone.id}`}
@@ -202,7 +191,6 @@ const PhoneCard = ({
       </div>
     </Card>
   ) : (
-    // List view - keeping it simple for this update
     <Card className="overflow-hidden border border-gray-200 hover:border-gray-300">
       <div className="flex flex-col sm:flex-row p-4 gap-4">
         <div className="sm:w-1/4 max-w-[160px] mx-auto sm:mx-0">
@@ -295,7 +283,7 @@ const PhoneCard = ({
             
             {phone.shipping && (
               <div className="text-sm text-muted-foreground mb-2">
-                <Package className="h-3 w-3 inline mr-1" />
+                <Package2 className="h-3 w-3 inline mr-1" />
                 {phone.shipping}
               </div>
             )}
