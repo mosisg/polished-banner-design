@@ -23,12 +23,6 @@ import {
   DrawerClose,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '@/components/ui/tabs';
 import PhoneCard from './PhoneCard';
 import PhoneComparisonTable from './PhoneComparisonTable';
 import { Phone, SortOption } from '@/types/phones';
@@ -52,7 +46,7 @@ const PhoneResultsPanel = ({
 }: PhoneResultsPanelProps) => {
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [page, setPage] = useState(1);
-  const phonesPerPage = 12;
+  const phonesPerPage = 9; // Changed to 9 for a 3x3 grid like the reference
   
   // Get comparison phones
   const comparisonPhones = phones.filter(phone => 
@@ -124,164 +118,86 @@ const PhoneResultsPanel = ({
   return (
     <div className="lg:col-span-3">
       {/* Results Header */}
-      <div className="bg-card border border-border rounded-lg shadow-sm p-4 mb-6">
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
-          <div className="flex items-center space-x-2">
-            <Filter className="h-5 w-5 text-muted-foreground" />
-            {isLoading ? (
-              <Skeleton className="h-6 w-32" />
-            ) : (
-              <h2 className="font-medium text-lg">
-                {phones.length} Téléphone{phones.length !== 1 ? 's' : ''}
-              </h2>
-            )}
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            {/* Comparison trigger */}
-            <Drawer>
-              <DrawerTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  disabled={comparisonList.length === 0}
-                  className="hidden sm:flex"
-                >
-                  <BarChart2 className="h-4 w-4 mr-2" />
-                  Comparer ({comparisonList.length})
-                </Button>
-              </DrawerTrigger>
-              <DrawerContent className="max-w-4xl mx-auto">
-                <DrawerHeader>
-                  <DrawerTitle>Comparaison de téléphones</DrawerTitle>
-                </DrawerHeader>
-                <div className="px-4 py-2">
-                  <PhoneComparisonTable phones={comparisonPhones} />
-                </div>
-                <DrawerFooter>
-                  <DrawerClose asChild>
-                    <Button variant="outline">Fermer</Button>
-                  </DrawerClose>
-                </DrawerFooter>
-              </DrawerContent>
-            </Drawer>
-            
-            {/* View switcher */}
-            <div className="flex border rounded-md">
-              <Button
-                variant={view === 'grid' ? "default" : "ghost"}
-                size="sm"
-                className="rounded-r-none border-0"
-                onClick={() => setView('grid')}
-              >
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="7" rx="1" />
-                  <rect x="14" y="3" width="7" height="7" rx="1" />
-                  <rect x="3" y="14" width="7" height="7" rx="1" />
-                  <rect x="14" y="14" width="7" height="7" rx="1" />
-                </svg>
-              </Button>
-              <Button
-                variant={view === 'list' ? "default" : "ghost"}
-                size="sm"
-                className="rounded-l-none border-0"
-                onClick={() => setView('list')}
-              >
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="18" height="4" rx="1" />
-                  <rect x="3" y="10" width="18" height="4" rx="1" />
-                  <rect x="3" y="17" width="18" height="4" rx="1" />
-                </svg>
-              </Button>
-            </div>
-            
-            {/* Sort select */}
-            <Select
-              value={sortOption}
-              onValueChange={(value) => setSortOption(value as SortOption)}
-            >
-              <SelectTrigger className="w-auto">
-                <SelectValue placeholder="Trier par" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="price-asc">
-                  <span className="flex items-center">
-                    <SortAsc className="mr-2 h-4 w-4" />
-                    Prix croissant
-                  </span>
-                </SelectItem>
-                <SelectItem value="price-desc">
-                  <span className="flex items-center">
-                    <SortDesc className="mr-2 h-4 w-4" />
-                    Prix décroissant
-                  </span>
-                </SelectItem>
-                <SelectItem value="rating-desc">
-                  <span className="flex items-center">
-                    <Star className="mr-2 h-4 w-4" />
-                    Meilleures notes
-                  </span>
-                </SelectItem>
-                <SelectItem value="popularity">Popularité</SelectItem>
-                <SelectItem value="newest">Nouveautés</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+      <div className="flex justify-between items-center py-3 mb-4 border-b">
+        <div className="flex items-center">
+          {isLoading ? (
+            <Skeleton className="h-6 w-32" />
+          ) : (
+            <h2 className="font-medium text-lg">
+              {phones.length} téléphones
+            </h2>
+          )}
         </div>
         
-        {/* Mobile comparison button */}
-        {comparisonList.length > 0 && (
-          <div className="mt-4 sm:hidden">
-            <Drawer>
-              <DrawerTrigger asChild>
-                <Button variant="outline" className="w-full">
-                  <BarChart2 className="h-4 w-4 mr-2" />
-                  Comparer {comparisonList.length} téléphone{comparisonList.length > 1 ? 's' : ''}
-                </Button>
-              </DrawerTrigger>
-              <DrawerContent>
-                <DrawerHeader>
-                  <DrawerTitle>Comparaison de téléphones</DrawerTitle>
-                </DrawerHeader>
-                <div className="px-4 py-2">
-                  <PhoneComparisonTable phones={comparisonPhones} />
-                </div>
-                <DrawerFooter>
-                  <DrawerClose asChild>
-                    <Button variant="outline">Fermer</Button>
-                  </DrawerClose>
-                </DrawerFooter>
-              </DrawerContent>
-            </Drawer>
-          </div>
-        )}
+        <div className="flex items-center">
+          {/* Sort select */}
+          <Select
+            value={sortOption}
+            onValueChange={(value) => setSortOption(value as SortOption)}
+          >
+            <SelectTrigger className="w-auto border-none">
+              <span className="text-sm font-medium mr-1">Trier par</span>
+              <SelectValue placeholder="Meilleures ventes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="popularity">Meilleures ventes</SelectItem>
+              <SelectItem value="price-asc">
+                <span className="flex items-center">
+                  <SortAsc className="mr-2 h-4 w-4" />
+                  Prix croissant
+                </span>
+              </SelectItem>
+              <SelectItem value="price-desc">
+                <span className="flex items-center">
+                  <SortDesc className="mr-2 h-4 w-4" />
+                  Prix décroissant
+                </span>
+              </SelectItem>
+              <SelectItem value="rating-desc">
+                <span className="flex items-center">
+                  <Star className="mr-2 h-4 w-4" />
+                  Meilleures notes
+                </span>
+              </SelectItem>
+              <SelectItem value="newest">Nouveautés</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Comparison selection reminder */}
       {comparisonList.length > 0 && (
-        <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mb-6 flex items-center justify-between">
-          <div className="flex items-center">
-            <CircleCheck className="h-5 w-5 text-primary mr-2" />
-            <span className="text-sm font-medium">
-              {comparisonList.length} téléphone{comparisonList.length > 1 ? 's' : ''} sélectionné{comparisonList.length > 1 ? 's' : ''} pour comparaison
-            </span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => toggleComparison(comparisonList[0])}
-            className="h-8 px-2"
-          >
-            <X className="h-4 w-4 mr-1" />
-            Effacer
-          </Button>
-        </div>
+        <Drawer>
+          <DrawerTrigger asChild>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="mb-4"
+            >
+              <BarChart2 className="h-4 w-4 mr-2" />
+              Comparer {comparisonList.length} téléphone{comparisonList.length > 1 ? 's' : ''}
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Comparaison de téléphones</DrawerTitle>
+            </DrawerHeader>
+            <div className="px-4 py-2">
+              <PhoneComparisonTable phones={comparisonPhones} />
+            </div>
+            <DrawerFooter>
+              <DrawerClose asChild>
+                <Button variant="outline">Fermer</Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
       )}
 
       {/* Results Content */}
       {isLoading ? (
         // Skeletons for loading state
-        <div className={`grid ${view === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="bg-card border border-border rounded-lg shadow-sm overflow-hidden">
               <div className="p-4 h-full">
@@ -311,7 +227,7 @@ const PhoneResultsPanel = ({
       ) : (
         // Results grid/list
         <>
-          <div className={`grid ${view === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {paginatedPhones.map((phone) => (
               <PhoneCard 
                 key={phone.id}

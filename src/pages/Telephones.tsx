@@ -18,7 +18,7 @@ const Telephones = () => {
   const [selectedOS, setSelectedOS] = useState<string[]>([]);
   const [selectedStorage, setSelectedStorage] = useState<string[]>([]);
   const [ecoFriendly, setEcoFriendly] = useState(false);
-  const [sortOption, setSortOption] = useState<SortOption>('price-asc');
+  const [sortOption, setSortOption] = useState<SortOption>('popularity');
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [comparisonList, setComparisonList] = useState<string[]>([]);
 
@@ -102,28 +102,7 @@ const Telephones = () => {
       <div className="flex flex-col min-h-screen">
         <Header />
 
-        {/* Hero Section */}
-        <section className="w-full py-24 md:py-32 lg:py-40 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
-          <div className="container px-4 md:px-6 mx-auto">
-            <div className="flex flex-col items-center space-y-4 text-center">
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
-                className="space-y-2"
-              >
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none text-white">
-                  Trouvez le Téléphone Parfait
-                </h1>
-                <p className="mx-auto max-w-[700px] text-gray-200 md:text-xl">
-                  Comparez les smartphones des meilleures marques et trouvez l'appareil qui répond à tous vos besoins.
-                </p>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        <main className="flex-1 container mx-auto px-4 md:px-6 py-8 md:py-12">
+        <main className="flex-1 container mx-auto px-4 md:px-6 py-8">
           {isError ? (
             <div className="text-center py-12">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">

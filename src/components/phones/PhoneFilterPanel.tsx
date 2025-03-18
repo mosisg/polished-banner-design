@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Slider } from "@/components/ui/slider";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import { Phone } from '@/types/phones';
 import { 
   getBrands, 
@@ -63,35 +64,35 @@ const PhoneFilterPanel = ({
   
   // Handlers for filter changes
   const handleBrandChange = (brand: string) => {
-    setSelectedBrands(prev => 
-      prev.includes(brand) 
-        ? prev.filter(b => b !== brand)
-        : [...prev, brand]
-    );
+    if (selectedBrands.includes(brand)) {
+      setSelectedBrands(selectedBrands.filter(b => b !== brand));
+    } else {
+      setSelectedBrands([...selectedBrands, brand]);
+    }
   };
   
   const handleConditionChange = (condition: 'new' | 'refurbished' | 'used') => {
-    setSelectedConditions(prev => 
-      prev.includes(condition) 
-        ? prev.filter(c => c !== condition)
-        : [...prev, condition]
-    );
+    if (selectedConditions.includes(condition)) {
+      setSelectedConditions(selectedConditions.filter(c => c !== condition));
+    } else {
+      setSelectedConditions([...selectedConditions, condition]);
+    }
   };
   
   const handleOSChange = (os: string) => {
-    setSelectedOS(prev => 
-      prev.includes(os) 
-        ? prev.filter(o => o !== os)
-        : [...prev, os]
-    );
+    if (selectedOS.includes(os)) {
+      setSelectedOS(selectedOS.filter(o => o !== os));
+    } else {
+      setSelectedOS([...selectedOS, os]);
+    }
   };
   
   const handleStorageChange = (storage: string) => {
-    setSelectedStorage(prev => 
-      prev.includes(storage) 
-        ? prev.filter(s => s !== storage)
-        : [...prev, storage]
-    );
+    if (selectedStorage.includes(storage)) {
+      setSelectedStorage(selectedStorage.filter(s => s !== storage));
+    } else {
+      setSelectedStorage([...selectedStorage, storage]);
+    }
   };
   
   // Reset all filters
@@ -140,45 +141,38 @@ const PhoneFilterPanel = ({
         </div>
 
         <CollapsibleContent className="p-4 space-y-6">
-          {/* Price Range Slider */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+          {/* Search bar */}
+          <div className="space-y-2">
+            <Input
+              type="text"
+              placeholder="Modèle, marque..."
+              className="w-full"
+              disabled={isLoading}
+            />
+          </div>
+
+          {/* Mode de livraison */}
+          <div className="space-y-4 border-t pt-4">
+            <h3 className="font-medium">Mode de livraison</h3>
+            <div className="space-y-2">
               <div className="flex items-center space-x-2">
-                <Euro className="h-4 w-4 text-primary" />
-                <h3 className="font-medium">Budget</h3>
-              </div>
-              <Badge variant="outline" className="font-semibold">
-                {priceRange[0]}€ - {priceRange[1]}€
-              </Badge>
-            </div>
-            
-            {isLoading ? (
-              <Skeleton className="h-4 w-full" />
-            ) : (
-              <>
-                <Slider
-                  defaultValue={[fullPriceRange.min, fullPriceRange.max]}
-                  min={fullPriceRange.min}
-                  max={fullPriceRange.max}
-                  step={10}
-                  value={priceRange}
-                  onValueChange={setPriceRange}
+                <Checkbox
+                  id="click-collect"
+                  disabled={isLoading}
                 />
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>{fullPriceRange.min}€</span>
-                  <span>{Math.round((fullPriceRange.min + fullPriceRange.max) / 2)}€</span>
-                  <span>{fullPriceRange.max}€</span>
-                </div>
-              </>
-            )}
+                <label
+                  htmlFor="click-collect"
+                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Click & Collect
+                </label>
+              </div>
+            </div>
           </div>
 
           {/* Brands Checkboxes */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Smartphone className="h-4 w-4 text-primary" />
-              <h3 className="font-medium">Marques</h3>
-            </div>
+          <div className="space-y-4 border-t pt-4">
+            <h3 className="font-medium">Marque</h3>
             
             {isLoading ? (
               <div className="space-y-2">
@@ -187,35 +181,125 @@ const PhoneFilterPanel = ({
                 <Skeleton className="h-5 w-full" />
               </div>
             ) : (
-              <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-                {brands.map((brand) => (
-                  <div key={brand.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`brand-${brand.id}`}
-                      checked={selectedBrands.includes(brand.label)}
-                      onCheckedChange={() => handleBrandChange(brand.label)}
-                    />
-                    <label
-                      htmlFor={`brand-${brand.id}`}
-                      className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center justify-between w-full"
-                    >
-                      <span>{brand.label}</span>
-                      <Badge variant="secondary" className="text-xs ml-auto">
-                        {brand.count}
-                      </Badge>
-                    </label>
-                  </div>
-                ))}
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="brand-apple"
+                    checked={selectedBrands.includes('Apple')}
+                    onCheckedChange={() => handleBrandChange('Apple')}
+                  />
+                  <label
+                    htmlFor="brand-apple"
+                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Apple
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="brand-samsung"
+                    checked={selectedBrands.includes('Samsung')}
+                    onCheckedChange={() => handleBrandChange('Samsung')}
+                  />
+                  <label
+                    htmlFor="brand-samsung"
+                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Samsung
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="brand-xiaomi"
+                    checked={selectedBrands.includes('Xiaomi')}
+                    onCheckedChange={() => handleBrandChange('Xiaomi')}
+                  />
+                  <label
+                    htmlFor="brand-xiaomi"
+                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Xiaomi
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="brand-google"
+                    checked={selectedBrands.includes('Google')}
+                    onCheckedChange={() => handleBrandChange('Google')}
+                  />
+                  <label
+                    htmlFor="brand-google"
+                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    Google
+                  </label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="brand-iphone-reconditionne"
+                    checked={selectedBrands.includes('iPhone reconditionné')}
+                    onCheckedChange={() => handleBrandChange('iPhone reconditionné')}
+                  />
+                  <label
+                    htmlFor="brand-iphone-reconditionne"
+                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                  >
+                    iPhone reconditionné
+                  </label>
+                </div>
+                <Button variant="link" size="sm" className="h-8 px-0 text-xs text-primary">
+                  + de marques
+                </Button>
               </div>
             )}
           </div>
 
-          {/* Condition */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <RefreshCcw className="h-4 w-4 text-primary" />
-              <h3 className="font-medium">État</h3>
+          {/* Price options */}
+          <div className="space-y-4 border-t pt-4">
+            <h3 className="font-medium">Prix</h3>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="price-cheap"
+                  disabled={isLoading}
+                />
+                <label
+                  htmlFor="price-cheap"
+                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Smartphone pas cher
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="price-value"
+                  disabled={isLoading}
+                />
+                <label
+                  htmlFor="price-value"
+                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Meilleur rapport qualité-prix
+                </label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="price-best"
+                  disabled={isLoading}
+                />
+                <label
+                  htmlFor="price-best"
+                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Meilleur smartphone
+                </label>
+              </div>
             </div>
+          </div>
+
+          {/* Condition */}
+          <div className="space-y-4 border-t pt-4">
+            <h3 className="font-medium">État</h3>
             <div className="space-y-2">
               <div className="flex items-center space-x-2">
                 <Checkbox
@@ -245,115 +329,45 @@ const PhoneFilterPanel = ({
                   Reconditionné
                 </label>
               </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="condition-used"
-                  checked={selectedConditions.includes('used')}
-                  onCheckedChange={() => handleConditionChange('used')}
-                  disabled={isLoading}
-                />
-                <label
-                  htmlFor="condition-used"
-                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Occasion
-                </label>
-              </div>
             </div>
           </div>
 
           {/* Operating System */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Monitor className="h-4 w-4 text-primary" />
-              <h3 className="font-medium">Système d'exploitation</h3>
-            </div>
-            
-            {isLoading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-full" />
+          <div className="space-y-4 border-t pt-4">
+            <h3 className="font-medium">Système</h3>
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="os-ios"
+                  checked={selectedOS.includes('iOS')}
+                  onCheckedChange={() => handleOSChange('iOS')}
+                  disabled={isLoading}
+                />
+                <label
+                  htmlFor="os-ios"
+                  className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  iOS
+                </label>
               </div>
-            ) : (
-              <div className="space-y-2">
-                {operatingSystems.map((os) => (
+              {operatingSystems
+                .filter(os => os.label !== 'iOS')
+                .map(os => (
                   <div key={os.id} className="flex items-center space-x-2">
                     <Checkbox
                       id={`os-${os.id}`}
                       checked={selectedOS.includes(os.label)}
                       onCheckedChange={() => handleOSChange(os.label)}
+                      disabled={isLoading}
                     />
                     <label
                       htmlFor={`os-${os.id}`}
-                      className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center justify-between w-full"
+                      className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
-                      <span>{os.label}</span>
-                      <Badge variant="secondary" className="text-xs ml-auto">
-                        {os.count}
-                      </Badge>
+                      {os.label}
                     </label>
                   </div>
                 ))}
-              </div>
-            )}
-          </div>
-
-          {/* Storage Capacity */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Database className="h-4 w-4 text-primary" />
-              <h3 className="font-medium">Capacité de stockage</h3>
-            </div>
-            
-            {isLoading ? (
-              <div className="space-y-2">
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-full" />
-                <Skeleton className="h-5 w-full" />
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-36 overflow-y-auto pr-2">
-                {storageOptions.map((storage) => (
-                  <div key={storage.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={`storage-${storage.id}`}
-                      checked={selectedStorage.includes(storage.label)}
-                      onCheckedChange={() => handleStorageChange(storage.label)}
-                    />
-                    <label
-                      htmlFor={`storage-${storage.id}`}
-                      className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center justify-between w-full"
-                    >
-                      <span>{storage.label}</span>
-                      <Badge variant="secondary" className="text-xs ml-auto">
-                        {storage.count}
-                      </Badge>
-                    </label>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Eco-Friendly */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <Leaf className="h-4 w-4 text-green-500" />
-              <h3 className="font-medium">Écologie</h3>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="eco-friendly"
-                checked={ecoFriendly}
-                onCheckedChange={(checked) => setEcoFriendly(checked as boolean)}
-                disabled={isLoading}
-              />
-              <label
-                htmlFor="eco-friendly"
-                className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Produit éco-responsable
-              </label>
             </div>
           </div>
         </CollapsibleContent>

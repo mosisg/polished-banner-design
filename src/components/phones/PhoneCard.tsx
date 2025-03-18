@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Phone as PhoneType } from '@/types/phones';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Star, Leaf, Package, Sparkles } from 'lucide-react';
+import { Star, Leaf, Info } from 'lucide-react';
 
 interface PhoneCardProps {
   phone: PhoneType;
@@ -30,123 +29,162 @@ const PhoneCard = ({
   };
   
   // Generate stars for rating
-  const renderRating = (rating: number = 0) => {
+  const renderRating = (rating: number = 0, reviewCount: number = 0) => {
     return (
       <div className="flex items-center">
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
             className={`w-4 h-4 ${
-              star <= rating
+              star <= Math.floor(rating)
                 ? 'text-yellow-400 fill-yellow-400'
+                : star - 0.5 <= rating
+                ? 'text-yellow-400 fill-yellow-400/50'
                 : 'text-gray-300 dark:text-gray-600'
             }`}
           />
         ))}
-        <span className="ml-1 text-sm text-muted-foreground">
-          {rating.toFixed(1)}
-        </span>
+        {reviewCount > 0 && (
+          <span className="ml-1 text-sm text-muted-foreground">
+            ({reviewCount} avis)
+          </span>
+        )}
       </div>
     );
   };
   
-  return viewType === 'grid' ? (
-    <Card className="overflow-hidden h-full flex flex-col transition-all hover:border-primary/50 group">
-      <div className="aspect-[4/3] relative bg-muted/20 flex items-center justify-center p-6 overflow-hidden">
-        {phone.discount && phone.discount > 0 && (
-          <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
-            -{phone.discount}€
-          </Badge>
-        )}
-        
-        {phone.isEcoFriendly && (
-          <Badge className="absolute top-2 right-2 bg-green-500 hover:bg-green-600">
-            <Leaf className="h-3 w-3 mr-1" />
-            Eco
-          </Badge>
-        )}
-        
-        <img 
-          src={phone.image || '/placeholder.svg'} 
-          alt={phone.title}
-          className="max-h-full max-w-full object-contain transition-transform group-hover:scale-105"
-        />
+  // Extract promotion tag from description
+  const getPromotionTag = () => {
+    if (phone.description.includes("OFFERTE")) {
+      return "GALAXY TABS6 LITE 2024 OFFERTE";
+    }
+    
+    if (phone.discount) {
+      if (phone.discount >= 100) {
+        return `-100€ REMISE IMMÉDIATE`;
+      } else if (phone.discount >= 60) {
+        return `-60€ REMISE IMMÉDIATE`;
+      } else if (phone.discount > 0) {
+        return `-${phone.discount}€ REMISE IMMÉDIATE`;
+      }
+    }
+    
+    return null;
+  };
+  
+  // Color options display (simplified)
+  const renderColorOptions = () => {
+    const colors = ['black', 'white', 'blue', 'green'];
+    
+    return (
+      <div className="flex space-x-1 mt-2">
+        {colors.map((color) => (
+          <div 
+            key={color} 
+            className={`w-4 h-4 rounded-full border ${
+              color === 'black' ? 'bg-black' : 
+              color === 'white' ? 'bg-white' : 
+              color === 'blue' ? 'bg-blue-500' : 
+              'bg-green-500'
+            }`}
+          />
+        ))}
       </div>
-      
-      <CardContent className="p-4 flex-1 flex flex-col">
-        {/* Manufacturer */}
-        <Badge variant="outline" className="mb-2 w-fit">
-          {phone.trademark}
-        </Badge>
-        
-        {/* Title */}
-        <h3 className="font-semibold text-lg mb-1 line-clamp-2">{phone.title}</h3>
-        
-        {/* Storage and OS info */}
-        <div className="flex flex-wrap gap-1 mb-2">
-          {phone.storage && (
-            <Badge variant="secondary" className="text-xs">
-              {phone.storage}
-            </Badge>
-          )}
-          {phone.operatingSystem && (
-            <Badge variant="secondary" className="text-xs">
-              {phone.operatingSystem}
-            </Badge>
-          )}
-          {phone.color && (
-            <Badge variant="secondary" className="text-xs">
-              {phone.color}
-            </Badge>
-          )}
-          {phone.condition !== 'new' && (
-            <Badge variant="secondary" className="text-xs capitalize">
-              {phone.condition === 'refurbished' ? 'Reconditionné' : 'Occasion'}
-            </Badge>
-          )}
+    );
+  };
+  
+  const promotionTag = getPromotionTag();
+  const isNewRelease = phone.title.includes("16") || phone.title.includes("A26") || phone.title.includes("S25");
+  
+  return viewType === 'grid' ? (
+    <Card className="overflow-hidden h-full flex flex-col border border-gray-200 hover:border-gray-300">
+      {/* Promotion banner */}
+      {promotionTag && (
+        <div className={`text-center text-white text-xs font-semibold py-1 px-2 ${
+          promotionTag.includes('OFFERTE') ? 'bg-blue-700' : 'bg-orange-500'
+        }`}>
+          {promotionTag}
         </div>
+      )}
+      
+      {isNewRelease && !promotionTag && (
+        <div className="text-center text-white text-xs font-semibold py-1 px-2 bg-blue-900">
+          NOUVEAUTÉ
+        </div>
+      )}
+      
+      <div className="p-4 flex-1 flex flex-col">
+        {/* Title & Rating */}
+        <h3 className="font-semibold text-lg mb-1">{phone.title}</h3>
         
-        {/* Promotion badge */}
-        {phone.promotion && (
-          <div className="mb-2">
-            <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800 text-xs">
-              <Sparkles className="h-3 w-3 mr-1" />
-              {phone.promotion}
-            </Badge>
+        {phone.rating && (
+          <div className="mb-3">
+            {renderRating(phone.rating, phone.reviewCount || 0)}
           </div>
         )}
+        
+        {/* Image section */}
+        <div className="relative flex-grow flex items-center justify-center py-4">
+          {phone.isEcoFriendly && (
+            <div className="absolute top-0 right-0">
+              <Badge className="bg-green-100 text-green-800 border-green-200">
+                <Leaf className="h-3 w-3 mr-1" />
+                TECH & DURABLE
+              </Badge>
+            </div>
+          )}
+          
+          <img 
+            src={phone.image || '/placeholder.svg'} 
+            alt={phone.title}
+            className="max-h-[150px] object-contain"
+          />
+          
+          {renderColorOptions()}
+        </div>
         
         {/* Price block */}
         <div className="mt-auto pt-4">
-          <div className="flex items-end gap-2">
+          <div className="flex flex-col">
+            <div className="flex items-baseline">
+              <span className="text-sm font-medium text-gray-500">À partir de</span>
+            </div>
             <span className="text-2xl font-bold">
-              {formatPrice(phone.price)}
+              1<sup>€</sup>
             </span>
             
-            {phone.originalPrice && phone.originalPrice > phone.price && (
-              <span className="text-muted-foreground line-through text-sm">
-                {formatPrice(phone.originalPrice)}
-              </span>
+            {/* Installment price */}
+            {phone.installmentPrice && phone.installmentMonths && (
+              <div className="text-sm text-gray-600 mt-1">
+                +{phone.installmentPrice}€/mois x {phone.installmentMonths} mois
+                <br />
+                <span className="text-xs text-gray-500">après remboursement</span>
+                <Info className="inline-block h-3 w-3 ml-1 text-gray-400" />
+              </div>
             )}
-          </div>
-          
-          {/* Installment price */}
-          {phone.installmentPrice && phone.installmentMonths && (
-            <div className="text-sm text-muted-foreground mb-2">
-              ou {phone.installmentPrice}€/mois sur {phone.installmentMonths} mois
+            
+            {/* Mobile value and bonus */}
+            <div className="flex items-center mt-2 py-2 border-t border-gray-100">
+              <div className="flex-shrink-0">
+                <img 
+                  src="/placeholder.svg" 
+                  alt="Phone icon" 
+                  className="w-8 h-8"
+                />
+              </div>
+              <div className="ml-2">
+                <div className="text-xs text-gray-500">
+                  Valeur ancien mobile
+                </div>
+                <div className="flex items-baseline">
+                  <span className="font-semibold text-sm">100€</span>
+                  <span className="ml-1 text-xs text-gray-500">de bonus</span>
+                </div>
+              </div>
             </div>
-          )}
-          
-          {/* Rating */}
-          {phone.rating && (
-            <div className="mb-3">
-              {renderRating(phone.rating)}
-            </div>
-          )}
-          
-          {/* Actions */}
-          <div className="flex items-center justify-between mt-3">
-            <div className="flex items-center space-x-1">
+            
+            {/* Compare checkbox */}
+            <div className="flex items-center justify-center mt-3 pt-3 border-t border-gray-100">
               <Checkbox 
                 id={`compare-${phone.id}`}
                 checked={isInComparison}
@@ -154,22 +192,18 @@ const PhoneCard = ({
               />
               <label 
                 htmlFor={`compare-${phone.id}`}
-                className="text-sm text-muted-foreground cursor-pointer"
+                className="text-sm text-gray-500 ml-2 cursor-pointer"
               >
-                Comparer
+                Ajouter au comparateur
               </label>
             </div>
-            
-            <Button size="sm">
-              Voir l'offre
-            </Button>
           </div>
         </div>
-      </CardContent>
+      </div>
     </Card>
   ) : (
-    // List view
-    <Card className="overflow-hidden transition-all hover:border-primary/50">
+    // List view - keeping it simple for this update
+    <Card className="overflow-hidden border border-gray-200 hover:border-gray-300">
       <div className="flex flex-col sm:flex-row p-4 gap-4">
         <div className="sm:w-1/4 max-w-[160px] mx-auto sm:mx-0">
           <div className="aspect-square relative bg-muted/20 flex items-center justify-center p-4 rounded-md">
