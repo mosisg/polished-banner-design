@@ -8,6 +8,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import Index from "./pages/Index";
 import MobilePlans from "./pages/MobilePlans";
 import InternetBoxes from "./pages/InternetBoxes";
+import Telephones from "./pages/Telephones";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/mobile" element={<MobilePlans />} />
             <Route path="/internet" element={<InternetBoxes />} />
+            <Route path="/telephones" element={<Telephones />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogArticle />} />
             <Route path="/sitemap.xml" element={<Sitemap />} />
