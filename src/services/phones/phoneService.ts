@@ -1,5 +1,5 @@
 
-import { Phone } from '@/types/phones';
+import { Phone, SortOption, FilterOption, PriceRange } from '@/types/phones';
 import { supabase } from '@/integrations/supabase/client';
 
 // Cache mechanism

@@ -63,43 +63,35 @@ const PhoneFilterPanel = ({
   
   // Handlers for filter changes
   const handleBrandChange = (brand: string) => {
-    setSelectedBrands(prev => {
-      if (prev.includes(brand)) {
-        return prev.filter(b => b !== brand);
-      } else {
-        return [...prev, brand];
-      }
-    });
+    setSelectedBrands(prev => 
+      prev.includes(brand) 
+        ? prev.filter(b => b !== brand)
+        : [...prev, brand]
+    );
   };
   
   const handleConditionChange = (condition: 'new' | 'refurbished' | 'used') => {
-    setSelectedConditions(prev => {
-      if (prev.includes(condition)) {
-        return prev.filter(c => c !== condition);
-      } else {
-        return [...prev, condition];
-      }
-    });
+    setSelectedConditions(prev => 
+      prev.includes(condition) 
+        ? prev.filter(c => c !== condition)
+        : [...prev, condition]
+    );
   };
   
   const handleOSChange = (os: string) => {
-    setSelectedOS(prev => {
-      if (prev.includes(os)) {
-        return prev.filter(o => o !== os);
-      } else {
-        return [...prev, os];
-      }
-    });
+    setSelectedOS(prev => 
+      prev.includes(os) 
+        ? prev.filter(o => o !== os)
+        : [...prev, os]
+    );
   };
   
   const handleStorageChange = (storage: string) => {
-    setSelectedStorage(prev => {
-      if (prev.includes(storage)) {
-        return prev.filter(s => s !== storage);
-      } else {
-        return [...prev, storage];
-      }
-    });
+    setSelectedStorage(prev => 
+      prev.includes(storage) 
+        ? prev.filter(s => s !== storage)
+        : [...prev, storage]
+    );
   };
   
   // Reset all filters
