@@ -12,6 +12,7 @@ interface Plan {
   features: string[];
   operator?: string;
   coverage?: string;
+  operatorLogo?: React.ReactNode;
 }
 
 interface PlanCardProps {
@@ -35,13 +36,13 @@ const PlanCard = ({ plan }: PlanCardProps) => {
       {/* Left side - Operator and Plan Name */}
       <div className="w-full md:w-1/5 p-4 md:p-6 bg-gradient-to-br from-background to-muted/50 flex flex-col justify-center items-center border-b md:border-b-0 md:border-r border-border">
         <div className="flex flex-col items-center text-center">
-          {plan.operator && (
+          {plan.operatorLogo || (plan.operator && (
             <div className="mb-3">
               <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm">
                 <span className="text-2xl font-bold text-primary">{plan.operator.charAt(0)}</span>
               </div>
             </div>
-          )}
+          ))}
           <h3 className="font-semibold text-lg">{plan.operator}</h3>
           <div className="mt-1 text-sm text-muted-foreground">{plan.name}</div>
           
