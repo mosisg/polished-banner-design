@@ -49,7 +49,7 @@ const BlogSection = () => {
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="overflow-hidden">
+                <Card key={i} className="overflow-hidden border border-border">
                   <Skeleton className="h-40 w-full" />
                   <CardContent className="p-4">
                     <Skeleton className="h-4 w-3/4 mb-2" />
@@ -75,7 +75,7 @@ const BlogSection = () => {
                 {data?.map((article) => (
                   <CarouselItem key={article.id} className="md:basis-1/2 lg:basis-1/3">
                     <Link to={`/blog/${article.slug}`}>
-                      <Card className="overflow-hidden h-full hover:shadow-md transition-shadow">
+                      <Card className="overflow-hidden h-full hover:shadow-md transition-shadow border border-border">
                         <div className="w-full h-40 overflow-hidden">
                           <img 
                             src={article.cover.url} 
