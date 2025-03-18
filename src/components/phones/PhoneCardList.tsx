@@ -4,8 +4,7 @@ import { Phone as PhoneType } from '@/types/phones';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Package2, Sparkles } from 'lucide-react';
+import { Package2, Sparkles, ExternalLink } from 'lucide-react';
 import { 
   formatPrice, 
   renderRating,
@@ -121,24 +120,11 @@ const PhoneCardList = ({
             )}
           </div>
           
-          <div className="flex flex-col gap-2 w-full mt-4">
-            <Button size="sm" className="w-full">
+          <div className="w-full mt-4">
+            <Button size="sm" className="w-full bg-purple-600 hover:bg-purple-700 text-white transition-all shadow-sm">
               Voir l'offre
+              <ExternalLink className="h-4 w-4 ml-1" />
             </Button>
-            
-            <div className="flex items-center justify-center">
-              <Checkbox 
-                id={`compare-list-${phone.id}`}
-                checked={isInComparison}
-                onCheckedChange={() => onCompareToggle()}
-              />
-              <label 
-                htmlFor={`compare-list-${phone.id}`}
-                className="text-sm text-muted-foreground ml-2 cursor-pointer"
-              >
-                Ajouter au comparateur
-              </label>
-            </div>
           </div>
         </div>
       </div>

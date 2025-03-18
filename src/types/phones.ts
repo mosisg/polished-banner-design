@@ -25,6 +25,7 @@ export interface Phone {
   reviewCount?: number;
   isEcoFriendly?: boolean;
   inStock?: boolean;
+  productUrl?: string;
 }
 
 export type FilterOption = {

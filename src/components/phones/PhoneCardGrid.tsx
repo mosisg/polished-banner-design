@@ -3,8 +3,7 @@ import React from 'react';
 import { Phone as PhoneType } from '@/types/phones';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Info } from 'lucide-react';
+import { Info, ExternalLink } from 'lucide-react';
 import { 
   formatPrice, 
   renderRating, 
@@ -105,18 +104,13 @@ const PhoneCardGrid = ({
               </div>
             </div>
             
-            <div className="flex items-center justify-center mt-3 pt-3 border-t border-gray-100">
-              <Checkbox 
-                id={`compare-${phone.id}`}
-                checked={isInComparison}
-                onCheckedChange={() => onCompareToggle()}
-              />
-              <label 
-                htmlFor={`compare-${phone.id}`}
-                className="text-sm text-gray-500 ml-2 cursor-pointer"
+            <div className="mt-3 pt-3 border-t border-gray-100">
+              <Button 
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white transition-all shadow-sm"
               >
-                Ajouter au comparateur
-              </label>
+                Voir l'offre
+                <ExternalLink className="h-4 w-4 ml-1" />
+              </Button>
             </div>
           </div>
         </div>
