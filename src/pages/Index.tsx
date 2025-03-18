@@ -6,7 +6,7 @@ import Banner from '@/components/layout/Banner';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layout/Footer';
 
-// Import des nouvelles sections
+// Import des sections
 import MobileSection from '@/components/home/MobileSection';
 import InternetSection from '@/components/home/InternetSection';
 import ComparisonSection from '@/components/home/ComparisonSection';
@@ -46,18 +46,19 @@ const Index = () => {
         <Header />
         
         <main className="flex-1">
-          {/* Hero Banner */}
-          <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted/50">
+          {/* Nouvelle section Hero Banner inspirée de la page Téléphones */}
+          <section className="relative overflow-hidden bg-gradient-to-r from-blue-600/5 to-purple-600/5">
             {/* Background Elements */}
-            <div className="absolute -top-10 -right-10 w-72 h-72 bg-accent/10 rounded-full filter blur-3xl opacity-70 animate-pulse-subtle"></div>
-            <div className="absolute top-40 -left-20 w-80 h-80 bg-primary/10 rounded-full filter blur-3xl opacity-70 animate-pulse-subtle" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute -top-10 -right-10 w-72 h-72 bg-blue-500/10 rounded-full filter blur-3xl opacity-70 animate-pulse-subtle"></div>
+            <div className="absolute top-40 -left-20 w-80 h-80 bg-purple-500/10 rounded-full filter blur-3xl opacity-70 animate-pulse-subtle" style={{ animationDelay: '1s' }}></div>
+            <div className="absolute bottom-10 right-20 w-64 h-64 bg-primary/10 rounded-full filter blur-3xl opacity-70 animate-pulse-subtle" style={{ animationDelay: '2s' }}></div>
             
             <Banner />
           </section>
           
           <Separator />
           
-          {/* Nouvelles sections */}
+          {/* Autres sections */}
           <MobileSection />
           <InternetSection />
           <ComparisonSection />

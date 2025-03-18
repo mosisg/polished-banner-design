@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Search, ShoppingCart, Smartphone } from 'lucide-react';
 import PlanCard from '@/components/ui/PlanCard';
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 
 interface Plan {
   id: number;
@@ -81,28 +82,117 @@ const Banner = () => {
   };
 
   return (
-    <div className="w-full pt-24 pb-12 lg:pt-32 lg:pb-16">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Banner Title */}
-        <div className="text-center mb-8 animate-slide-down">
-          <span className="inline-block text-sm font-medium py-1 px-3 rounded-full bg-muted mb-3">
-            Comparateur de forfaits
-          </span>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-            <span className="block md:inline">Trouvez votre </span>
-            <span className="text-gradient-blue-purple">nouveau</span>
-            <br className="md:hidden" />
-            <span className="text-gradient-purple-pink"> forfait mobile</span>
-          </h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto animate-fade-in-slow">
-            Nous comparons au quotidien 
-            <span className="font-medium text-foreground"> plus de 100 forfaits </span>
-            mobile et Box Internet pour vous aider à trouver celui qu'il vous faut.
-          </p>
+    <div className="w-full pt-24 pb-16">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <motion.div 
+            className="space-y-6"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
+            <motion.span 
+              className="inline-block bg-primary/20 backdrop-blur-sm text-primary px-4 py-1 rounded-full text-sm font-medium"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.4 }}
+            >
+              Meilleurs prix garantis
+            </motion.span>
+            <motion.h1 
+              className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
+              Économisez sur vos <span className="text-gradient-blue-purple">forfaits</span> <span className="text-gradient-purple-pink">mobiles</span>
+            </motion.h1>
+            <motion.p 
+              className="text-xl md:text-2xl text-muted-foreground max-w-md"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+            >
+              Comparez plus de 100 forfaits des plus grands opérateurs et économisez jusqu'à 40%
+            </motion.p>
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+            >
+              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
+                <Search className="mr-2 h-5 w-5" />
+                Comparer maintenant
+              </Button>
+              <Button size="lg" variant="outline" className="border-primary/50 hover:bg-primary/10">
+                <ShoppingCart className="mr-2 h-5 w-5" />
+                Meilleures offres
+              </Button>
+            </motion.div>
+            <motion.div 
+              className="flex items-center space-x-4 text-sm text-muted-foreground"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6, duration: 0.6 }}
+            >
+              <div className="flex items-center">
+                <span className="bg-primary/20 p-1 rounded-full mr-1 text-primary">✓</span>
+                Comparaison gratuite
+              </div>
+              <div className="flex items-center">
+                <span className="bg-primary/20 p-1 rounded-full mr-1 text-primary">✓</span>
+                100% indépendant
+              </div>
+              <div className="flex items-center">
+                <span className="bg-primary/20 p-1 rounded-full mr-1 text-primary">✓</span>
+                Mis à jour quotidiennement
+              </div>
+            </motion.div>
+          </motion.div>
+          
+          <motion.div 
+            className="flex justify-center md:justify-end relative"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
+            <div className="relative w-64 h-64 md:w-72 md:h-72 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center p-4">
+              <Smartphone className="w-40 h-40 text-white" />
+              <motion.div 
+                className="absolute -top-4 -right-4 bg-yellow-400 text-blue-800 font-bold rounded-full w-16 h-16 flex items-center justify-center text-xl"
+                animate={{ rotate: [0, 10, 0, -10, 0] }}
+                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+              >
+                -40%
+              </motion.div>
+            </div>
+            <motion.div 
+              className="absolute top-1/4 -left-4 bg-white dark:bg-slate-800 shadow-lg rounded-lg p-3"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            >
+              <span className="text-primary font-bold">Forfait 5G</span>
+              <div className="text-sm">9,99€ <span className="line-through text-muted-foreground">19,99€</span></div>
+            </motion.div>
+            <motion.div 
+              className="absolute bottom-1/4 -right-4 bg-white dark:bg-slate-800 shadow-lg rounded-lg p-3"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut", delay: 1 }}
+            >
+              <span className="text-purple-600 font-bold">Box Fibre</span>
+              <div className="text-sm">22,99€ <span className="line-through text-muted-foreground">42,99€</span></div>
+            </motion.div>
+          </motion.div>
         </div>
 
         {/* Plan Carousel */}
-        <div className="relative mt-12 px-4 sm:px-0">
+        <motion.div 
+          className="relative mt-16"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7, duration: 0.6 }}
+        >
           <div className="overflow-hidden">
             <div 
               className={cn(
@@ -154,16 +244,7 @@ const Banner = () => {
               <ChevronRight className="h-6 w-6" />
             </Button>
           </div>
-        </div>
-
-        {/* CTA Button */}
-        <div className="text-center mt-12">
-          <Button 
-            className="bg-gradient-blue-purple hover:bg-gradient-purple-pink text-white rounded-full px-8 py-6 text-lg font-medium shadow-lg hover:shadow-xl transition-all hover:scale-105 h-auto"
-          >
-            Comparer les forfaits
-          </Button>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
