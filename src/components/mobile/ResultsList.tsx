@@ -18,6 +18,8 @@ const OperatorLogo = ({ operator }: { operator: string }) => {
       case 'auchan télécom':
       case 'auchan telecom':
         return '/logo-auchan-telecom.svg';
+      case 'prixtel':
+        return '/logo-prixtel.svg';
       default:
         return null;
     }
