@@ -2,8 +2,8 @@
 import { StrapiArticle } from '@/services/strapi/types';
 import { getStrapiURL } from '@/services/strapi/utils';
 
-// Base URL de l'application (à ajuster selon l'environnement)
-const BASE_URL = import.meta.env.VITE_APP_URL || 'https://compareprix.net';
+// Base URL de l'application
+const BASE_URL = 'https://compareprix.net';
 
 /**
  * Génère le contenu XML d'un sitemap pour le blog
