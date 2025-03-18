@@ -13,6 +13,7 @@ export interface InternetBox {
   features: string[];
   image?: string;
   specialOffer?: string;
+  operatorLogo?: React.ReactNode;
 }
 
 export type ConnectionType = 'all' | 'fibre' | 'adsl' | 'box4g';

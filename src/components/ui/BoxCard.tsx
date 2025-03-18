@@ -6,7 +6,7 @@ import { Wifi, Download, Upload, Router, Monitor, Phone, Check, Info } from 'luc
 import { InternetBox } from '@/types/internet';
 
 interface BoxCardProps {
-  box: InternetBox;
+  box: InternetBox & { operatorLogo?: React.ReactNode };
 }
 
 const BoxCard = ({ box }: BoxCardProps) => {
@@ -27,9 +27,11 @@ const BoxCard = ({ box }: BoxCardProps) => {
       <div className="w-full md:w-1/5 p-4 md:p-6 bg-gradient-to-br from-background to-muted/50 flex flex-col justify-center items-center border-b md:border-b-0 md:border-r border-border">
         <div className="flex flex-col items-center text-center">
           <div className="mb-3">
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm">
-              <span className="text-2xl font-bold text-primary">{box.operator.charAt(0)}</span>
-            </div>
+            {box.operatorLogo || (
+              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm">
+                <span className="text-2xl font-bold text-primary">{box.operator.charAt(0)}</span>
+              </div>
+            )}
           </div>
           <h3 className="font-semibold text-lg">{box.operator}</h3>
           <div className="mt-1 text-sm text-muted-foreground">{box.name}</div>
