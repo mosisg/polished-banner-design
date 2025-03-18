@@ -11,6 +11,10 @@ import InternetBoxes from "./pages/InternetBoxes";
 import Telephones from "./pages/Telephones";
 import Blog from "./pages/Blog";
 import BlogArticle from "./pages/BlogArticle";
+import PolitiqueConfidentialite from "./pages/PolitiqueConfidentialite";
+import PolitiqueCookies from "./pages/PolitiqueCookies";
+import MentionsLegales from "./pages/MentionsLegales";
+import CGV from "./pages/CGV";
 import NotFound from "./pages/NotFound";
 import Sitemap from "./pages/Sitemap";
 
@@ -30,6 +34,13 @@ const App = () => (
             <Route path="/telephones" element={<Telephones />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogArticle />} />
+            
+            {/* Policy Pages */}
+            <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+            <Route path="/politique-cookies" element={<PolitiqueCookies />} />
+            <Route path="/mentions-legales" element={<MentionsLegales />} />
+            <Route path="/cgv" element={<CGV />} />
+            
             <Route path="/sitemap.xml" element={<Sitemap />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

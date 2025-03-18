@@ -45,6 +45,42 @@ export const generateSitemapXML = (articles: StrapiArticle[]): string => {
     <priority>0.8</priority>
   </url>\n`;
   
+  xml += `  <url>
+    <loc>${BASE_URL}/telephones</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>\n`;
+  
+  // Ajouter les pages de politique
+  xml += `  <url>
+    <loc>${BASE_URL}/politique-confidentialite</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>\n`;
+  
+  xml += `  <url>
+    <loc>${BASE_URL}/politique-cookies</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>\n`;
+  
+  xml += `  <url>
+    <loc>${BASE_URL}/mentions-legales</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>\n`;
+  
+  xml += `  <url>
+    <loc>${BASE_URL}/cgv</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>\n`;
+  
   // Ajouter les articles du blog
   articles.forEach(article => {
     const updatedAt = new Date(article.attributes.updatedAt).toISOString();
