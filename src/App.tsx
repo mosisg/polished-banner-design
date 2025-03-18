@@ -62,7 +62,7 @@ const App = () => (
               <Route path="/mentions-legales" element={<MentionsLegales />} />
               <Route path="/cgv" element={<CGV />} />
               
-              {/* Sitemap route - Using both .xml extension and without extension */}
+              {/* Sitemap routes */}
               <Route path="/sitemap.xml" element={<Sitemap />} />
               <Route path="/sitemap" element={<Sitemap />} />
               

@@ -34,20 +34,22 @@ const Sitemap = () => {
     );
   }
 
+  // Créer un blob pour le téléchargement si nécessaire
   // Forcer le type de contenu à application/xml
   return (
     <>
       <Helmet>
         <title>Sitemap | ComparePrix</title>
         <meta name="robots" content="noindex, follow" />
-        <meta httpEquiv="Content-Type" content="application/xml; charset=utf-8" />
+        <meta httpEquiv="Content-Type" content="text/xml; charset=utf-8" />
       </Helmet>
-      <div 
+      <pre
         dangerouslySetInnerHTML={{ __html: sitemapContent }} 
         style={{ 
           whiteSpace: 'pre', 
           fontFamily: 'monospace',
-          padding: '20px'
+          padding: '20px',
+          display: 'block'
         }} 
       />
     </>

@@ -4,6 +4,11 @@
   RewriteEngine On
   RewriteBase /
   
+  # Servir directement le sitemap.xml s'il existe
+  RewriteCond %{REQUEST_URI} ^/sitemap.xml$
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+  
   # Si le fichier ou répertoire existe, utiliser celui-ci
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
@@ -16,3 +21,8 @@
 <IfModule mod_mime.c>
   AddType application/xml .xml
 </IfModule>
+
+# En-têtes supplémentaires pour le sitemap
+<FilesMatch "sitemap\.xml$">
+  Header set Content-Type "application/xml; charset=UTF-8"
+</FilesMatch>
