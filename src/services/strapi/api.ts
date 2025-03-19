@@ -1,4 +1,3 @@
-
 import { getStrapiURL, getStrapiAPIKey, getStrapiMedia, USE_MOCK_DATA, ALLOWED_ORIGINS } from './utils';
 import { MOCK_ARTICLES } from './mockData';
 import { 
@@ -29,6 +28,7 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${getStrapiAPIKey()}`,
       },
+      mode: 'cors', // Explicitly set CORS mode
       // Don't use credentials or other complex CORS settings since Strapi is configured correctly
       cache: 'no-store'
     });
@@ -49,6 +49,7 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
       console.log("Using mock data as fallback");
       // Only use mock data if explicitly allowed
       if (endpoint.startsWith('articles')) {
+        
         if (endpoint.includes('filters[slug]')) {
           // Extract slug from endpoint 
           const slugMatch = endpoint.match(/filters\[slug\]\[\$eq\]=([^&]+)/);
