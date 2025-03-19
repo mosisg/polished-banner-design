@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Header from '@/components/layout/Header';
 import Banner from '@/components/layout/Banner';
@@ -8,6 +8,8 @@ import Footer from '@/components/layout/Footer';
 import NotificationBar from '@/components/layout/NotificationBar';
 import TrustBadges from '@/components/layout/TrustBadges';
 import MarketingPopup from '@/components/marketing/MarketingPopup';
+import CustomerSupportChat from '@/components/support/CustomerSupportChat';
+import { MessageCircle, Star } from 'lucide-react';
 
 // Import des sections
 import MobileSection from '@/components/home/MobileSection';
@@ -18,6 +20,8 @@ import PartnersSection from '@/components/home/PartnersSection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 
 const Index = () => {
+  const [chatOpen, setChatOpen] = useState(false);
+  
   // Structured data for the homepage
   const structuredData = {
     "@context": "https://schema.org",
@@ -101,20 +105,39 @@ const Index = () => {
             <Banner />
           </section>
           
-          {/* Social Proof Popup Trigger - subtly integrated */}
-          <div className="fixed bottom-4 right-4 z-40">
-            <MarketingPopup
-              type="social-proof"
-              trigger={
-                <button className="bg-white dark:bg-slate-800 shadow-lg rounded-full p-3 flex items-center gap-2 text-sm font-medium border border-border hover:border-primary/40 transition-all">
-                  <span className="bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center">
-                    <span className="text-xs">★</span>
-                  </span>
-                  <span>Avis clients</span>
-                </button>
-              }
-            />
+          {/* Customer support buttons on both sides */}
+          <div className="fixed bottom-4 z-40 w-full px-4 flex justify-between pointer-events-none">
+            {/* Avis clients - left side */}
+            <div className="pointer-events-auto">
+              <MarketingPopup
+                type="social-proof"
+                trigger={
+                  <button className="bg-white dark:bg-slate-800 shadow-lg rounded-full p-3 flex items-center gap-2 text-sm font-medium border border-border hover:border-primary/40 transition-all">
+                    <span className="bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center">
+                      <Star className="h-3 w-3 text-primary" />
+                    </span>
+                    <span>Avis clients</span>
+                  </button>
+                }
+              />
+            </div>
+            
+            {/* Chat support - right side */}
+            <div className="pointer-events-auto">
+              <button 
+                onClick={() => setChatOpen(prev => !prev)}
+                className="bg-white dark:bg-slate-800 shadow-lg rounded-full p-3 flex items-center gap-2 text-sm font-medium border border-border hover:border-primary/40 transition-all"
+              >
+                <span className="bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center">
+                  <MessageCircle className="h-3 w-3 text-primary" />
+                </span>
+                <span>Assistance client</span>
+              </button>
+            </div>
           </div>
+          
+          {/* Chat component */}
+          <CustomerSupportChat isOpen={chatOpen} onClose={() => setChatOpen(false)} />
           
           <Separator />
           

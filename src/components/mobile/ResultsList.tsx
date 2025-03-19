@@ -113,7 +113,7 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
                 <p className="font-medium">Offre exclusive chez {selectedPlan.operator}</p>
               </div>
               <p className="text-sm mb-3">
-                Pour le forfait <span className="font-semibold">{selectedPlan.name}</span> : premier mois à 1€ au lieu de {selectedPlan.price} !
+                Pour le forfait <span className="font-semibold">{selectedPlan.name}</span> : premier mois à 1€ au lieu de {selectedPlan.price.toString()} !
               </p>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <ThumbsUp className="h-4 w-4 text-primary" />
