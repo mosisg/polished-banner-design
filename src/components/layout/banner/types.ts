@@ -5,6 +5,7 @@ export interface Plan {
   data: string;
   price: string;
   features: string[];
-  operator?: string;
-  coverage?: string;
+  operator: string; // Changed from optional to required
+  coverage: string; // Changed from optional to required
+  operatorLogo?: string; // Keep this optional property for PlanCard
 }

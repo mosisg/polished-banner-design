@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Phone, Wifi, Check, Signal, MapPin } from 'lucide-react';
 import type { MobilePlan } from '@/types/mobile';
+import type { Plan } from '@/components/layout/banner/types';
 
 interface PlanCardProps {
-  plan: MobilePlan;
+  plan: MobilePlan | Plan;
   variant?: 'default' | 'compact';
 }
 
@@ -18,6 +19,9 @@ const PlanCard = ({ plan, variant = 'default' }: PlanCardProps) => {
   const priceValue = parseFloat(plan.price.match(/\d+\.\d+/)?.[0] || '0');
   const priceInt = Math.floor(priceValue);
   const priceDecimal = (priceValue % 1).toFixed(2).substring(2);
+  
+  // Check if plan has operatorLogo property (only in Plan type, not in MobilePlan)
+  const hasOperatorLogo = 'operatorLogo' in plan && plan.operatorLogo;
 
   return (
     <div 
@@ -34,13 +38,17 @@ const PlanCard = ({ plan, variant = 'default' }: PlanCardProps) => {
         isCompact ? "w-full p-4" : "w-full md:w-1/5 p-4 md:p-6 md:border-b-0 md:border-r"
       )}>
         <div className="flex flex-col items-center text-center">
-          {plan.operatorLogo || (plan.operator && (
+          {hasOperatorLogo ? (
+            <div className="mb-3">
+              <img src={plan.operatorLogo} alt={plan.operator} className="w-16 h-16" />
+            </div>
+          ) : (
             <div className="mb-3">
               <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm">
                 <span className="text-2xl font-bold text-primary">{plan.operator.charAt(0)}</span>
               </div>
             </div>
-          ))}
+          )}
           <h3 className="font-semibold text-lg">{plan.operator}</h3>
           <div className="mt-1 text-sm text-muted-foreground">{plan.name}</div>
           

@@ -1,20 +1,10 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import PlanCard from '@/components/ui/PlanCard';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-
-interface Plan {
-  id: number;
-  name: string;
-  data: string;
-  price: string;
-  features: string[];
-  operator?: string;
-  coverage?: string;
-}
+import { Plan } from './types';
 
 interface PlanCarouselProps {
   plans: Plan[];
@@ -69,7 +59,6 @@ const PlanCarousel: React.FC<PlanCarouselProps> = ({ plans }) => {
         </div>
       </div>
       
-      {/* Navigation Buttons */}
       <div className="flex justify-center items-center space-x-4 mt-8">
         <Button 
           variant="outline" 
