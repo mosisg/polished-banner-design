@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import Header from '@/components/layout/Header';
 import Banner from '@/components/layout/Banner';
@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layout/Footer';
 import NotificationBar from '@/components/layout/NotificationBar';
 import TrustBadges from '@/components/layout/TrustBadges';
+import MarketingPopup from '@/components/marketing/MarketingPopup';
 
 // Import des sections
 import MobileSection from '@/components/home/MobileSection';
@@ -30,6 +31,36 @@ const Index = () => {
       "query-input": "required name=search_term_string"
     }
   };
+  
+  // Exit intent detection for exit popup
+  useEffect(() => {
+    const handleMouseLeave = (e: MouseEvent) => {
+      // If the mouse leaves from the top of the document
+      if (e.clientY <= 0) {
+        // We need to check if the user already saw the popup or if it's been more than a week
+        const exitPopupShown = localStorage.getItem('popup-exit');
+        const exitPopupDate = localStorage.getItem('popup-exit-date');
+        
+        const now = new Date().getTime();
+        const weekInMs = 7 * 24 * 60 * 60 * 1000;
+        
+        // If never shown or shown more than a week ago
+        if (!exitPopupShown || (exitPopupDate && now - parseInt(exitPopupDate) > weekInMs)) {
+          // Dispatch a custom event to show the exit popup
+          window.dispatchEvent(new CustomEvent('showExitPopup'));
+          
+          // Update the timestamp
+          localStorage.setItem('popup-exit-date', now.toString());
+        }
+      }
+    };
+    
+    document.addEventListener('mouseleave', handleMouseLeave);
+    
+    return () => {
+      document.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
 
   return (
     <>
@@ -43,6 +74,17 @@ const Index = () => {
           {JSON.stringify(structuredData)}
         </script>
       </Helmet>
+      
+      {/* Welcome Popup - for new visitors */}
+      <MarketingPopup 
+        type="welcome" 
+        autoShow={true} 
+        delay={5000} 
+        onAction={() => window.location.href = '/mobile'}
+      />
+      
+      {/* Exit Intent Popup - attached to the exit intent event */}
+      <ExitPopup />
       
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -59,12 +101,34 @@ const Index = () => {
             <Banner />
           </section>
           
+          {/* Social Proof Popup Trigger - subtly integrated */}
+          <div className="fixed bottom-4 right-4 z-40">
+            <MarketingPopup
+              type="social-proof"
+              trigger={
+                <button className="bg-white dark:bg-slate-800 shadow-lg rounded-full p-3 flex items-center gap-2 text-sm font-medium border border-border hover:border-primary/40 transition-all">
+                  <span className="bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center">
+                    <span className="text-xs">★</span>
+                  </span>
+                  <span>Avis clients</span>
+                </button>
+              }
+            />
+          </div>
+          
           <Separator />
           
           {/* Autres sections */}
           <MobileSection />
           <InternetSection />
-          <ComparisonSection />
+          
+          {/* Feedback popup trigger after scrolling to comparison section */}
+          <div id="comparison-section">
+            <ComparisonSection />
+          </div>
+          
+          <FeedbackTrigger />
+          
           <BlogSection />
           <PartnersSection />
           <TestimonialsSection />
@@ -74,6 +138,73 @@ const Index = () => {
         <Footer />
       </div>
     </>
+  );
+};
+
+// Component to handle exit intent popup
+const ExitPopup = () => {
+  const [showPopup, setShowPopup] = React.useState(false);
+  
+  useEffect(() => {
+    const handleExitIntent = () => {
+      setShowPopup(true);
+    };
+    
+    window.addEventListener('showExitPopup', handleExitIntent);
+    
+    return () => {
+      window.removeEventListener('showExitPopup', handleExitIntent);
+    };
+  }, []);
+  
+  if (!showPopup) return null;
+  
+  return (
+    <MarketingPopup 
+      type="exit" 
+      autoShow={true}
+      onAction={() => window.location.href = '/mobile'}
+    />
+  );
+};
+
+// Component to show feedback popup after scrolling to a certain point
+const FeedbackTrigger = () => {
+  const [showFeedback, setShowFeedback] = React.useState(false);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      const comparisonSection = document.getElementById('comparison-section');
+      if (comparisonSection) {
+        const rect = comparisonSection.getBoundingClientRect();
+        
+        // When the user has scrolled past the comparison section
+        if (rect.bottom < 0) {
+          // Check if we haven't shown the feedback popup in this session
+          const feedbackShown = sessionStorage.getItem('feedback-shown');
+          
+          if (!feedbackShown) {
+            setShowFeedback(true);
+            sessionStorage.setItem('feedback-shown', 'true');
+          }
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+  
+  if (!showFeedback) return null;
+  
+  return (
+    <MarketingPopup 
+      type="feedback" 
+      autoShow={true}
+    />
   );
 };
 
