@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Info } from 'lucide-react';
 import BoxCard from '@/components/ui/BoxCard';
 import { InternetBox } from '@/types/internet';
 
 // Composant pour afficher le logo de l'opérateur
-const OperatorLogo = ({ operator }: { operator: string }) => {
+const OperatorLogo = memo(({ operator }: { operator: string }) => {
   const getLogoPath = (operator: string) => {
     switch (operator.toLowerCase()) {
       case 'orange':
@@ -53,7 +53,9 @@ const OperatorLogo = ({ operator }: { operator: string }) => {
       <img src={logoPath} alt={operator} className="max-h-10 max-w-12" />
     </div>
   );
-};
+});
+
+OperatorLogo.displayName = 'OperatorLogo';
 
 interface ResultsListProps {
   filteredBoxes: InternetBox[];
@@ -79,4 +81,5 @@ const ResultsList = ({ filteredBoxes }: ResultsListProps) => {
   );
 };
 
-export default ResultsList;
+// Use React.memo to prevent unnecessary re-renders
+export default memo(ResultsList);

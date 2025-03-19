@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,29 +16,27 @@ const NotificationBar: React.FC<NotificationBarProps> = ({
   link = "/mobile",
   expiryHours = 3
 }) => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
   const [timeLeft, setTimeLeft] = useState(expiryHours);
   
-  useEffect(() => {
-    // Mise à jour du temps restant toutes les heures
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 3600000); // 1 heure en millisecondes
-    
-    return () => clearInterval(timer);
-  }, []);
-  
-  // Vérifier si l'utilisateur a déjà fermé la notification
+  // Only initialize the component if it's actually going to be shown
   useEffect(() => {
     const notificationDismissed = localStorage.getItem('notificationDismissed');
-    if (notificationDismissed === 'true') {
-      setIsVisible(false);
+    if (notificationDismissed !== 'true') {
+      setIsVisible(true);
+      
+      // Set up timer only if notification is visible
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 3600000); // 1 heure en millisecondes
+      
+      return () => clearInterval(timer);
     }
   }, []);
   
@@ -92,4 +90,5 @@ const NotificationBar: React.FC<NotificationBarProps> = ({
   );
 };
 
-export default NotificationBar;
+// Export with React.memo to prevent unnecessary re-renders
+export default React.memo(NotificationBar);

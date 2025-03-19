@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { Info, ThumbsUp, Zap } from 'lucide-react';
 import PlanCard from '@/components/ui/PlanCard';
 import { MobilePlan } from '@/types/mobile';
@@ -7,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
-const OperatorLogo = ({ operator }: { operator: string }) => {
+const OperatorLogo = memo(({ operator }: { operator: string }) => {
   const getLogoPath = (operator: string) => {
     switch (operator.toLowerCase()) {
       case 'orange':
@@ -54,7 +53,9 @@ const OperatorLogo = ({ operator }: { operator: string }) => {
       <img src={logoPath} alt={operator} className="max-h-10 max-w-12" />
     </div>
   );
-};
+});
+
+OperatorLogo.displayName = 'OperatorLogo';
 
 interface ResultsListProps {
   filteredPlans: MobilePlan[];
@@ -191,4 +192,4 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
   );
 };
 
-export default ResultsList;
+export default memo(ResultsList);

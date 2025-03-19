@@ -16,9 +16,9 @@ const PhoneStructuredData: React.FC<PhoneStructuredDataProps> = ({ phones }) => 
       'position': index + 1,
       'item': {
         '@type': 'Product',
-        'name': `${phone.trademark} ${phone.model}`,
-        'description': phone.description || `${phone.trademark} ${phone.model} - ${phone.storage} Go`,
-        'image': phone.imageUrl,
+        'name': `${phone.trademark} ${phone.title}`,
+        'description': phone.description || `${phone.trademark} ${phone.title} - ${phone.storage}`,
+        'image': phone.image,
         'brand': {
           '@type': 'Brand',
           'name': phone.trademark
@@ -27,7 +27,7 @@ const PhoneStructuredData: React.FC<PhoneStructuredDataProps> = ({ phones }) => 
           '@type': 'Offer',
           'price': phone.price,
           'priceCurrency': 'EUR',
-          'availability': 'https://schema.org/InStock'
+          'availability': phone.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
         }
       }
     }))
