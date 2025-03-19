@@ -13,6 +13,7 @@ interface Plan {
   operator?: string;
   coverage?: string;
   operatorLogo?: React.ReactNode;
+  affiliate_url?: string;
 }
 
 interface PlanCardProps {
@@ -47,7 +48,7 @@ const PlanCard = ({ plan }: PlanCardProps) => {
   const priceDecimal = (priceValue % 1).toFixed(2).substring(2);
   
   // Générer l'URL d'affiliation
-  const affiliateUrl = plan.operator ? getMobileAffiliateUrl(plan.operator) : 'https://compareprix.fr/redirect';
+  const affiliateUrl = plan.affiliate_url || (plan.operator ? getMobileAffiliateUrl(plan.operator) : 'https://compareprix.fr/redirect');
 
   return (
     <div 

@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       internet_boxes: {
         Row: {
+          affiliate_url: string | null
           call_option: string | null
           commitment: string | null
           created_at: string | null
@@ -28,6 +29,7 @@ export type Database = {
           wifi_type: string
         }
         Insert: {
+          affiliate_url?: string | null
           call_option?: string | null
           commitment?: string | null
           created_at?: string | null
@@ -45,6 +47,7 @@ export type Database = {
           wifi_type: string
         }
         Update: {
+          affiliate_url?: string | null
           call_option?: string | null
           commitment?: string | null
           created_at?: string | null
@@ -65,6 +68,7 @@ export type Database = {
       }
       mobile_plans: {
         Row: {
+          affiliate_url: string | null
           coverage: string
           created_at: string | null
           data: string
@@ -76,6 +80,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          affiliate_url?: string | null
           coverage: string
           created_at?: string | null
           data: string
@@ -87,6 +92,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          affiliate_url?: string | null
           coverage?: string
           created_at?: string | null
           data?: string
@@ -1055,6 +1061,7 @@ export type Database = {
       get_internet_boxes: {
         Args: Record<PropertyKey, never>
         Returns: {
+          affiliate_url: string | null
           call_option: string | null
           commitment: string | null
           created_at: string | null
@@ -1075,6 +1082,7 @@ export type Database = {
       get_mobile_plans: {
         Args: Record<PropertyKey, never>
         Returns: {
+          affiliate_url: string | null
           coverage: string
           created_at: string | null
           data: string
