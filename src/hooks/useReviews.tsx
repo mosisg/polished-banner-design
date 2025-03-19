@@ -12,6 +12,7 @@ export interface Review {
   product_type: 'mobile_plan' | 'internet_box';
   product_id: string | null;
   created_at: string;
+  approved?: boolean;
 }
 
 export const useReviews = (productType: 'mobile_plan' | 'internet_box') => {
@@ -28,7 +29,17 @@ export const useReviews = (productType: 'mobile_plan' | 'internet_box') => {
       throw new Error('Failed to fetch reviews');
     }
 
-    return data || [];
+    return (data || []).map(item => ({
+      id: item.id,
+      author_name: item.author_name,
+      author_avatar: item.author_avatar,
+      rating: item.rating,
+      title: item.title,
+      content: item.content,
+      product_type: item.product_type as 'mobile_plan' | 'internet_box',
+      product_id: item.product_id,
+      created_at: item.created_at
+    }));
   };
 
   return useQuery({

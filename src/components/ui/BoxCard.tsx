@@ -2,12 +2,27 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Wifi, Download, Upload, Router, Monitor, Phone, Check, Info } from 'lucide-react';
+import { Wifi, Download, Upload, Router, Monitor, Phone, Check, Info, ExternalLink } from 'lucide-react';
 import { InternetBox } from '@/types/internet';
 
 interface BoxCardProps {
   box: InternetBox & { operatorLogo?: React.ReactNode };
 }
+
+// Fonction pour obtenir l'URL d'affiliation en fonction de l'opérateur
+const getAffiliateUrl = (operator: string): string => {
+  const affiliateUrls: Record<string, string> = {
+    'Free': 'https://free.fr/freebox/?utm_source=compareprix&utm_medium=affiliation&utm_campaign=internet',
+    'Bouygues': 'https://www.bouyguestelecom.fr/offres-internet/?utm_source=compareprix&utm_medium=affiliation',
+    'Sosh': 'https://www.sosh.fr/offres-mobiles/sosh-mobile-livebox/?utm_source=compareprix&utm_medium=affiliation',
+    'Orange': 'https://boutique.orange.fr/internet/offres-fibre/?utm_source=compareprix&utm_medium=affiliation',
+    'SFR': 'https://www.sfr.fr/offre-internet/?utm_source=compareprix&utm_medium=affiliation',
+    'RED': 'https://www.red-by-sfr.fr/offres-internet/?utm_source=compareprix&utm_medium=affiliation',
+    'Bouygues Telecom': 'https://www.bouyguestelecom.fr/offres-internet/?utm_source=compareprix&utm_medium=affiliation',
+  };
+  
+  return affiliateUrls[operator] || 'https://compareprix.fr/redirect';
+};
 
 const BoxCard = ({ box }: BoxCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
@@ -16,6 +31,9 @@ const BoxCard = ({ box }: BoxCardProps) => {
   const priceValue = parseFloat(box.price);
   const priceInt = Math.floor(priceValue);
   const priceDecimal = (priceValue % 1).toFixed(2).substring(2);
+  
+  // Générer l'URL d'affiliation
+  const affiliateUrl = getAffiliateUrl(box.operator);
 
   return (
     <div 
@@ -116,13 +134,17 @@ const BoxCard = ({ box }: BoxCardProps) => {
         <div className="mt-6">
           <Button 
             className={cn(
-              "w-full rounded-full transition-all duration-300",
+              "w-full rounded-full transition-all duration-300 group",
               isHovered 
                 ? "bg-primary" 
                 : "bg-primary/90"
             )}
+            asChild
           >
-            Voir l'offre
+            <a href={affiliateUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+              Voir l'offre
+              <ExternalLink className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </a>
           </Button>
         </div>
       </div>
