@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Info } from 'lucide-react';
 import PlanCard from '@/components/ui/PlanCard';
@@ -27,8 +26,8 @@ const OperatorLogo = ({ operator }: { operator: string }) => {
         return '/logo-sfr.svg';
       case 'sosh':
         return '/logo-sosh.svg';
-      case 'youprice':
-        return '/logo-youprice.svg';
+      case 'lebara':
+        return '/logo-lebara.svg';
       case 'free':
       case 'free mobile':
         return '/logo-free.svg';

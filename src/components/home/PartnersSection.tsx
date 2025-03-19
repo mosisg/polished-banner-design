@@ -12,7 +12,7 @@ const partners = [
   { name: 'RED by SFR', logo: '/logo-red.svg', color: 'from-green-500/20 to-green-600/10' },
   { name: 'Prixtel', logo: '/logo-prixtel.svg', color: 'from-slate-500/20 to-slate-600/10' },
   { name: 'Coriolis', logo: '/logo-coriolis.svg', color: 'from-cyan-500/20 to-cyan-600/10' },
-  { name: 'YouPrice', logo: '/logo-youprice.svg', color: 'from-emerald-500/20 to-emerald-600/10' },
+  { name: 'Lebara', logo: '/logo-lebara.svg', color: 'from-blue-500/20 to-blue-600/10' },
   { name: 'Auchan Télécom', logo: '/logo-auchan-telecom.svg', color: 'from-red-500/20 to-red-600/10' },
 ];
 
