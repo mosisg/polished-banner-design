@@ -1,203 +1,212 @@
-
-import React, { useState } from 'react';
-import { Info, ThumbsUp, Zap } from 'lucide-react';
-import PlanCard from '@/components/ui/PlanCard';
-import { MobilePlan } from '@/types/mobile';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Check, Smartphone, Star, ArrowRight, Package, Timer, Zap, ExternalLink } from 'lucide-react';
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useMobilePlans } from '@/hooks/use-mobile';
+import { Plan } from '@/types/mobile';
+import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 
-// Composant pour afficher le logo de l'opérateur
-const OperatorLogo = ({ operator }: { operator: string }) => {
-  const getLogoPath = (operator: string) => {
-    switch (operator.toLowerCase()) {
-      case 'orange':
-        return '/logo-orange.svg';
-      case 'bouygues':
-      case 'bouygues telecom':
-        return '/logo-bouygues.svg';
-      case 'coriolis':
-        return '/logo-coriolis.svg';
-      case 'auchan télécom':
-      case 'auchan telecom':
-        return '/logo-auchan-telecom.svg';
-      case 'prixtel':
-        return '/logo-prixtel.svg';
-      case 'red':
-      case 'red by sfr':
-        return '/logo-red.svg';
-      case 'sfr':
-        return '/logo-sfr.svg';
-      case 'sosh':
-        return '/logo-sosh.svg';
-      case 'lebara':
-        return '/logo-lebara.svg';
-      case 'free':
-      case 'free mobile':
-        return '/logo-free.svg';
-      default:
-        return null;
-    }
-  };
-
-  const logoPath = getLogoPath(operator);
-  
-  if (!logoPath) {
-    // Si pas de logo, on affiche juste l'initiale dans un carré
-    return (
-      <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm">
-        <span className="text-2xl font-bold text-primary">{operator.charAt(0)}</span>
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center shadow-sm p-2">
-      <img src={logoPath} alt={operator} className="max-h-10 max-w-12" />
-    </div>
-  );
-};
-
-interface ResultsListProps {
-  filteredPlans: MobilePlan[];
-}
-
-const ResultsList = ({ filteredPlans }: ResultsListProps) => {
-  const [showPersonalizedOffer, setShowPersonalizedOffer] = useState(false);
-  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+const ResultsList = () => {
+  const { planResults, isLoading, addToCompare, compareList } = useMobilePlans();
+  const navigate = useNavigate();
   const { toast } = useToast();
   
-  // Tracker for plan interactions
-  const trackPlanInteraction = (planId: string, action: 'view' | 'compare' | 'select') => {
-    // In a real application, this would send data to an analytics service
-    console.log(`User ${action}ed plan ${planId}`);
-    
-    // For demo purposes, trigger personalized offer after some interactions
-    if (action === 'select' && Math.random() > 0.7) { // 30% chance
-      setSelectedPlanId(planId);
-      setShowPersonalizedOffer(true);
-    }
+  const operatorLogos: Record<string, string> = {
+    'Orange': '/logo-orange.svg',
+    'SFR': '/logo-sfr.svg',
+    'Free': '/logo-free.svg',
+    'Bouygues': '/logo-bouygues.svg',
+    'Sosh': '/logo-sosh.svg',
+    'RED': '/logo-red.svg',
+    'Prixtel': '/logo-prixtel.svg',
+    'Coriolis': '/logo-coriolis.svg',
+    'Lebara': '/logo-lebara.svg',
+    'Auchan Telecom': '/logo-auchan-telecom.svg',
+    'YouPrice': '/logo-youprice.svg',
   };
   
-  // Find the selected plan for the personalized offer
-  const selectedPlan = selectedPlanId 
-    ? filteredPlans.find(plan => plan.id === selectedPlanId) 
-    : null;
-  
-  // Handle claiming an offer
-  const handleClaimOffer = () => {
-    setShowPersonalizedOffer(false);
+  const getStarColor = (rating: number): string => {
+    if (rating >= 4.5) return "text-green-500";
+    if (rating >= 3.5) return "text-yellow-500";
+    return "text-red-500";
+  };
+
+  const handleCompare = (plan: Plan) => {
+    if (compareList.includes(plan.id)) {
+      toast({
+        title: "Forfait déjà dans la comparaison",
+        description: "Ce forfait est déjà présent dans votre liste de comparaison.",
+      });
+      return;
+    }
     
+    if (compareList.length >= 3) {
+      toast({
+        title: "Comparaison limitée à 3 forfaits",
+        description: "Vous ne pouvez pas comparer plus de 3 forfaits simultanément.",
+      });
+      return;
+    }
+    
+    addToCompare(plan.id);
     toast({
-      title: "Offre appliquée !",
-      description: "Vous bénéficiez d'une réduction spéciale sur cette offre.",
-      duration: 5000,
+      title: "Forfait ajouté à la comparaison",
+      description: "Vous pouvez comparer jusqu'à 3 forfaits en même temps.",
     });
   };
   
-  return (
-    <div className="space-y-6">
-      {/* Activity-based personalized offer popup */}
-      <Dialog open={showPersonalizedOffer} onOpenChange={setShowPersonalizedOffer}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Offre personnalisée pour vous !</DialogTitle>
-            <DialogDescription>
-              Basée sur vos préférences de recherche
-            </DialogDescription>
-          </DialogHeader>
-          {selectedPlan && (
-            <div className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-              <div className="flex items-center gap-3 mb-3">
-                <Zap className="h-5 w-5 text-primary" />
-                <p className="font-medium">Offre exclusive chez {selectedPlan.operator}</p>
+  const goToVisitors = (plan: Plan) => {
+    // Simulating visitor count - would be fetched from an analytics API in a real app
+    const baseVisitors = Math.floor(Math.random() * 100) + 50;
+    const currentVisitors = baseVisitors + new Date().getMinutes();
+    
+    toast({
+      title: `${currentVisitors.toString()} personnes consultent cette offre`,
+      description: "Cette offre est populaire auprès de nos utilisateurs.",
+    });
+  };
+  
+  const showRemainingTime = (plan: Plan) => {
+    // Simulate a random remaining time for the offer
+    const hours = Math.floor(Math.random() * 24) + 1;
+    const minutes = Math.floor(Math.random() * 60);
+    
+    toast({
+      title: "Offre à durée limitée !",
+      description: `Cette offre expire dans ${hours}h et ${minutes}min - Ne ratez pas cette opportunité !`,
+      variant: "destructive",
+    });
+  };
+  
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map((item) => (
+          <Card key={item} className="overflow-hidden">
+            <CardHeader className="p-4 border-b">
+              <div className="flex justify-between items-center">
+                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-6 w-16" />
               </div>
-              <p className="text-sm mb-3">
-                Pour le forfait <span className="font-semibold">{selectedPlan.name}</span> : premier mois à 1€ au lieu de {selectedPlan.price.toString()} !
-              </p>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                <ThumbsUp className="h-4 w-4 text-primary" />
-                <span>Déjà utilisé par 127 personnes aujourd'hui</span>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="grid md:grid-cols-4 gap-4">
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
               </div>
-            </div>
-          )}
-          <DialogFooter className="sm:justify-start">
-            <Button variant="outline" onClick={() => setShowPersonalizedOffer(false)}>Plus tard</Button>
-            <Button type="submit" onClick={handleClaimOffer}>Profiter de l'offre</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {filteredPlans.length > 0 ? (
-        <>
-          {/* Real-time viewer count - Social proof */}
-          <div className="bg-muted/30 rounded-lg p-3 mb-4 flex items-center gap-3 text-sm">
-            <div className="relative">
-              <div className="w-2 h-2 rounded-full bg-green-500 absolute top-0 right-0 animate-pulse"></div>
-              <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-              </svg>
-            </div>
-            <p className="text-muted-foreground">
-              <span className="font-medium">{Math.floor(Math.random() * 20) + 30}</span> personnes consultent actuellement cette page
-            </p>
-          </div>
-
-          {/* List of plans with interaction tracking */}
-          <div className="space-y-6">
-            {filteredPlans.map((plan) => (
-              <div 
-                key={plan.id}
-                onClick={() => trackPlanInteraction(plan.id, 'select')}
-                onMouseEnter={() => trackPlanInteraction(plan.id, 'view')}
-              >
-                <PlanCard 
-                  plan={{
-                    ...plan, 
-                    operatorLogo: <OperatorLogo operator={plan.operator} />
-                  }} 
-                />
-              </div>
-            ))}
-          </div>
-          
-          {/* Limited time offer - Creates urgency */}
-          <div className="mt-8 bg-gradient-to-r from-amber-100 to-amber-50 dark:from-amber-900/20 dark:to-amber-800/10 p-4 rounded-lg border border-amber-200 dark:border-amber-800/30 shadow-sm">
-            <div className="flex items-center gap-3 mb-2">
-              <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <p className="font-medium">Offre à durée limitée</p>
-            </div>
-            <p className="text-sm mb-3">
-              Les opérateurs proposent actuellement des réductions de fin d'été. Ces offres expirent dans :
-            </p>
-            <div className="flex justify-center gap-3 mb-2">
-              <div className="bg-white dark:bg-slate-800 px-3 py-2 rounded shadow-sm">
-                <span className="text-xl font-bold">2</span>
-                <span className="text-xs block">jours</span>
-              </div>
-              <div className="bg-white dark:bg-slate-800 px-3 py-2 rounded shadow-sm">
-                <span className="text-xl font-bold">11</span>
-                <span className="text-xs block">heures</span>
-              </div>
-              <div className="bg-white dark:bg-slate-800 px-3 py-2 rounded shadow-sm">
-                <span className="text-xl font-bold">45</span>
-                <span className="text-xs block">min</span>
-              </div>
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className="flex flex-col items-center justify-center p-8 bg-muted/30 rounded-lg">
-          <Info className="h-12 w-12 text-muted-foreground mb-2" />
-          <h3 className="text-lg font-medium">Aucun forfait trouvé</h3>
-          <p className="text-muted-foreground text-center mt-1">
-            Essayez d'élargir vos critères de recherche
-          </p>
+            </CardContent>
+            <CardFooter className="p-4 flex flex-wrap justify-between gap-2 border-t">
+              <Skeleton className="h-10 w-32" />
+              <Skeleton className="h-10 w-32" />
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+  
+  const renderPlans = () => {
+    if (!planResults || planResults.length === 0) {
+      return (
+        <div className="text-center py-10">
+          <Smartphone className="mx-auto h-10 w-10 text-muted-foreground mb-4" />
+          <p className="text-lg font-semibold text-muted-foreground">Aucun forfait ne correspond à vos critères.</p>
+          <p className="text-sm text-muted-foreground">Essayez d'ajuster vos filtres de recherche.</p>
         </div>
-      )}
+      );
+    }
+    
+    return planResults.map((plan) => (
+      <Card key={plan.id} className="overflow-hidden">
+        <CardHeader className="p-4 border-b">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              {operatorLogos[plan.operator] && (
+                <img src={operatorLogos[plan.operator]} alt={`${plan.operator} Logo`} className="h-6 w-auto" />
+              )}
+              <h3 className="text-lg font-semibold">{plan.operator}</h3>
+            </div>
+            <Badge variant="secondary">
+              {plan.price}
+            </Badge>
+          </div>
+        </CardHeader>
+        
+        <CardContent className="p-4">
+          <div className="grid md:grid-cols-4 gap-4">
+            <div className="flex flex-col items-center">
+              <Package className="h-5 w-5 text-primary mb-1" />
+              <span className="font-bold">{plan.data}</span>
+              <span className="text-xs text-muted-foreground">Data</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Smartphone className="h-5 w-5 text-primary mb-1" />
+              <span className="font-bold">{plan.call}</span>
+              <span className="text-xs text-muted-foreground">Appels & SMS</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Timer className="h-5 w-5 text-primary mb-1" />
+              <span className="font-bold">{plan.commitment}</span>
+              <span className="text-xs text-muted-foreground">Engagement</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Zap className="h-5 w-5 text-primary mb-1" />
+              <span className="font-bold">{plan.network}</span>
+              <span className="text-xs text-muted-foreground">Réseau</span>
+            </div>
+          </div>
+        </CardContent>
+        
+        <CardFooter className="p-4 flex flex-wrap justify-between gap-2 border-t">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={() => handleCompare(plan)} disabled={compareList.includes(plan.id)}>
+                  {compareList.includes(plan.id) ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Comparé
+                    </>
+                  ) : (
+                    <>
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Comparer
+                    </>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Ajouter à la comparaison</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          
+          <div className="flex gap-2">
+            {plan.rating && (
+              <Badge variant="secondary" className="gap-1.5">
+                <Star className={cn("h-3 w-3 fill-current", getStarColor(parseFloat(plan.rating)))} />
+                <span>{plan.rating}</span>
+              </Badge>
+            )}
+            <Button size="sm" onClick={() => { goToVisitors(plan); showRemainingTime(plan); navigate(plan.link) }}>
+              Voir l'offre <ExternalLink className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
+        </CardFooter>
+      </Card>
+    ));
+  };
+  
+  return (
+    <div>
+      {renderPlans()}
     </div>
   );
 };
