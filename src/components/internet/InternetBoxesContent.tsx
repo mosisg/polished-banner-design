@@ -3,14 +3,15 @@ import React from 'react';
 import FilterPanel from '@/components/internet/FilterPanel';
 import ResultsPanel from '@/components/internet/ResultsPanel';
 import TrustBadges from '@/components/layout/TrustBadges';
+import { ConnectionType, SortOption } from '@/types/internet';
 
 interface InternetBoxesContentProps {
   speedRange: number[];
   setSpeedRange: (value: number[]) => void;
   priceRange: number[];
   setPriceRange: (value: number[]) => void;
-  connectionType: string;
-  setConnectionType: (value: any) => void;
+  connectionType: ConnectionType;
+  setConnectionType: (value: ConnectionType) => void;
   selectedOperators: string[];
   operators: string[];
   handleOperatorChange: (operator: string) => void;
@@ -18,8 +19,8 @@ interface InternetBoxesContentProps {
   wifiTypes: string[];
   handleWifiTypeChange: (type: string) => void;
   filteredBoxes: any[];
-  sortOption: string;
-  setSortOption: (value: any) => void;
+  sortOption: SortOption;
+  setSortOption: (value: SortOption) => void;
   filtersOpen: boolean;
   setFiltersOpen: (value: boolean) => void;
 }
