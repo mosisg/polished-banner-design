@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { X, Send, Bot, User } from 'lucide-react';
 import { 
   Sheet,
@@ -11,67 +11,15 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { useSupportChat } from '@/hooks/useSupportChat';
 
 interface CustomerSupportChatProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-interface Message {
-  id: string;
-  text: string;
-  sender: 'user' | 'bot';
-  timestamp: Date;
-}
-
 const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClose }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: 'Bonjour ! Je suis votre assistant virtuel. Comment puis-je vous aider aujourd\'hui ?',
-      sender: 'bot',
-      timestamp: new Date()
-    }
-  ]);
-  const [inputText, setInputText] = useState('');
-  
-  // Demo responses for the chatbot
-  const botResponses = [
-    "Je suis là pour vous aider à trouver le forfait mobile idéal pour vos besoins.",
-    "Vous pouvez comparer les offres de différents opérateurs sur notre site.",
-    "Nous proposons également des comparatifs de box internet et de téléphones mobiles.",
-    "Avez-vous des critères spécifiques pour votre forfait mobile (data, budget, engagement) ?",
-    "N'hésitez pas à utiliser notre outil de comparaison pour trouver les meilleures offres.",
-    "Je vous recommande de consulter notre section blog pour des conseils sur le choix de votre forfait."
-  ];
-  
-  const sendMessage = () => {
-    if (!inputText.trim()) return;
-    
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: inputText,
-      sender: 'user',
-      timestamp: new Date()
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
-    setInputText('');
-    
-    // Simulate bot response after a short delay
-    setTimeout(() => {
-      const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: randomResponse,
-        sender: 'bot',
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, botMessage]);
-    }, 1000);
-  };
+  const { messages, inputText, setInputText, sendMessage } = useSupportChat();
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {

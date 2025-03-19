@@ -5,8 +5,10 @@ import Header from '@/components/layout/Header';
 import InternetHero from '@/components/internet/InternetHero';
 import InternetBoxesContent from '@/components/internet/InternetBoxesContent';
 import InternetStructuredData from '@/components/internet/InternetStructuredData';
-import { useInternetBoxes } from '@/hooks/useInternetBoxes';
 import Footer from '@/components/layout/Footer';
+import { useInternetBoxesFromSupabase } from '@/hooks/useInternetBoxesFromSupabase';
+import { useToast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
 
 const InternetBoxes = () => {
   const {
@@ -26,8 +28,22 @@ const InternetBoxes = () => {
     sortOption,
     setSortOption,
     filtersOpen,
-    setFiltersOpen
-  } = useInternetBoxes();
+    setFiltersOpen,
+    isLoading,
+    error
+  } = useInternetBoxesFromSupabase();
+
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Erreur de chargement",
+        description: "Impossible de charger les box internet. Veuillez réessayer plus tard.",
+        variant: "destructive"
+      });
+    }
+  }, [error, toast]);
 
   return (
     <>
@@ -41,25 +57,33 @@ const InternetBoxes = () => {
       <div className="flex flex-col min-h-screen">
         <Header />
         <InternetHero />
-        <InternetBoxesContent
-          speedRange={speedRange}
-          setSpeedRange={setSpeedRange}
-          priceRange={priceRange}
-          setPriceRange={setPriceRange}
-          connectionType={connectionType}
-          setConnectionType={setConnectionType}
-          selectedOperators={selectedOperators}
-          operators={operators}
-          handleOperatorChange={handleOperatorChange}
-          selectedWifiTypes={selectedWifiTypes}
-          wifiTypes={wifiTypes}
-          handleWifiTypeChange={handleWifiTypeChange}
-          filteredBoxes={filteredBoxes}
-          sortOption={sortOption}
-          setSortOption={setSortOption}
-          filtersOpen={filtersOpen}
-          setFiltersOpen={setFiltersOpen}
-        />
+        
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <InternetBoxesContent
+            speedRange={speedRange}
+            setSpeedRange={setSpeedRange}
+            priceRange={priceRange}
+            setPriceRange={setPriceRange}
+            connectionType={connectionType}
+            setConnectionType={setConnectionType}
+            selectedOperators={selectedOperators}
+            operators={operators}
+            handleOperatorChange={handleOperatorChange}
+            selectedWifiTypes={selectedWifiTypes}
+            wifiTypes={wifiTypes}
+            handleWifiTypeChange={handleWifiTypeChange}
+            filteredBoxes={filteredBoxes}
+            sortOption={sortOption}
+            setSortOption={setSortOption}
+            filtersOpen={filtersOpen}
+            setFiltersOpen={setFiltersOpen}
+          />
+        )}
+        
         <InternetStructuredData 
           filteredBoxes={filteredBoxes}
           connectionType={connectionType}

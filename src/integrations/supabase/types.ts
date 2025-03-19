@@ -9,6 +9,135 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      internet_boxes: {
+        Row: {
+          call_option: string | null
+          commitment: string | null
+          created_at: string | null
+          download_speed: string
+          features: string[]
+          id: string
+          image: string | null
+          name: string
+          operator: string
+          price: string
+          special_offer: string | null
+          tv_option: string | null
+          updated_at: string | null
+          upload_speed: string
+          wifi_type: string
+        }
+        Insert: {
+          call_option?: string | null
+          commitment?: string | null
+          created_at?: string | null
+          download_speed: string
+          features: string[]
+          id?: string
+          image?: string | null
+          name: string
+          operator: string
+          price: string
+          special_offer?: string | null
+          tv_option?: string | null
+          updated_at?: string | null
+          upload_speed: string
+          wifi_type: string
+        }
+        Update: {
+          call_option?: string | null
+          commitment?: string | null
+          created_at?: string | null
+          download_speed?: string
+          features?: string[]
+          id?: string
+          image?: string | null
+          name?: string
+          operator?: string
+          price?: string
+          special_offer?: string | null
+          tv_option?: string | null
+          updated_at?: string | null
+          upload_speed?: string
+          wifi_type?: string
+        }
+        Relationships: []
+      }
+      mobile_plans: {
+        Row: {
+          coverage: string
+          created_at: string | null
+          data: string
+          features: string[]
+          id: string
+          name: string
+          operator: string
+          price: string
+          updated_at: string | null
+        }
+        Insert: {
+          coverage: string
+          created_at?: string | null
+          data: string
+          features: string[]
+          id?: string
+          name: string
+          operator: string
+          price: string
+          updated_at?: string | null
+        }
+        Update: {
+          coverage?: string
+          created_at?: string | null
+          data?: string
+          features?: string[]
+          id?: string
+          name?: string
+          operator?: string
+          price?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      reviews: {
+        Row: {
+          approved: boolean | null
+          author_avatar: string | null
+          author_name: string
+          content: string
+          created_at: string | null
+          id: string
+          product_id: string | null
+          product_type: string
+          rating: number
+          title: string
+        }
+        Insert: {
+          approved?: boolean | null
+          author_avatar?: string | null
+          author_name: string
+          content: string
+          created_at?: string | null
+          id?: string
+          product_id?: string | null
+          product_type: string
+          rating: number
+          title: string
+        }
+        Update: {
+          approved?: boolean | null
+          author_avatar?: string | null
+          author_name?: string
+          content?: string
+          created_at?: string | null
+          id?: string
+          product_id?: string | null
+          product_type?: string
+          rating?: number
+          title?: string
+        }
+        Relationships: []
+      }
       spatial_ref_sys: {
         Row: {
           auth_name: string | null
@@ -30,6 +159,57 @@ export type Database = {
           proj4text?: string | null
           srid?: number
           srtext?: string | null
+        }
+        Relationships: []
+      }
+      support_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_bot: boolean
+          message: string
+          session_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_bot?: boolean
+          message: string
+          session_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_bot?: boolean
+          message?: string
+          session_id?: string
+        }
+        Relationships: []
+      }
+      support_sessions: {
+        Row: {
+          closed_at: string | null
+          created_at: string | null
+          id: string
+          status: string
+          updated_at: string | null
+          visitor_id: string | null
+        }
+        Insert: {
+          closed_at?: string | null
+          created_at?: string | null
+          id?: string
+          status?: string
+          updated_at?: string | null
+          visitor_id?: string | null
+        }
+        Update: {
+          closed_at?: string | null
+          created_at?: string | null
+          id?: string
+          status?: string
+          updated_at?: string | null
+          visitor_id?: string | null
         }
         Relationships: []
       }
@@ -872,11 +1052,62 @@ export type Database = {
         }
         Returns: unknown
       }
+      get_internet_boxes: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          call_option: string | null
+          commitment: string | null
+          created_at: string | null
+          download_speed: string
+          features: string[]
+          id: string
+          image: string | null
+          name: string
+          operator: string
+          price: string
+          special_offer: string | null
+          tv_option: string | null
+          updated_at: string | null
+          upload_speed: string
+          wifi_type: string
+        }[]
+      }
+      get_mobile_plans: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          coverage: string
+          created_at: string | null
+          data: string
+          features: string[]
+          id: string
+          name: string
+          operator: string
+          price: string
+          updated_at: string | null
+        }[]
+      }
       get_proj4_from_srid: {
         Args: {
           "": number
         }
         Returns: string
+      }
+      get_reviews: {
+        Args: {
+          product_type: string
+        }
+        Returns: {
+          approved: boolean | null
+          author_avatar: string | null
+          author_name: string
+          content: string
+          created_at: string | null
+          id: string
+          product_id: string | null
+          product_type: string
+          rating: number
+          title: string
+        }[]
       }
       gettransactionid: {
         Args: Record<PropertyKey, never>
