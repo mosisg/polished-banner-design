@@ -14,6 +14,7 @@ interface MobilePlanResponse {
   features: string[];
   created_at: string;
   updated_at: string;
+  affiliate_url: string | null;
 }
 
 const fetchMobilePlans = async (): Promise<MobilePlan[]> => {
@@ -34,7 +35,8 @@ const fetchMobilePlans = async (): Promise<MobilePlan[]> => {
     data: plan.data,
     price: plan.price,
     coverage: plan.coverage,
-    features: plan.features
+    features: plan.features,
+    affiliate_url: plan.affiliate_url || undefined
   }));
 };
 

@@ -7,6 +7,7 @@ export interface MobilePlan {
   price: string;
   coverage: string;
   features: string[];
+  affiliate_url?: string;
 }
 
 export type NetworkType = 'all' | '4G' | '5G';

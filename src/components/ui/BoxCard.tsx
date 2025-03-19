@@ -33,7 +33,7 @@ const BoxCard = ({ box }: BoxCardProps) => {
   const priceDecimal = (priceValue % 1).toFixed(2).substring(2);
   
   // Générer l'URL d'affiliation
-  const affiliateUrl = getAffiliateUrl(box.operator);
+  const affiliateUrl = box.affiliate_url || getAffiliateUrl(box.operator);
 
   return (
     <div 

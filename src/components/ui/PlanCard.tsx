@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Phone, Wifi, Check, Signal, MapPin } from 'lucide-react';
+import { Phone, Wifi, Check, Signal, MapPin, ExternalLink } from 'lucide-react';
 
 interface Plan {
   id: number;
@@ -19,6 +19,25 @@ interface PlanCardProps {
   plan: Plan;
 }
 
+// Fonction pour obtenir l'URL d'affiliation en fonction de l'opérateur mobile
+const getMobileAffiliateUrl = (operator: string): string => {
+  const affiliateUrls: Record<string, string> = {
+    'Free': 'https://mobile.free.fr/?utm_source=compareprix&utm_medium=affiliation&utm_campaign=mobile',
+    'Orange': 'https://boutique.orange.fr/mobile/forfaits-mobiles/?utm_source=compareprix&utm_medium=affiliation',
+    'SFR': 'https://www.sfr.fr/forfait-mobile/?utm_source=compareprix&utm_medium=affiliation',
+    'Bouygues': 'https://www.bouyguestelecom.fr/forfaits-mobiles/?utm_source=compareprix&utm_medium=affiliation',
+    'Bouygues Telecom': 'https://www.bouyguestelecom.fr/forfaits-mobiles/?utm_source=compareprix&utm_medium=affiliation',
+    'RED': 'https://www.red-by-sfr.fr/forfaits-mobiles/?utm_source=compareprix&utm_medium=affiliation',
+    'Sosh': 'https://www.sosh.fr/forfaits-mobiles/?utm_source=compareprix&utm_medium=affiliation',
+    'Prixtel': 'https://www.prixtel.com/forfait-mobile/?utm_source=compareprix&utm_medium=affiliation',
+    'YouPrice': 'https://www.youprice.fr/forfait-mobile/?utm_source=compareprix&utm_medium=affiliation',
+    'Coriolis': 'https://www.coriolis.com/forfait-mobile/?utm_source=compareprix&utm_medium=affiliation',
+    'Auchan Télécom': 'https://www.auchan-telecom.fr/forfaits-mobiles/?utm_source=compareprix&utm_medium=affiliation',
+  };
+  
+  return affiliateUrls[operator] || 'https://compareprix.fr/redirect';
+};
+
 const PlanCard = ({ plan }: PlanCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -26,6 +45,9 @@ const PlanCard = ({ plan }: PlanCardProps) => {
   const priceValue = parseFloat(plan.price.match(/\d+\.\d+/)?.[0] || '0');
   const priceInt = Math.floor(priceValue);
   const priceDecimal = (priceValue % 1).toFixed(2).substring(2);
+  
+  // Générer l'URL d'affiliation
+  const affiliateUrl = plan.operator ? getMobileAffiliateUrl(plan.operator) : 'https://compareprix.fr/redirect';
 
   return (
     <div 
@@ -94,13 +116,17 @@ const PlanCard = ({ plan }: PlanCardProps) => {
         <div className="mt-6">
           <Button 
             className={cn(
-              "w-full rounded-full transition-all duration-300",
+              "w-full rounded-full transition-all duration-300 group",
               isHovered 
                 ? "bg-primary" 
                 : "bg-primary/90"
             )}
+            asChild
           >
-            Voir l'offre
+            <a href={affiliateUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+              Voir l'offre
+              <ExternalLink className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </a>
           </Button>
         </div>
       </div>

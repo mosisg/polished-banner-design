@@ -20,6 +20,7 @@ interface InternetBoxResponse {
   special_offer: string | null;
   created_at: string;
   updated_at: string;
+  affiliate_url: string | null;
 }
 
 const fetchInternetBoxes = async (): Promise<InternetBox[]> => {
@@ -46,7 +47,8 @@ const fetchInternetBoxes = async (): Promise<InternetBox[]> => {
     callOption: box.call_option || undefined,
     features: box.features,
     image: box.image || undefined,
-    specialOffer: box.special_offer || undefined
+    specialOffer: box.special_offer || undefined,
+    affiliate_url: box.affiliate_url || undefined
   }));
 };
 

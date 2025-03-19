@@ -14,6 +14,7 @@ export interface InternetBox {
   image?: string;
   specialOffer?: string;
   operatorLogo?: React.ReactNode;
+  affiliate_url?: string;
 }
 
 export type ConnectionType = 'all' | 'fibre' | 'adsl' | 'box4g';
