@@ -40,12 +40,10 @@ const Telephones = () => {
   return (
     <>
       <Helmet>
-        <html lang="fr" />
         <title>Comparateur de Téléphones Mobiles | ComparePrix</title>
         <meta name="description" content="Comparez les meilleurs téléphones mobiles du marché. Trouvez le smartphone idéal au meilleur prix avec notre comparateur téléphone." />
         <link rel="canonical" href="https://compareprix.fr/telephones" />
         <meta name="robots" content="index, follow" />
-        <PhoneStructuredData phones={filteredPhones.slice(0, 10)} />
       </Helmet>
 
       <div className="flex flex-col min-h-screen">
@@ -79,6 +77,7 @@ const Telephones = () => {
           toggleComparison={toggleComparison}
         />
         <Footer />
+        {filteredPhones.length > 0 && <PhoneStructuredData phones={filteredPhones.slice(0, 10)} />}
       </div>
     </>
   );
