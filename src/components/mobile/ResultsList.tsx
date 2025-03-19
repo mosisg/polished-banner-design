@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Info, ThumbsUp, Zap } from 'lucide-react';
 import PlanCard from '@/components/ui/PlanCard';
@@ -61,10 +62,10 @@ interface ResultsListProps {
 
 const ResultsList = ({ filteredPlans }: ResultsListProps) => {
   const [showPersonalizedOffer, setShowPersonalizedOffer] = useState(false);
-  const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const { toast } = useToast();
   
-  const trackPlanInteraction = (planId: string, action: 'view' | 'compare' | 'select') => {
+  const trackPlanInteraction = (planId: number, action: 'view' | 'compare' | 'select') => {
     console.log(`User ${action}ed plan ${planId}`);
     
     if (action === 'select' && Math.random() > 0.7) {
@@ -74,7 +75,7 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
   };
   
   const selectedPlan = selectedPlanId 
-    ? filteredPlans.find(plan => plan.id.toString() === selectedPlanId) 
+    ? filteredPlans.find(plan => plan.id === selectedPlanId) 
     : null;
   
   const handleClaimOffer = () => {
@@ -104,7 +105,7 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
                 <p className="font-medium">Offre exclusive chez {selectedPlan.operator}</p>
               </div>
               <p className="text-sm mb-3">
-                Pour le forfait <span className="font-semibold">{selectedPlan.name}</span> : premier mois à 1€ au lieu de {selectedPlan.price.toString()} !
+                Pour le forfait <span className="font-semibold">{selectedPlan.name}</span> : premier mois à 1€ au lieu de {selectedPlan.price} !
               </p>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <ThumbsUp className="h-4 w-4 text-primary" />
@@ -138,8 +139,8 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
             {filteredPlans.map((plan) => (
               <div 
                 key={plan.id}
-                onClick={() => trackPlanInteraction(plan.id.toString(), 'select')}
-                onMouseEnter={() => trackPlanInteraction(plan.id.toString(), 'view')}
+                onClick={() => trackPlanInteraction(plan.id, 'select')}
+                onMouseEnter={() => trackPlanInteraction(plan.id, 'view')}
               >
                 <PlanCard 
                   plan={{
