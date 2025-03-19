@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import PlanCard from '@/components/ui/PlanCard';
 import { Button } from '@/components/ui/button';
@@ -111,7 +112,7 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {currentItems.map((plan, index) => (
-            <PlanCard key={`${plan.id}-${index}`} plan={plan} />
+            <PlanCard key={`${plan.id}-${index}`} plan={plan} variant="compact" />
           ))}
         </div>
       )}
