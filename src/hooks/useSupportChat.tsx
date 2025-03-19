@@ -30,25 +30,26 @@ export const useSupportChat = () => {
       const newSessionId = uuidv4();
       setSessionId(newSessionId);
       
-      // Create a new session in Supabase
-      const { error } = await supabase
-        .from('support_sessions')
-        .insert([
-          { id: newSessionId, status: 'active' }
-        ]);
-      
-      if (error) {
-        console.error('Error creating chat session:', error);
-        toast({
-          title: "Erreur de connexion",
-          description: "Impossible de créer une session de chat. Veuillez réessayer.",
-          variant: "destructive"
-        });
+      try {
+        // Create a new session in Supabase
+        const { error } = await supabase
+          .from('support_sessions')
+          .insert([
+            { id: newSessionId, status: 'active' }
+          ]);
+        
+        if (error) {
+          console.error('Error creating chat session:', error);
+          // Continue without showing error toast - chat will work in local mode
+        }
+      } catch (err) {
+        console.error('Failed to create session:', err);
+        // Continue without error notification
       }
     };
     
     createSession();
-  }, [toast]);
+  }, []);
 
   // Save message to Supabase
   const saveMessage = async (message: string, isBot: boolean) => {
@@ -67,9 +68,11 @@ export const useSupportChat = () => {
       
       if (error) {
         console.error('Error saving chat message:', error);
+        // Continue without showing error
       }
     } catch (err) {
       console.error('Failed to save message:', err);
+      // Continue without error notification
     }
   };
 
@@ -95,7 +98,7 @@ export const useSupportChat = () => {
     };
     
     setMessages(prev => [...prev, userMessage]);
-    saveMessage(inputText, false);
+    saveMessage(inputText, false).catch(console.error);
     setInputText('');
     
     // Simulate bot response after a short delay
@@ -109,7 +112,7 @@ export const useSupportChat = () => {
       };
       
       setMessages(prev => [...prev, botMessage]);
-      saveMessage(randomResponse, true);
+      saveMessage(randomResponse, true).catch(console.error);
     }, 1000);
   };
   
