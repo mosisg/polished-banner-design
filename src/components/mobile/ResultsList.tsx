@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Info, ThumbsUp, Zap } from 'lucide-react';
 import PlanCard from '@/components/ui/PlanCard';
@@ -7,7 +6,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
-// Composant pour afficher le logo de l'opérateur
 const OperatorLogo = ({ operator }: { operator: string }) => {
   const getLogoPath = (operator: string) => {
     switch (operator.toLowerCase()) {
@@ -43,7 +41,6 @@ const OperatorLogo = ({ operator }: { operator: string }) => {
   const logoPath = getLogoPath(operator);
   
   if (!logoPath) {
-    // Si pas de logo, on affiche juste l'initiale dans un carré
     return (
       <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm">
         <span className="text-2xl font-bold text-primary">{operator.charAt(0)}</span>
@@ -67,24 +64,19 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
   const { toast } = useToast();
   
-  // Tracker for plan interactions
   const trackPlanInteraction = (planId: string, action: 'view' | 'compare' | 'select') => {
-    // In a real application, this would send data to an analytics service
     console.log(`User ${action}ed plan ${planId}`);
     
-    // For demo purposes, trigger personalized offer after some interactions
-    if (action === 'select' && Math.random() > 0.7) { // 30% chance
+    if (action === 'select' && Math.random() > 0.7) {
       setSelectedPlanId(planId);
       setShowPersonalizedOffer(true);
     }
   };
   
-  // Find the selected plan for the personalized offer
   const selectedPlan = selectedPlanId 
-    ? filteredPlans.find(plan => plan.id === selectedPlanId) 
+    ? filteredPlans.find(plan => plan.id.toString() === selectedPlanId) 
     : null;
   
-  // Handle claiming an offer
   const handleClaimOffer = () => {
     setShowPersonalizedOffer(false);
     
@@ -97,7 +89,6 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
   
   return (
     <div className="space-y-6">
-      {/* Activity-based personalized offer popup */}
       <Dialog open={showPersonalizedOffer} onOpenChange={setShowPersonalizedOffer}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -130,7 +121,6 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
 
       {filteredPlans.length > 0 ? (
         <>
-          {/* Real-time viewer count - Social proof */}
           <div className="bg-muted/30 rounded-lg p-3 mb-4 flex items-center gap-3 text-sm">
             <div className="relative">
               <div className="w-2 h-2 rounded-full bg-green-500 absolute top-0 right-0 animate-pulse"></div>
@@ -144,13 +134,12 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
             </p>
           </div>
 
-          {/* List of plans with interaction tracking */}
           <div className="space-y-6">
             {filteredPlans.map((plan) => (
               <div 
                 key={plan.id}
-                onClick={() => trackPlanInteraction(plan.id, 'select')}
-                onMouseEnter={() => trackPlanInteraction(plan.id, 'view')}
+                onClick={() => trackPlanInteraction(plan.id.toString(), 'select')}
+                onMouseEnter={() => trackPlanInteraction(plan.id.toString(), 'view')}
               >
                 <PlanCard 
                   plan={{
@@ -162,7 +151,6 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
             ))}
           </div>
           
-          {/* Limited time offer - Creates urgency */}
           <div className="mt-8 bg-gradient-to-r from-amber-100 to-amber-50 dark:from-amber-900/20 dark:to-amber-800/10 p-4 rounded-lg border border-amber-200 dark:border-amber-800/30 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <svg className="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
