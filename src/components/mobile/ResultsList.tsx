@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Info, ThumbsUp, Zap } from 'lucide-react';
 import PlanCard from '@/components/ui/PlanCard';
@@ -43,7 +42,6 @@ const OperatorLogo = ({ operator }: { operator: string }) => {
   const logoPath = getLogoPath(operator);
   
   if (!logoPath) {
-    // Si pas de logo, on affiche juste l'initiale dans un carré
     return (
       <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm">
         <span className="text-2xl font-bold text-primary">{operator.charAt(0)}</span>
@@ -81,7 +79,7 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
   
   // Find the selected plan for the personalized offer
   const selectedPlan = selectedPlanId 
-    ? filteredPlans.find(plan => plan.id === selectedPlanId) 
+    ? filteredPlans.find(plan => plan.id.toString() === selectedPlanId) 
     : null;
   
   // Handle claiming an offer
@@ -113,7 +111,7 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
                 <p className="font-medium">Offre exclusive chez {selectedPlan.operator}</p>
               </div>
               <p className="text-sm mb-3">
-                Pour le forfait <span className="font-semibold">{selectedPlan.name}</span> : premier mois à 1€ au lieu de {selectedPlan.price.toString()} !
+                Pour le forfait <span className="font-semibold">{selectedPlan.name}</span> : premier mois à 1€ au lieu de {selectedPlan.price} !
               </p>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <ThumbsUp className="h-4 w-4 text-primary" />
@@ -149,8 +147,8 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
             {filteredPlans.map((plan) => (
               <div 
                 key={plan.id}
-                onClick={() => trackPlanInteraction(plan.id, 'select')}
-                onMouseEnter={() => trackPlanInteraction(plan.id, 'view')}
+                onClick={() => trackPlanInteraction(plan.id.toString(), 'select')}
+                onMouseEnter={() => trackPlanInteraction(plan.id.toString(), 'view')}
               >
                 <PlanCard 
                   plan={{
