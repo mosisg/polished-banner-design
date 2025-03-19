@@ -16,7 +16,7 @@ const ArticleGrid = ({ articles, isLoading, error, onRetry }: ArticleGridProps) 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {Array.from({ length: 6 }).map((_, index) => (
+        {Array.from({ length: 9 }).map((_, index) => (
           <div key={index} className="rounded-xl overflow-hidden border border-border">
             <Skeleton className="w-full h-48" />
             <div className="p-6">

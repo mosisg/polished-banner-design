@@ -163,5 +163,83 @@ export const MOCK_ARTICLES: StrapiArticle[] = [
         }
       ]
     }
+  },
+  {
+    id: 3,
+    attributes: {
+      title: "5G : tout ce que vous devez savoir sur cette nouvelle technologie",
+      description: "Découvrez les avantages de la 5G et comment cette technologie va transformer notre façon d'utiliser internet sur mobile.",
+      slug: "5g-tout-ce-que-vous-devez-savoir",
+      createdAt: "2023-07-10T09:15:00.000Z",
+      updatedAt: "2023-07-10T09:15:00.000Z",
+      publishedAt: "2023-07-10T09:15:00.000Z",
+      cover: {
+        data: {
+          id: 8,
+          attributes: {
+            url: "/placeholder.svg",
+            width: 1200,
+            height: 630,
+            alternativeText: "Technologie 5G"
+          }
+        }
+      },
+      author: {
+        data: {
+          id: 3,
+          attributes: {
+            name: "Antoine Leroy",
+            avatar: {
+              data: {
+                id: 9,
+                attributes: {
+                  url: "/placeholder.svg",
+                  width: 200,
+                  height: 200,
+                  alternativeText: "Antoine Leroy"
+                }
+              }
+            }
+          }
+        }
+      },
+      category: {
+        data: {
+          id: 1,
+          attributes: {
+            name: "Forfaits Mobiles",
+            slug: "forfaits-mobiles"
+          }
+        }
+      },
+      blocks: [
+        {
+          __component: "shared.rich-text",
+          id: 6,
+          body: "<h2>Qu'est-ce que la 5G ?</h2><p>La 5G est la cinquième génération de réseaux mobiles. Elle offre des débits beaucoup plus rapides que la 4G, une latence réduite et la possibilité de connecter un plus grand nombre d'appareils simultanément.</p>"
+        },
+        {
+          __component: "shared.quote",
+          id: 7,
+          title: "Le saviez-vous ?",
+          body: "Avec la 5G, vous pouvez télécharger un film HD en quelques secondes seulement."
+        },
+        {
+          __component: "shared.media",
+          id: 8,
+          file: {
+            data: {
+              id: 10,
+              attributes: {
+                url: "/placeholder.svg",
+                width: 800,
+                height: 450,
+                alternativeText: "Illustration 5G"
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 ];
