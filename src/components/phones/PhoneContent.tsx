@@ -2,6 +2,7 @@
 import React from 'react';
 import PhoneFilterPanel from '@/components/phones/PhoneFilterPanel';
 import PhoneResultsPanel from '@/components/phones/PhoneResultsPanel';
+import { SortOption, Phone } from '@/types/phones';
 
 interface PhoneContentProps {
   // Filter state
@@ -17,13 +18,13 @@ interface PhoneContentProps {
   setSelectedStorage: (storage: string[]) => void;
   ecoFriendly: boolean;
   setEcoFriendly: (value: boolean) => void;
-  sortOption: string;
-  setSortOption: (value: any) => void;
+  sortOption: SortOption;
+  setSortOption: (value: SortOption) => void;
   filtersOpen: boolean;
   setFiltersOpen: (value: boolean) => void;
   // Data
-  allPhones: any[];
-  filteredPhones: any[];
+  allPhones: Phone[];
+  filteredPhones: Phone[];
   isLoading: boolean;
   isError: boolean;
   // Comparison
