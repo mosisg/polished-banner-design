@@ -10,9 +10,17 @@ interface ResultsPanelProps {
   filteredBoxes: InternetBox[];
   sortOption: SortOption;
   setSortOption: (value: SortOption) => void;
+  isLoading?: boolean;
+  isFiltering?: boolean;
 }
 
-const ResultsPanel = ({ filteredBoxes, sortOption, setSortOption }: ResultsPanelProps) => {
+const ResultsPanel = ({ 
+  filteredBoxes, 
+  sortOption, 
+  setSortOption, 
+  isLoading = false, 
+  isFiltering = false 
+}: ResultsPanelProps) => {
   // Get the first box for the viewer counter and expert insight
   const featuredBox = filteredBoxes.length > 0 ? filteredBoxes[0] : null;
   
@@ -35,10 +43,11 @@ const ResultsPanel = ({ filteredBoxes, sortOption, setSortOption }: ResultsPanel
       <ResultsHeader 
         filteredBoxesCount={filteredBoxes.length} 
         sortOption={sortOption} 
-        setSortOption={setSortOption} 
+        setSortOption={setSortOption}
+        isLoading={isLoading || isFiltering}
       />
       
-      {featuredBox && (
+      {featuredBox && !isLoading && !isFiltering && (
         <div className="space-y-4">
           <ViewerCounter 
             operatorName={featuredBox.operator} 
@@ -54,7 +63,10 @@ const ResultsPanel = ({ filteredBoxes, sortOption, setSortOption }: ResultsPanel
         </div>
       )}
       
-      <ResultsList filteredBoxes={filteredBoxes} />
+      <ResultsList 
+        filteredBoxes={filteredBoxes} 
+        isLoading={isLoading || isFiltering}
+      />
     </div>
   );
 };

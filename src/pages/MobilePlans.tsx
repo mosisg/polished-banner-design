@@ -31,6 +31,7 @@ const MobilePlans = () => {
     filtersOpen,
     setFiltersOpen,
     isLoading,
+    isFiltering,
     error
   } = useMobilePlansFromSupabase();
 
@@ -114,7 +115,7 @@ const MobilePlans = () => {
         </section>
 
         <main className="flex-1 mt-6 md:mt-8 container mx-auto px-4 md:px-6 pb-16">
-          {isLoading ? (
+          {isLoading && !isFiltering ? (
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
@@ -122,7 +123,13 @@ const MobilePlans = () => {
             <>
               {isMobile && (
                 <div className="sticky top-16 z-10 bg-background/90 backdrop-blur-sm py-3 mb-4 flex justify-between items-center border-b border-border">
-                  <p className="text-sm font-medium">{filteredPlans.length} forfaits trouvés</p>
+                  <p className="text-sm font-medium">
+                    {isFiltering ? (
+                      <span className="animate-pulse">Filtrage en cours...</span>
+                    ) : (
+                      `${filteredPlans.length} forfaits trouvés`
+                    )}
+                  </p>
                   <Dialog open={showFiltersDialog} onOpenChange={setShowFiltersDialog}>
                     <DialogTrigger asChild>
                       <Button size="sm" variant="outline" className="gap-2">
@@ -175,7 +182,9 @@ const MobilePlans = () => {
                 <ResultsPanel 
                   filteredPlans={filteredPlans} 
                   sortOption={sortOption} 
-                  setSortOption={setSortOption} 
+                  setSortOption={setSortOption}
+                  isLoading={isLoading}
+                  isFiltering={isFiltering}
                 />
               </div>
             </>

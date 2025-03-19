@@ -23,6 +23,8 @@ interface InternetBoxesContentProps {
   setSortOption: (value: SortOption) => void;
   filtersOpen: boolean;
   setFiltersOpen: (value: boolean) => void;
+  isLoading?: boolean;
+  isFiltering?: boolean;
 }
 
 const InternetBoxesContent: React.FC<InternetBoxesContentProps> = ({
@@ -42,7 +44,9 @@ const InternetBoxesContent: React.FC<InternetBoxesContentProps> = ({
   sortOption,
   setSortOption,
   filtersOpen,
-  setFiltersOpen
+  setFiltersOpen,
+  isLoading = false,
+  isFiltering = false
 }) => {
   return (
     <main className="flex-1 mt-8 container mx-auto px-4 md:px-6 pb-16">
@@ -69,7 +73,9 @@ const InternetBoxesContent: React.FC<InternetBoxesContentProps> = ({
         <ResultsPanel 
           filteredBoxes={filteredBoxes} 
           sortOption={sortOption} 
-          setSortOption={setSortOption} 
+          setSortOption={setSortOption}
+          isLoading={isLoading}
+          isFiltering={isFiltering}
         />
       </div>
       

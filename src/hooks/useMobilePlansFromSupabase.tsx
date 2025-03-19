@@ -48,6 +48,7 @@ export const useMobilePlansFromSupabase = () => {
   const [filteredPlans, setFilteredPlans] = useState<MobilePlan[]>([]);
   const [sortOption, setSortOption] = useState<SortOption>('price-asc');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   // Fetch data using React Query
   const { data: allPlans = [], isLoading, error } = useQuery({
@@ -71,52 +72,63 @@ export const useMobilePlansFromSupabase = () => {
 
   // Apply filters
   useEffect(() => {
-    let filtered = [...allPlans];
+    if (allPlans.length === 0) return;
+    
+    // Set filtering state to true
+    setIsFiltering(true);
+    
+    // Set a small timeout to simulate loading and show skeleton
+    const filterTimer = setTimeout(() => {
+      let filtered = [...allPlans];
 
-    // Filter by data amount
-    filtered = filtered.filter(plan => {
-      const dataAmount = parseInt(plan.data.replace(/[^0-9]/g, ''));
-      return dataAmount <= dataRange[0];
-    });
+      // Filter by data amount
+      filtered = filtered.filter(plan => {
+        const dataAmount = parseInt(plan.data.replace(/[^0-9]/g, ''));
+        return dataAmount <= dataRange[0];
+      });
 
-    // Filter by price
-    filtered = filtered.filter(plan => {
-      const price = parseFloat(plan.price.match(/\d+\.\d+/)?.[0] || '0');
-      return price <= priceRange[0];
-    });
+      // Filter by price
+      filtered = filtered.filter(plan => {
+        const price = parseFloat(plan.price.match(/\d+\.\d+/)?.[0] || '0');
+        return price <= priceRange[0];
+      });
 
-    // Filter by network type (4G/5G)
-    if (networkType !== 'all') {
-      filtered = filtered.filter(plan => plan.coverage.includes(networkType));
-    }
-
-    // Filter by selected operators
-    if (selectedOperators.length > 0) {
-      filtered = filtered.filter(plan => selectedOperators.includes(plan.operator));
-    }
-
-    // Sort results
-    filtered.sort((a, b) => {
-      const priceA = parseFloat(a.price.match(/\d+\.\d+/)?.[0] || '0');
-      const priceB = parseFloat(b.price.match(/\d+\.\d+/)?.[0] || '0');
-      const dataA = parseInt(a.data.replace(/[^0-9]/g, ''));
-      const dataB = parseInt(b.data.replace(/[^0-9]/g, ''));
-
-      switch (sortOption) {
-        case 'price-asc':
-          return priceA - priceB;
-        case 'price-desc':
-          return priceB - priceA;
-        case 'data-asc':
-          return dataA - dataB;
-        case 'data-desc':
-          return dataB - dataA;
-        default:
-          return priceA - priceB;
+      // Filter by network type (4G/5G)
+      if (networkType !== 'all') {
+        filtered = filtered.filter(plan => plan.coverage.includes(networkType));
       }
-    });
 
-    setFilteredPlans(filtered);
+      // Filter by selected operators
+      if (selectedOperators.length > 0) {
+        filtered = filtered.filter(plan => selectedOperators.includes(plan.operator));
+      }
+
+      // Sort results
+      filtered.sort((a, b) => {
+        const priceA = parseFloat(a.price.match(/\d+\.\d+/)?.[0] || '0');
+        const priceB = parseFloat(b.price.match(/\d+\.\d+/)?.[0] || '0');
+        const dataA = parseInt(a.data.replace(/[^0-9]/g, ''));
+        const dataB = parseInt(b.data.replace(/[^0-9]/g, ''));
+
+        switch (sortOption) {
+          case 'price-asc':
+            return priceA - priceB;
+          case 'price-desc':
+            return priceB - priceA;
+          case 'data-asc':
+            return dataA - dataB;
+          case 'data-desc':
+            return dataB - dataA;
+          default:
+            return priceA - priceB;
+        }
+      });
+
+      setFilteredPlans(filtered);
+      setIsFiltering(false);
+    }, 600); // 600ms delay to show the skeleton loading state
+    
+    return () => clearTimeout(filterTimer);
   }, [allPlans, dataRange, priceRange, networkType, selectedOperators, sortOption]);
 
   return {
@@ -135,6 +147,7 @@ export const useMobilePlansFromSupabase = () => {
     filtersOpen,
     setFiltersOpen,
     isLoading,
+    isFiltering,
     error
   };
 };

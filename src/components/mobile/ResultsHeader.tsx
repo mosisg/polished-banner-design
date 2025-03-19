@@ -1,43 +1,68 @@
 
 import React from 'react';
+import { ArrowDownAZ, ArrowUpZA, Signal, Wifi } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SortOption } from '@/types/mobile';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface ResultsHeaderProps {
   filteredPlansCount: number;
   sortOption: SortOption;
-  setSortOption: (value: SortOption) => void;
+  setSortOption: (option: SortOption) => void;
+  isLoading?: boolean;
 }
 
-const ResultsHeader = ({ filteredPlansCount, sortOption, setSortOption }: ResultsHeaderProps) => {
-  const isMobile = useIsMobile();
-  
+const ResultsHeader = ({ filteredPlansCount, sortOption, setSortOption, isLoading = false }: ResultsHeaderProps) => {
+  if (isLoading) {
+    return (
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-card border border-border rounded-lg shadow-sm">
+        <Skeleton className="h-6 w-40 mb-3 md:mb-0" />
+        <Skeleton className="h-9 w-48" />
+      </div>
+    );
+  }
+
   return (
-    <div className={`flex flex-col ${isMobile ? 'gap-3' : 'md:flex-row md:items-center justify-between gap-4'} bg-card p-3 md:p-4 rounded-lg border border-border`}>
-      {!isMobile && (
-        <div>
-          <h2 className="text-lg md:text-xl font-semibold">
-            {filteredPlansCount} forfaits trouvés
-          </h2>
-          <p className="text-xs md:text-sm text-muted-foreground">
-            Comparaison mise à jour le {new Date().toLocaleDateString('fr-FR')}
-          </p>
-        </div>
-      )}
-      <div className="flex items-center space-x-2 w-full md:w-auto">
-        <Select 
-          value={sortOption} 
+    <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-card border border-border rounded-lg shadow-sm">
+      <div>
+        <h2 className="text-lg font-medium">
+          {filteredPlansCount} forfait{filteredPlansCount !== 1 ? 's' : ''} trouvé{filteredPlansCount !== 1 ? 's' : ''}
+        </h2>
+      </div>
+
+      <div className="mt-3 md:mt-0">
+        <Select
+          value={sortOption}
           onValueChange={(value) => setSortOption(value as SortOption)}
         >
-          <SelectTrigger className="w-full md:w-[200px] text-sm h-9">
-            <SelectValue placeholder="Trier par" />
+          <SelectTrigger className="w-full md:w-[180px]">
+            <SelectValue placeholder="Trier par..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="price-asc">Prix (croissant)</SelectItem>
-            <SelectItem value="price-desc">Prix (décroissant)</SelectItem>
-            <SelectItem value="data-asc">Données (croissant)</SelectItem>
-            <SelectItem value="data-desc">Données (décroissant)</SelectItem>
+            <SelectItem value="price-asc">
+              <div className="flex items-center">
+                <ArrowDownAZ className="mr-2 h-4 w-4" />
+                Prix croissant
+              </div>
+            </SelectItem>
+            <SelectItem value="price-desc">
+              <div className="flex items-center">
+                <ArrowUpZA className="mr-2 h-4 w-4" />
+                Prix décroissant
+              </div>
+            </SelectItem>
+            <SelectItem value="data-asc">
+              <div className="flex items-center">
+                <Wifi className="mr-2 h-4 w-4" />
+                Data croissante
+              </div>
+            </SelectItem>
+            <SelectItem value="data-desc">
+              <div className="flex items-center">
+                <Wifi className="mr-2 h-4 w-4" />
+                Data décroissante
+              </div>
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>

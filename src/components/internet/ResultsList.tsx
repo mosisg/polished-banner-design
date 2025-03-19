@@ -1,7 +1,7 @@
 
 import React, { memo } from 'react';
 import { Info } from 'lucide-react';
-import BoxCard from '@/components/ui/BoxCard';
+import BoxCard, { BoxCardSkeleton } from '@/components/ui/BoxCard';
 import { InternetBox } from '@/types/internet';
 
 // Composant pour afficher le logo de l'opérateur
@@ -59,9 +59,21 @@ OperatorLogo.displayName = 'OperatorLogo';
 
 interface ResultsListProps {
   filteredBoxes: InternetBox[];
+  isLoading?: boolean;
 }
 
-const ResultsList = ({ filteredBoxes }: ResultsListProps) => {
+const ResultsList = ({ filteredBoxes, isLoading = false }: ResultsListProps) => {
+  // Show skeletons when loading
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <BoxCardSkeleton key={`skeleton-${index}`} />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {filteredBoxes.length > 0 ? (

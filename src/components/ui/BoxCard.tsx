@@ -2,150 +2,181 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Wifi, Download, Upload, Router, Monitor, Phone, Check, Info, ExternalLink } from 'lucide-react';
+import { Wifi, ExternalLink, Check, ArrowUpFromLine, Phone, Tv } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { InternetBox } from '@/types/internet';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface BoxCardProps {
-  box: InternetBox & { operatorLogo?: React.ReactNode };
+  box: InternetBox;
+  isLoading?: boolean;
 }
 
-// Fonction pour obtenir l'URL d'affiliation en fonction de l'opérateur
-const getAffiliateUrl = (operator: string): string => {
-  const affiliateUrls: Record<string, string> = {
-    'Free': 'https://free.fr/freebox/?utm_source=compareprix&utm_medium=affiliation&utm_campaign=internet',
-    'Bouygues': 'https://www.bouyguestelecom.fr/offres-internet/?utm_source=compareprix&utm_medium=affiliation',
-    'Sosh': 'https://www.sosh.fr/offres-mobiles/sosh-mobile-livebox/?utm_source=compareprix&utm_medium=affiliation',
-    'Orange': 'https://boutique.orange.fr/internet/offres-fibre/?utm_source=compareprix&utm_medium=affiliation',
-    'SFR': 'https://www.sfr.fr/offre-internet/?utm_source=compareprix&utm_medium=affiliation',
-    'RED': 'https://www.red-by-sfr.fr/offres-internet/?utm_source=compareprix&utm_medium=affiliation',
-    'Bouygues Telecom': 'https://www.bouyguestelecom.fr/offres-internet/?utm_source=compareprix&utm_medium=affiliation',
-  };
-  
-  return affiliateUrls[operator] || 'https://compareprix.fr/redirect';
-};
+export function BoxCardSkeleton() {
+  return (
+    <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm animate-pulse">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        {/* Operator section */}
+        <div className="md:col-span-3 p-4 md:p-6 bg-gradient-to-br from-background to-muted/30 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-border">
+          <Skeleton className="w-16 h-16 rounded-xl mb-3" />
+          <Skeleton className="h-5 w-28 mb-2" />
+          <Skeleton className="h-4 w-20 mb-3" />
+          <Skeleton className="h-6 w-24" />
+        </div>
 
-const BoxCard = ({ box }: BoxCardProps) => {
+        {/* Details section */}
+        <div className="md:col-span-5 p-4 md:p-6 flex flex-col justify-center">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Skeleton className="h-5 w-24 mb-1" />
+              <Skeleton className="h-8 w-28" />
+            </div>
+            <div>
+              <Skeleton className="h-5 w-24 mb-1" />
+              <Skeleton className="h-8 w-28" />
+            </div>
+            <div>
+              <Skeleton className="h-5 w-24 mb-1" />
+              <Skeleton className="h-8 w-28" />
+            </div>
+            <div>
+              <Skeleton className="h-5 w-24 mb-1" />
+              <Skeleton className="h-8 w-28" />
+            </div>
+          </div>
+        </div>
+
+        {/* Price and CTA section */}
+        <div className="md:col-span-4 p-4 md:p-6 bg-muted/10 flex flex-col justify-between border-t md:border-t-0 md:border-l border-border">
+          <div>
+            <Skeleton className="h-5 w-28 mb-2" />
+            <Skeleton className="h-11 w-32 mb-2" />
+            <Skeleton className="h-4 w-20 mb-4" />
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-full" />
+              <Skeleton className="h-5 w-full" />
+            </div>
+          </div>
+          <div className="mt-4">
+            <Skeleton className="h-10 w-full rounded-full" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const BoxCard = ({ box, isLoading = false }: BoxCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  
+  if (isLoading) {
+    return <BoxCardSkeleton />;
+  }
 
   // Extract numeric price value for styling
   const priceValue = parseFloat(box.price);
   const priceInt = Math.floor(priceValue);
   const priceDecimal = (priceValue % 1).toFixed(2).substring(2);
   
-  // Générer l'URL d'affiliation
-  const affiliateUrl = box.affiliate_url || getAffiliateUrl(box.operator);
+  // Generate the affiliate URL
+  const affiliateUrl = box.affiliate_url || 'https://compareprix.fr/redirect';
 
   return (
     <div 
-      className="max-w-full mx-auto flex flex-col md:flex-row overflow-hidden rounded-2xl border border-border transition-all duration-300 shadow-sm hover:shadow-md animate-fade-in"
+      className="bg-card border border-border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 animate-fade-in"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Left side - Operator and Box Name */}
-      <div className="w-full md:w-1/5 p-4 md:p-6 bg-gradient-to-br from-background to-muted/50 flex flex-col justify-center items-center border-b md:border-b-0 md:border-r border-border">
-        <div className="flex flex-col items-center text-center">
-          <div className="mb-3">
-            {box.operatorLogo || (
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center shadow-sm">
-                <span className="text-2xl font-bold text-primary">{box.operator.charAt(0)}</span>
-              </div>
-            )}
-          </div>
-          <h3 className="font-semibold text-lg">{box.operator}</h3>
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+        {/* Operator section */}
+        <div className="md:col-span-3 p-4 md:p-6 bg-gradient-to-br from-background to-muted/30 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-border">
+          {box.operatorLogo}
+          <h3 className="font-semibold text-lg mt-2">{box.operator}</h3>
           <div className="mt-1 text-sm text-muted-foreground">{box.name}</div>
           
-          {box.wifiType && (
-            <div className="mt-3 flex items-center bg-muted px-2 py-1 rounded text-xs font-medium">
-              <Wifi className="h-3 w-3 mr-1" /> {box.wifiType}
-            </div>
-          )}
-          
-          {box.specialOffer && (
-            <div className="mt-2 bg-primary/20 text-primary px-2 py-1 rounded-full text-xs font-semibold">
-              {box.specialOffer}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Middle - Connection information and price */}
-      <div className="w-full md:w-2/5 p-6 bg-card flex flex-col md:flex-row justify-between items-center">
-        <div className="text-center md:text-left mb-4 md:mb-0 space-y-3">
-          <div className="flex flex-col">
-            <div className="flex items-center justify-center md:justify-start">
-              <Download className="w-4 h-4 text-primary mr-2" />
-              <span className="text-sm font-medium text-muted-foreground">Download</span>
-            </div>
-            <div className="text-2xl md:text-3xl font-bold mt-1">
-              {box.downloadSpeed}
-            </div>
-          </div>
-          
-          <div className="flex flex-col">
-            <div className="flex items-center justify-center md:justify-start">
-              <Upload className="w-4 h-4 text-primary mr-2" />
-              <span className="text-sm font-medium text-muted-foreground">Upload</span>
-            </div>
-            <div className="text-xl md:text-2xl font-bold mt-1">
-              {box.uploadSpeed}
-            </div>
-          </div>
-          
-          {box.tvOption && (
-            <div className="flex items-center justify-center md:justify-start text-sm">
-              <Monitor className="w-4 h-4 text-primary mr-2" />
-              {box.tvOption}
-            </div>
-          )}
-        </div>
-        
-        <div className="text-center md:text-right">
-          <div className="text-sm font-medium text-muted-foreground mb-1">Prix mensuel</div>
-          <div className="flex items-center justify-center md:justify-end">
-            <span className="text-3xl md:text-4xl font-bold">{priceInt}</span>
-            <span className="text-xl md:text-2xl font-bold">.{priceDecimal}€</span>
-          </div>
-          <div className="text-xs text-muted-foreground">/mois</div>
-          
           {box.commitment && (
-            <div className="mt-2 text-xs">
-              <span className="text-muted-foreground">Engagement: </span>
-              <span className="font-medium">{box.commitment}</span>
-            </div>
+            <Badge variant="outline" className="mt-3 font-medium">
+              {box.commitment}
+            </Badge>
           )}
         </div>
-      </div>
 
-      {/* Right side - Features */}
-      <div className="w-full md:w-2/5 p-6 bg-muted/20 flex flex-col justify-between">
-        <div>
-          <ul className="space-y-2">
-            {box.features.map((feature, index) => (
-              <li key={index} className="flex items-start">
-                <span className="text-primary mr-2 mt-0.5 flex-shrink-0">
-                  <Check size={16} />
-                </span>
-                <span className="text-sm">{feature}</span>
-              </li>
-            ))}
-          </ul>
+        {/* Details section */}
+        <div className="md:col-span-5 p-4 md:p-6 flex flex-col justify-center">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <div className="flex items-center text-sm text-muted-foreground mb-1">
+                <ArrowUpFromLine className="w-4 h-4 mr-1" />
+                Download
+              </div>
+              <div className="font-semibold text-xl">{box.downloadSpeed}</div>
+            </div>
+            <div>
+              <div className="flex items-center text-sm text-muted-foreground mb-1">
+                <ArrowUpFromLine className="w-4 h-4 mr-1 rotate-180" />
+                Upload
+              </div>
+              <div className="font-semibold text-xl">{box.uploadSpeed}</div>
+            </div>
+            <div>
+              <div className="flex items-center text-sm text-muted-foreground mb-1">
+                <Wifi className="w-4 h-4 mr-1" />
+                WiFi
+              </div>
+              <div className="font-semibold text-xl">{box.wifiType}</div>
+            </div>
+            <div>
+              <div className="flex items-center text-sm text-muted-foreground mb-1">
+                <Tv className="w-4 h-4 mr-1" />
+                TV
+              </div>
+              <div className="font-semibold text-xl">{box.tvOption || 'Non inclus'}</div>
+            </div>
+          </div>
         </div>
 
-        <div className="mt-6">
-          <Button 
-            className={cn(
-              "w-full rounded-full transition-all duration-300 group",
-              isHovered 
-                ? "bg-primary" 
-                : "bg-primary/90"
+        {/* Price and CTA section */}
+        <div className="md:col-span-4 p-4 md:p-6 bg-muted/10 flex flex-col justify-between border-t md:border-t-0 md:border-l border-border">
+          <div>
+            <div className="text-sm font-medium text-muted-foreground">Prix mensuel</div>
+            <div className="flex items-baseline mt-1">
+              <span className="text-3xl font-bold">{priceInt}</span>
+              <span className="text-xl font-bold">.{priceDecimal}€</span>
+              <span className="text-xs text-muted-foreground ml-1">/mois</span>
+            </div>
+            
+            {box.specialOffer && (
+              <Badge variant="secondary" className="mt-2">
+                {box.specialOffer}
+              </Badge>
             )}
-            asChild
-          >
-            <a href={affiliateUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
-              Voir l'offre
-              <ExternalLink className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </a>
-          </Button>
+            
+            <ul className="mt-4 space-y-1">
+              {box.features.slice(0, 2).map((feature, index) => (
+                <li key={index} className="flex items-start text-sm">
+                  <Check size={16} className="text-primary mr-2 mt-0.5 flex-shrink-0" />
+                  {feature}
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          <div className="mt-4">
+            <Button 
+              className={cn(
+                "w-full rounded-full transition-all duration-300 group",
+                isHovered 
+                  ? "bg-primary" 
+                  : "bg-primary/90"
+              )}
+              asChild
+            >
+              <a href={affiliateUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center">
+                Voir l'offre
+                <ExternalLink className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </a>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

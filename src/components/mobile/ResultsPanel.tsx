@@ -8,17 +8,23 @@ interface ResultsPanelProps {
   filteredPlans: MobilePlan[];
   sortOption: SortOption;
   setSortOption: (value: SortOption) => void;
+  isLoading?: boolean;
+  isFiltering?: boolean;
 }
 
-const ResultsPanel = ({ filteredPlans, sortOption, setSortOption }: ResultsPanelProps) => {
+const ResultsPanel = ({ filteredPlans, sortOption, setSortOption, isLoading = false, isFiltering = false }: ResultsPanelProps) => {
   return (
     <div className="lg:col-span-3 space-y-6">
       <ResultsHeader 
         filteredPlansCount={filteredPlans.length} 
         sortOption={sortOption} 
         setSortOption={setSortOption} 
+        isLoading={isLoading || isFiltering}
       />
-      <ResultsList filteredPlans={filteredPlans} />
+      <ResultsList 
+        filteredPlans={filteredPlans} 
+        isLoading={isLoading || isFiltering} 
+      />
     </div>
   );
 };

@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Phone, Wifi, Check, Signal, MapPin, ExternalLink } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Plan {
   id: number;
@@ -18,6 +18,7 @@ interface Plan {
 
 interface PlanCardProps {
   plan: Plan;
+  isLoading?: boolean;
 }
 
 // Fonction pour obtenir l'URL d'affiliation en fonction de l'opérateur mobile
@@ -39,8 +40,58 @@ const getMobileAffiliateUrl = (operator: string): string => {
   return affiliateUrls[operator] || 'https://compareprix.fr/redirect';
 };
 
-const PlanCard = ({ plan }: PlanCardProps) => {
+export function PlanCardSkeleton() {
+  return (
+    <div className="max-w-full mx-auto flex flex-col md:flex-row overflow-hidden rounded-2xl border border-border transition-all duration-300 shadow-sm animate-pulse">
+      {/* Left side - Operator skeleton */}
+      <div className="w-full md:w-1/5 p-4 md:p-6 bg-gradient-to-br from-background to-muted/50 flex flex-col justify-center items-center border-b md:border-b-0 md:border-r border-border">
+        <div className="flex flex-col items-center text-center">
+          <Skeleton className="w-16 h-16 rounded-xl mb-3" />
+          <Skeleton className="h-5 w-28 mb-2" />
+          <Skeleton className="h-4 w-20" />
+          <Skeleton className="h-6 w-24 mt-3" />
+        </div>
+      </div>
+
+      {/* Middle - Data and price skeleton */}
+      <div className="w-full md:w-2/5 p-6 bg-card flex flex-col md:flex-row justify-between items-center">
+        <div className="text-center md:text-left mb-4 md:mb-0">
+          <Skeleton className="h-5 w-16 mb-1" />
+          <Skeleton className="h-12 w-20" />
+        </div>
+        
+        <div className="text-center md:text-right">
+          <Skeleton className="h-5 w-24 mb-1" />
+          <Skeleton className="h-12 w-28" />
+          <Skeleton className="h-3 w-12 mt-1" />
+        </div>
+      </div>
+
+      {/* Right side - Features skeleton */}
+      <div className="w-full md:w-2/5 p-6 bg-muted/20 flex flex-col justify-between">
+        <div>
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-full" />
+            <Skeleton className="h-5 w-4/5" />
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <Skeleton className="h-10 w-full rounded-full" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const PlanCard = ({ plan, isLoading = false }: PlanCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+
+  if (isLoading) {
+    return <PlanCardSkeleton />;
+  }
 
   // Extract numeric price value for styling
   const priceValue = parseFloat(plan.price.match(/\d+\.\d+/)?.[0] || '0');
