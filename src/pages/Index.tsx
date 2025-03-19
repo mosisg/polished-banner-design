@@ -1,6 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import React from 'react';
 import Header from '@/components/layout/Header';
 import Banner from '@/components/layout/Banner';
 import { Separator } from '@/components/ui/separator';
@@ -8,8 +7,11 @@ import Footer from '@/components/layout/Footer';
 import NotificationBar from '@/components/layout/NotificationBar';
 import TrustBadges from '@/components/layout/TrustBadges';
 import MarketingPopup from '@/components/marketing/MarketingPopup';
-import CustomerSupportChat from '@/components/support/CustomerSupportChat';
-import { MessageCircle, Star } from 'lucide-react';
+import ExitPopup from '@/components/marketing/ExitPopup';
+import FeedbackTrigger from '@/components/marketing/FeedbackTrigger';
+import SupportButtons from '@/components/support/SupportButtons';
+import HomeStructuredData from '@/components/seo/HomeStructuredData';
+import useExitIntent from '@/hooks/useExitIntent';
 
 // Import des sections
 import MobileSection from '@/components/home/MobileSection';
@@ -20,64 +22,12 @@ import PartnersSection from '@/components/home/PartnersSection';
 import TestimonialsSection from '@/components/home/TestimonialsSection';
 
 const Index = () => {
-  const [chatOpen, setChatOpen] = useState(false);
+  // Use the exit intent hook
+  useExitIntent();
   
-  // Structured data for the homepage
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "url": "https://compareprix.fr/",
-    "name": "ComparePrix - Comparateur de forfaits mobiles en France",
-    "description": "Trouvez et comparez les meilleurs forfaits mobiles en France. Économisez sur votre forfait avec notre comparateur de prix indépendant.",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://compareprix.fr/mobile?search={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
-  };
-  
-  // Exit intent detection for exit popup
-  useEffect(() => {
-    const handleMouseLeave = (e: MouseEvent) => {
-      // If the mouse leaves from the top of the document
-      if (e.clientY <= 0) {
-        // We need to check if the user already saw the popup or if it's been more than a week
-        const exitPopupShown = localStorage.getItem('popup-exit');
-        const exitPopupDate = localStorage.getItem('popup-exit-date');
-        
-        const now = new Date().getTime();
-        const weekInMs = 7 * 24 * 60 * 60 * 1000;
-        
-        // If never shown or shown more than a week ago
-        if (!exitPopupShown || (exitPopupDate && now - parseInt(exitPopupDate) > weekInMs)) {
-          // Dispatch a custom event to show the exit popup
-          window.dispatchEvent(new CustomEvent('showExitPopup'));
-          
-          // Update the timestamp
-          localStorage.setItem('popup-exit-date', now.toString());
-        }
-      }
-    };
-    
-    document.addEventListener('mouseleave', handleMouseLeave);
-    
-    return () => {
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
-
   return (
     <>
-      <Helmet>
-        <html lang="fr" />
-        <title>ComparePrix - Comparez les meilleurs forfaits mobiles en France</title>
-        <meta name="description" content="Trouvez et comparez les meilleurs forfaits mobiles en France. Économisez sur votre forfait avec notre comparateur de prix indépendant." />
-        <link rel="canonical" href="https://compareprix.fr/" />
-        <meta name="robots" content="index, follow" />
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
-      </Helmet>
+      <HomeStructuredData />
       
       {/* Welcome Popup - for new visitors */}
       <MarketingPopup 
@@ -105,39 +55,8 @@ const Index = () => {
             <Banner />
           </section>
           
-          {/* Customer support buttons on both sides */}
-          <div className="fixed bottom-4 z-40 w-full px-4 flex justify-between pointer-events-none">
-            {/* Avis clients - left side */}
-            <div className="pointer-events-auto">
-              <MarketingPopup
-                type="social-proof"
-                trigger={
-                  <button className="bg-white dark:bg-slate-800 shadow-lg rounded-full p-3 flex items-center gap-2 text-sm font-medium border border-border hover:border-primary/40 transition-all">
-                    <span className="bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center">
-                      <Star className="h-3 w-3 text-primary" />
-                    </span>
-                    <span>Avis clients</span>
-                  </button>
-                }
-              />
-            </div>
-            
-            {/* Chat support - right side */}
-            <div className="pointer-events-auto">
-              <button 
-                onClick={() => setChatOpen(prev => !prev)}
-                className="bg-white dark:bg-slate-800 shadow-lg rounded-full p-3 flex items-center gap-2 text-sm font-medium border border-border hover:border-primary/40 transition-all"
-              >
-                <span className="bg-primary/10 w-6 h-6 rounded-full flex items-center justify-center">
-                  <MessageCircle className="h-3 w-3 text-primary" />
-                </span>
-                <span>Assistance client</span>
-              </button>
-            </div>
-          </div>
-          
-          {/* Chat component */}
-          <CustomerSupportChat isOpen={chatOpen} onClose={() => setChatOpen(false)} />
+          {/* Support buttons and chat */}
+          <SupportButtons />
           
           <Separator />
           
@@ -161,73 +80,6 @@ const Index = () => {
         <Footer />
       </div>
     </>
-  );
-};
-
-// Component to handle exit intent popup
-const ExitPopup = () => {
-  const [showPopup, setShowPopup] = React.useState(false);
-  
-  useEffect(() => {
-    const handleExitIntent = () => {
-      setShowPopup(true);
-    };
-    
-    window.addEventListener('showExitPopup', handleExitIntent);
-    
-    return () => {
-      window.removeEventListener('showExitPopup', handleExitIntent);
-    };
-  }, []);
-  
-  if (!showPopup) return null;
-  
-  return (
-    <MarketingPopup 
-      type="exit" 
-      autoShow={true}
-      onAction={() => window.location.href = '/mobile'}
-    />
-  );
-};
-
-// Component to show feedback popup after scrolling to a certain point
-const FeedbackTrigger = () => {
-  const [showFeedback, setShowFeedback] = React.useState(false);
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      const comparisonSection = document.getElementById('comparison-section');
-      if (comparisonSection) {
-        const rect = comparisonSection.getBoundingClientRect();
-        
-        // When the user has scrolled past the comparison section
-        if (rect.bottom < 0) {
-          // Check if we haven't shown the feedback popup in this session
-          const feedbackShown = sessionStorage.getItem('feedback-shown');
-          
-          if (!feedbackShown) {
-            setShowFeedback(true);
-            sessionStorage.setItem('feedback-shown', 'true');
-          }
-        }
-      }
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-  
-  if (!showFeedback) return null;
-  
-  return (
-    <MarketingPopup 
-      type="feedback" 
-      autoShow={true}
-    />
   );
 };
 

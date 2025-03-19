@@ -7,24 +7,23 @@ interface InternetStructuredDataProps {
   connectionType: ConnectionType;
 }
 
-const InternetStructuredData: React.FC<InternetStructuredDataProps> = ({ 
-  filteredBoxes,
-  connectionType
-}) => {
-  // Create structured data for the internet boxes page
+const InternetStructuredData: React.FC<InternetStructuredDataProps> = ({ filteredBoxes, connectionType }) => {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ItemList",
     "itemListElement": filteredBoxes.map((box, index) => ({
-      "@type": "Product",
+      "@type": "ListItem",
       "position": index + 1,
-      "name": `${box.name} - ${box.operator}`,
-      "description": `Box ${connectionType === 'fibre' ? 'Fibre' : connectionType === 'adsl' ? 'ADSL' : 'Internet'} ${box.name} avec ${box.downloadSpeed} en débit descendant et ${box.uploadSpeed} en débit montant.`,
-      "offers": {
-        "@type": "Offer",
-        "price": box.price,
-        "priceCurrency": "EUR",
-        "availability": "https://schema.org/InStock"
+      "item": {
+        "@type": "Product",
+        "name": `${box.operator} ${box.name}`,
+        "description": `Box internet ${box.downloadSpeed} en ${connectionType === 'all' ? 'Fibre/ADSL' : connectionType}`,
+        "offers": {
+          "@type": "Offer",
+          "price": parseFloat(box.price),
+          "priceCurrency": "EUR",
+          "availability": "https://schema.org/InStock"
+        }
       }
     }))
   };

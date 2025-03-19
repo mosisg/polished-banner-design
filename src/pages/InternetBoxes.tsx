@@ -6,7 +6,6 @@ import InternetHero from '@/components/internet/InternetHero';
 import InternetBoxesContent from '@/components/internet/InternetBoxesContent';
 import InternetStructuredData from '@/components/internet/InternetStructuredData';
 import { useInternetBoxes } from '@/hooks/useInternetBoxes';
-import Footer from '@/components/layout/Footer';
 
 const InternetBoxes = () => {
   const {
@@ -65,7 +64,6 @@ const InternetBoxes = () => {
           filtersOpen={filtersOpen}
           setFiltersOpen={setFiltersOpen}
         />
-        <Footer />
       </div>
     </>
   );
