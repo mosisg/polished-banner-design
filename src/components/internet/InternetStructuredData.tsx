@@ -37,9 +37,12 @@ const InternetStructuredData: React.FC<InternetStructuredDataProps> = ({ filtere
   };
 
   return (
-    <script type="application/ld+json">
-      {JSON.stringify(structuredData)}
-    </script>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(structuredData)
+      }}
+    />
   );
 };
 

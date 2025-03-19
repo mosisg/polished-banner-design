@@ -32,15 +32,10 @@ const InternetBoxes = () => {
   return (
     <>
       <Helmet>
-        <html lang="fr" />
         <title>Box Internet - Comparez les meilleures offres | ComparePrix</title>
         <meta name="description" content="Comparez les box internet des principaux opérateurs. Trouvez la meilleure connexion fibre ou ADSL avec notre comparateur de box internet." />
         <link rel="canonical" href="https://compareprix.fr/internet" />
         <meta name="robots" content="index, follow" />
-        <InternetStructuredData 
-          filteredBoxes={filteredBoxes}
-          connectionType={connectionType}
-        />
       </Helmet>
 
       <div className="flex flex-col min-h-screen">
@@ -64,6 +59,10 @@ const InternetBoxes = () => {
           setSortOption={setSortOption}
           filtersOpen={filtersOpen}
           setFiltersOpen={setFiltersOpen}
+        />
+        <InternetStructuredData 
+          filteredBoxes={filteredBoxes}
+          connectionType={connectionType}
         />
         <Footer />
       </div>
