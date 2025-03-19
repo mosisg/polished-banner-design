@@ -1,16 +1,15 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Phone, Wifi, Home, Flame, Package, Smartphone, FileText, X } from 'lucide-react';
+import { Menu, Phone, Wifi, Home, Flame, Package, Smartphone, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface NavItem {
   label: string;
   href: string;
-  icon: React.ReactNode;
+  icon: React.ReactElement;
 }
 
 const navItems: NavItem[] = [
@@ -24,53 +23,62 @@ const navItems: NavItem[] = [
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const isMobile = useIsMobile();
+  const headerRef = useRef<HTMLElement>(null);
 
+  // Gestion du défilement
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 10);
+      setIsScrolled(window.scrollY > 10);
     };
-
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile menu when switching from mobile to desktop
+  // Blocage du défilement
   useEffect(() => {
-    if (!isMobile && isMobileMenuOpen) {
-      setIsMobileMenuOpen(false);
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
-  }, [isMobile, isMobileMenuOpen]);
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isMobileMenuOpen]);
 
-  // Handle mobile menu toggle separately to prevent navigation
-  const handleMobileMenuToggle = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent any default navigation
-    e.stopPropagation(); // Stop event propagation
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+  // Fermeture au clic externe
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <header 
+      ref={headerRef}
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 md:px-8",
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-4 md:px-8 h-16",
         isScrolled 
-          ? "py-2 bg-background/95 backdrop-blur-lg shadow-md" 
-          : "py-3 md:py-5 bg-transparent"
+          ? "bg-background/80 backdrop-blur-lg shadow-md" 
+          : "bg-transparent"
       )}
     >
-      <div className="container mx-auto">
-        <div className="flex items-center justify-between">
+      <div className="container mx-auto h-full">
+        <div className="flex items-center justify-between h-full">
           {/* Logo */}
           <Link 
             to="/" 
             className="flex items-center space-x-2 group transition-all"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-blue-purple flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-105">
-              <span className="text-white font-bold text-base md:text-lg">C</span>
+            <div className="w-10 h-10 rounded-xl bg-gradient-blue-purple flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-105">
+              <span className="text-white font-bold text-lg">C</span>
             </div>
-            <div className="font-bold text-xl md:text-2xl tracking-tight transition-colors">
+            <div className="font-bold text-2xl tracking-tight transition-colors">
               <span className="text-gradient-blue-purple">Compare</span>
               <span className="text-gradient-purple-pink">Prix</span>
             </div>
@@ -94,20 +102,17 @@ const Header = () => {
           <div className="flex items-center space-x-2">
             <ThemeToggle />
             
-            {/* Mobile Menu Button */}
             <Button 
               variant="ghost" 
               size="icon" 
-              onClick={handleMobileMenuToggle}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden"
               aria-label={isMobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-navigation"
               type="button"
             >
-              {isMobileMenuOpen ? (
-                <X className="h-5 w-5" />
-              ) : (
-                <Menu className="h-5 w-5" />
-              )}
+              <Menu className="h-5 w-5" />
             </Button>
           </div>
         </div>
@@ -115,27 +120,41 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       <div 
+        id="mobile-navigation"
         className={cn(
-          "md:hidden fixed inset-x-0 top-[58px] bg-background/95 backdrop-blur-lg border-b border-border transform transition-all duration-300 ease-in-out z-40",
-          isMobileMenuOpen 
-            ? "translate-y-0 opacity-100 shadow-md" 
-            : "-translate-y-full opacity-0"
+          "md:hidden fixed inset-x-0 bg-background border-b border-border z-40",
+          "transition-[opacity,margin-top] duration-300 ease-in-out",
+          "shadow-lg backdrop-blur-lg",
+          isMobileMenuOpen
+            ? "mt-16 opacity-100"
+            : "-mt-[100vh] opacity-0"
         )}
+        style={{ top: headerRef.current?.offsetHeight || "4rem" }}
       >
-        <nav className="container mx-auto py-3 px-4 flex flex-col space-y-1">
+        <nav className="container mx-auto py-2 px-4 flex flex-col">
           {navItems.map((item, index) => (
             <Link
               key={index}
               to={item.href}
-              className="py-3 px-4 rounded-lg hover:bg-muted/70 flex items-center transition-colors text-foreground"
+              className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground"
               onClick={() => setIsMobileMenuOpen(false)}
+              role="menuitem"
             >
-              <div className="w-8 flex justify-center">{item.icon}</div>
-              <span className="ml-2 font-medium">{item.label}</span>
+              {React.cloneElement(item.icon, { className: "w-5 h-5 mr-3" })}
+              <span className="text-base">{item.label}</span>
             </Link>
           ))}
         </nav>
       </div>
+
+      {/* Overlay arrière */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/30 z-30 md:hidden" 
+          onClick={() => setIsMobileMenuOpen(false)}
+          role="presentation"
+        />
+      )}
     </header>
   );
 };
