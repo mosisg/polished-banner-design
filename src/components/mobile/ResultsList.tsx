@@ -1,18 +1,15 @@
 
 import { useState } from 'react';
-import { PlanCard } from '@/components/ui/PlanCard';
+import PlanCard from '@/components/ui/PlanCard';
 import { Button } from '@/components/ui/button';
 import {
   ChevronLeft,
   ChevronRight,
-  Filter,
   BarChart,
   ListFilter,
-  Grid,
   LayoutGrid
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { mobilePlans } from '@/data/mobilePlans';
 import type { MobilePlan } from '@/types/mobile';
 
 interface ResultsListProps {
@@ -31,7 +28,7 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
     currentPage * itemsPerPage
   );
   
-  const pageNumbers = [];
+  const pageNumbers: (number | string)[] = [];
   for (let i = 1; i <= totalPages; i++) {
     pageNumbers.push(i);
   }
@@ -150,7 +147,7 @@ const ResultsList = ({ filteredPlans }: ResultsListProps) => {
                   key={`page-${pageNumber}`}
                   variant={currentPage === pageNumber ? "default" : "outline"}
                   size="icon"
-                  onClick={() => changePage(Number(pageNumber))}
+                  onClick={() => typeof pageNumber === 'number' ? changePage(pageNumber) : null}
                   className="join-item"
                 >
                   {pageNumber}
