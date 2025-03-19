@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Search, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
+import GeolocatedOffer from './GeolocatedOffer';
 
 const BannerContent: React.FC = () => {
   return (
@@ -36,11 +37,22 @@ const BannerContent: React.FC = () => {
       >
         Comparez plus de 100 forfaits des plus grands opérateurs et économisez jusqu'à 40%
       </motion.p>
+      
+      {/* Offre géolocalisée */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 0.6 }}
+        className="mb-4"
+      >
+        <GeolocatedOffer />
+      </motion.div>
+      
       <motion.div 
         className="flex flex-col sm:flex-row gap-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.6 }}
+        transition={{ delay: 0.6, duration: 0.6 }}
       >
         <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700">
           <Search className="mr-2 h-5 w-5" />
@@ -55,7 +67,7 @@ const BannerContent: React.FC = () => {
         className="flex items-center space-x-4 text-sm text-muted-foreground"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.6, duration: 0.6 }}
+        transition={{ delay: 0.7, duration: 0.6 }}
       >
         <div className="flex items-center">
           <span className="bg-primary/20 p-1 rounded-full mr-1 text-primary">✓</span>

@@ -5,6 +5,8 @@ import Header from '@/components/layout/Header';
 import Banner from '@/components/layout/Banner';
 import { Separator } from '@/components/ui/separator';
 import Footer from '@/components/layout/Footer';
+import NotificationBar from '@/components/layout/NotificationBar';
+import TrustBadges from '@/components/layout/TrustBadges';
 
 // Import des sections
 import MobileSection from '@/components/home/MobileSection';
@@ -44,6 +46,7 @@ const Index = () => {
       
       <div className="min-h-screen flex flex-col">
         <Header />
+        <NotificationBar />
         
         <main className="flex-1">
           {/* Nouvelle section Hero Banner inspirée de la page Téléphones */}
@@ -65,6 +68,7 @@ const Index = () => {
           <BlogSection />
           <PartnersSection />
           <TestimonialsSection />
+          <TrustBadges />
         </main>
         
         <Footer />
