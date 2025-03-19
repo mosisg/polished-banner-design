@@ -1,23 +1,20 @@
 
-import React from 'react';
-import ResultsHeader from './ResultsHeader';
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import ResultsList from './ResultsList';
-import { MobilePlan, SortOption } from '@/types/mobile';
+import ResultsHeader from './ResultsHeader';
+import { mobilePlans } from '@/data/mobilePlans';
+import type { MobilePlan } from '@/types/mobile';
 
 interface ResultsPanelProps {
   filteredPlans: MobilePlan[];
-  sortOption: SortOption;
-  setSortOption: (value: SortOption) => void;
 }
 
-const ResultsPanel = ({ filteredPlans, sortOption, setSortOption }: ResultsPanelProps) => {
+const ResultsPanel: React.FC<ResultsPanelProps> = ({ filteredPlans }) => {
   return (
-    <div className="lg:col-span-3 space-y-6">
-      <ResultsHeader 
-        filteredPlansCount={filteredPlans.length} 
-        sortOption={sortOption} 
-        setSortOption={setSortOption} 
-      />
+    <div className="flex-1 px-4 lg:px-6 py-6">
+      <ResultsHeader />
       <ResultsList filteredPlans={filteredPlans} />
     </div>
   );

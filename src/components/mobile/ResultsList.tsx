@@ -1,212 +1,175 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Check, Smartphone, Star, ArrowRight, Package, Timer, Zap, ExternalLink } from 'lucide-react';
-import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useMobilePlans } from '@/hooks/use-mobile';
-import { Plan } from '@/types/mobile';
-import { cn } from '@/lib/utils';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useToast } from '@/hooks/use-toast';
 
-const ResultsList = () => {
-  const { planResults, isLoading, addToCompare, compareList } = useMobilePlans();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  const operatorLogos: Record<string, string> = {
-    'Orange': '/logo-orange.svg',
-    'SFR': '/logo-sfr.svg',
-    'Free': '/logo-free.svg',
-    'Bouygues': '/logo-bouygues.svg',
-    'Sosh': '/logo-sosh.svg',
-    'RED': '/logo-red.svg',
-    'Prixtel': '/logo-prixtel.svg',
-    'Coriolis': '/logo-coriolis.svg',
-    'Lebara': '/logo-lebara.svg',
-    'Auchan Telecom': '/logo-auchan-telecom.svg',
-    'YouPrice': '/logo-youprice.svg',
-  };
-  
-  const getStarColor = (rating: number): string => {
-    if (rating >= 4.5) return "text-green-500";
-    if (rating >= 3.5) return "text-yellow-500";
-    return "text-red-500";
-  };
+import { useState } from 'react';
+import { PlanCard } from '@/components/ui/PlanCard';
+import { Button } from '@/components/ui/button';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Filter,
+  BarChart,
+  ListFilter,
+  Grid,
+  LayoutGrid
+} from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { mobilePlans } from '@/data/mobilePlans';
+import type { MobilePlan } from '@/types/mobile';
 
-  const handleCompare = (plan: Plan) => {
-    if (compareList.includes(plan.id)) {
-      toast({
-        title: "Forfait déjà dans la comparaison",
-        description: "Ce forfait est déjà présent dans votre liste de comparaison.",
-      });
-      return;
-    }
-    
-    if (compareList.length >= 3) {
-      toast({
-        title: "Comparaison limitée à 3 forfaits",
-        description: "Vous ne pouvez pas comparer plus de 3 forfaits simultanément.",
-      });
-      return;
-    }
-    
-    addToCompare(plan.id);
-    toast({
-      title: "Forfait ajouté à la comparaison",
-      description: "Vous pouvez comparer jusqu'à 3 forfaits en même temps.",
-    });
-  };
+interface ResultsListProps {
+  filteredPlans: MobilePlan[];
+}
+
+const ResultsList = ({ filteredPlans }: ResultsListProps) => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [viewType, setViewType] = useState<'list' | 'grid'>('list');
   
-  const goToVisitors = (plan: Plan) => {
-    // Simulating visitor count - would be fetched from an analytics API in a real app
-    const baseVisitors = Math.floor(Math.random() * 100) + 50;
-    const currentVisitors = baseVisitors + new Date().getMinutes();
-    
-    toast({
-      title: `${currentVisitors.toString()} personnes consultent cette offre`,
-      description: "Cette offre est populaire auprès de nos utilisateurs.",
-    });
-  };
+  const itemsPerPage = viewType === 'list' ? 5 : 9;
+  const totalPages = Math.ceil(filteredPlans.length / itemsPerPage);
   
-  const showRemainingTime = (plan: Plan) => {
-    // Simulate a random remaining time for the offer
-    const hours = Math.floor(Math.random() * 24) + 1;
-    const minutes = Math.floor(Math.random() * 60);
-    
-    toast({
-      title: "Offre à durée limitée !",
-      description: `Cette offre expire dans ${hours}h et ${minutes}min - Ne ratez pas cette opportunité !`,
-      variant: "destructive",
-    });
-  };
+  const currentItems = filteredPlans.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
   
-  if (isLoading) {
-    return (
-      <div className="space-y-4">
-        {[1, 2, 3].map((item) => (
-          <Card key={item} className="overflow-hidden">
-            <CardHeader className="p-4 border-b">
-              <div className="flex justify-between items-center">
-                <Skeleton className="h-8 w-24" />
-                <Skeleton className="h-6 w-16" />
-              </div>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="grid md:grid-cols-4 gap-4">
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-                <Skeleton className="h-16 w-full" />
-              </div>
-            </CardContent>
-            <CardFooter className="p-4 flex flex-wrap justify-between gap-2 border-t">
-              <Skeleton className="h-10 w-32" />
-              <Skeleton className="h-10 w-32" />
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-    );
+  const pageNumbers = [];
+  for (let i = 1; i <= totalPages; i++) {
+    pageNumbers.push(i);
   }
   
-  const renderPlans = () => {
-    if (!planResults || planResults.length === 0) {
-      return (
-        <div className="text-center py-10">
-          <Smartphone className="mx-auto h-10 w-10 text-muted-foreground mb-4" />
-          <p className="text-lg font-semibold text-muted-foreground">Aucun forfait ne correspond à vos critères.</p>
-          <p className="text-sm text-muted-foreground">Essayez d'ajuster vos filtres de recherche.</p>
-        </div>
-      );
+  // Determine which page numbers to display
+  const getVisiblePageNumbers = () => {
+    if (totalPages <= 5) {
+      return pageNumbers;
     }
     
-    return planResults.map((plan) => (
-      <Card key={plan.id} className="overflow-hidden">
-        <CardHeader className="p-4 border-b">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              {operatorLogos[plan.operator] && (
-                <img src={operatorLogos[plan.operator]} alt={`${plan.operator} Logo`} className="h-6 w-auto" />
-              )}
-              <h3 className="text-lg font-semibold">{plan.operator}</h3>
-            </div>
-            <Badge variant="secondary">
-              {plan.price}
-            </Badge>
-          </div>
-        </CardHeader>
-        
-        <CardContent className="p-4">
-          <div className="grid md:grid-cols-4 gap-4">
-            <div className="flex flex-col items-center">
-              <Package className="h-5 w-5 text-primary mb-1" />
-              <span className="font-bold">{plan.data}</span>
-              <span className="text-xs text-muted-foreground">Data</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Smartphone className="h-5 w-5 text-primary mb-1" />
-              <span className="font-bold">{plan.call}</span>
-              <span className="text-xs text-muted-foreground">Appels & SMS</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Timer className="h-5 w-5 text-primary mb-1" />
-              <span className="font-bold">{plan.commitment}</span>
-              <span className="text-xs text-muted-foreground">Engagement</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <Zap className="h-5 w-5 text-primary mb-1" />
-              <span className="font-bold">{plan.network}</span>
-              <span className="text-xs text-muted-foreground">Réseau</span>
-            </div>
-          </div>
-        </CardContent>
-        
-        <CardFooter className="p-4 flex flex-wrap justify-between gap-2 border-t">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" onClick={() => handleCompare(plan)} disabled={compareList.includes(plan.id)}>
-                  {compareList.includes(plan.id) ? (
-                    <>
-                      <Check className="h-4 w-4 mr-2" />
-                      Comparé
-                    </>
-                  ) : (
-                    <>
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      Comparer
-                    </>
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Ajouter à la comparaison</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-          
-          <div className="flex gap-2">
-            {plan.rating && (
-              <Badge variant="secondary" className="gap-1.5">
-                <Star className={cn("h-3 w-3 fill-current", getStarColor(parseFloat(plan.rating)))} />
-                <span>{plan.rating}</span>
-              </Badge>
-            )}
-            <Button size="sm" onClick={() => { goToVisitors(plan); showRemainingTime(plan); navigate(plan.link) }}>
-              Voir l'offre <ExternalLink className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
-        </CardFooter>
-      </Card>
-    ));
+    if (currentPage <= 3) {
+      return [1, 2, 3, 4, 5, '...', totalPages];
+    }
+    
+    if (currentPage >= totalPages - 2) {
+      return [1, '...', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+    }
+    
+    return [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages];
+  };
+  
+  const visiblePageNumbers = getVisiblePageNumbers();
+
+  const changePage = (pageNumber: number) => {
+    if (pageNumber < 1 || pageNumber > totalPages) return;
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   
   return (
-    <div>
-      {renderPlans()}
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div className="text-sm text-muted-foreground">
+          {filteredPlans.length} offres trouvées
+        </div>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={() => setViewType('list')}
+            className={viewType === 'list' ? 'bg-primary/10' : ''}
+          >
+            <ListFilter className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={() => setViewType('grid')}
+            className={viewType === 'grid' ? 'bg-primary/10' : ''}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      
+      {/* Visitor counter and urgency elements */}
+      <Card className="bg-primary/5 p-3 border border-primary/10">
+        <div className="flex justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2">
+            <div className="bg-primary/20 p-2 rounded-full">
+              <BarChart className="h-4 w-4 text-primary" />
+            </div>
+            <span className="text-sm">
+              <strong>267 personnes</strong> comparent des forfaits en ce moment
+            </span>
+          </div>
+          <div className="text-sm text-amber-600 flex items-center gap-1">
+            <span className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+            Dernière mise à jour il y a 12 minutes
+          </div>
+        </div>
+      </Card>
+      
+      {/* Results display */}
+      {viewType === 'list' ? (
+        <div className="space-y-4">
+          {currentItems.map((plan, index) => (
+            <PlanCard key={`${plan.id}-${index}`} plan={plan} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {currentItems.map((plan, index) => (
+            <PlanCard key={`${plan.id}-${index}`} plan={plan} variant="compact" />
+          ))}
+        </div>
+      )}
+      
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center mt-8">
+          <div className="join">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => changePage(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="join-item"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            
+            {visiblePageNumbers.map((pageNumber, idx) => (
+              pageNumber === '...' ? (
+                <Button 
+                  key={`ellipsis-${idx}`}
+                  variant="outline"
+                  size="icon"
+                  disabled
+                  className="join-item"
+                >
+                  ...
+                </Button>
+              ) : (
+                <Button
+                  key={`page-${pageNumber}`}
+                  variant={currentPage === pageNumber ? "default" : "outline"}
+                  size="icon"
+                  onClick={() => changePage(Number(pageNumber))}
+                  className="join-item"
+                >
+                  {pageNumber}
+                </Button>
+              )
+            ))}
+            
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => changePage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="join-item"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
