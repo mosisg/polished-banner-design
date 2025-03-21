@@ -1,0 +1,17 @@
+
+# robots.txt file for ComparePrix
+User-agent: *
+Allow: /
+
+# Allow access to all content
+Allow: /blog/
+Allow: /mobile/
+Allow: /internet/
+Allow: /telephones/
+
+# Disallow access to admin and sensitive areas
+Disallow: /admin/
+Disallow: /login/
+
+# Sitemap location
+Sitemap: https://compareprix.net/sitemap.xml

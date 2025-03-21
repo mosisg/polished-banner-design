@@ -4,8 +4,9 @@
   RewriteEngine On
   RewriteBase /
   
-  # Servir directement le sitemap.xml s'il existe
-  RewriteCond %{REQUEST_URI} ^/sitemap.xml$
+  # Servir directement le sitemap.xml et robots.txt s'ils existent
+  RewriteCond %{REQUEST_URI} ^/sitemap.xml$ [OR]
+  RewriteCond %{REQUEST_URI} ^/robots.txt$
   RewriteCond %{REQUEST_FILENAME} -f
   RewriteRule ^ - [L]
   
@@ -17,12 +18,18 @@
   RewriteRule ^ index.html [QSA,L]
 </IfModule>
 
-# Définir le type MIME pour sitemap.xml
+# Définir le type MIME pour sitemap.xml et robots.txt
 <IfModule mod_mime.c>
   AddType application/xml .xml
+  AddType text/plain .txt
 </IfModule>
 
 # En-têtes supplémentaires pour le sitemap
 <FilesMatch "sitemap\.xml$">
   Header set Content-Type "application/xml; charset=UTF-8"
+</FilesMatch>
+
+# En-têtes pour robots.txt
+<FilesMatch "robots\.txt$">
+  Header set Content-Type "text/plain; charset=UTF-8"
 </FilesMatch>
