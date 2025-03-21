@@ -16,6 +16,8 @@ interface ChatCompletionRequest {
   temperature?: number;
   max_tokens?: number;
   session_id?: string;
+  query?: string; // For RAG search
+  use_rag?: boolean; // Whether to use RAG
 }
 
 interface ChatCompletionResponse {
@@ -29,6 +31,8 @@ interface ChatCompletionResponse {
     completion_tokens: number;
     total_tokens: number;
   };
+  used_context?: boolean;
+  context_count?: number;
 }
 
 /**
@@ -41,6 +45,8 @@ export async function getChatCompletion(
     model?: string;
     temperature?: number;
     maxTokens?: number;
+    query?: string; // The query for RAG lookup
+    useRag?: boolean; // Whether to use RAG
   } = {}
 ): Promise<ChatCompletionResponse> {
   const {
@@ -48,6 +54,8 @@ export async function getChatCompletion(
     model = 'gpt-4-turbo',
     temperature = 0.7,
     maxTokens = 1200,
+    query,
+    useRag = false,
   } = options;
 
   try {
@@ -57,6 +65,8 @@ export async function getChatCompletion(
       temperature,
       max_tokens: maxTokens,
       session_id: sessionId,
+      query: query || messages[messages.length - 1]?.content, // Use the last user message as query if not provided
+      use_rag: useRag,
     };
 
     // Call the Supabase Edge Function
@@ -105,4 +115,3 @@ Ton style de communication:
 Rappelle-toi que tu ne peux pas effectuer d'actions comme souscrire à un forfait. Tu dois rediriger vers le comparateur approprié du site.`
   };
 }
-

@@ -23,6 +23,51 @@ interface ChatCompletionRequest {
   temperature?: number;
   max_tokens?: number;
   session_id?: string;
+  query?: string; // For RAG search
+  use_rag?: boolean; // Whether to use RAG
+}
+
+interface Document {
+  id: string;
+  content: string;
+  metadata: Record<string, any>;
+}
+
+// Function to find relevant documents based on query
+async function findRelevantDocuments(
+  supabase: any,
+  query: string,
+  limit = 5
+): Promise<Document[]> {
+  try {
+    // Generate embedding for the query
+    const embeddingResponse = await openai.embeddings.create({
+      model: 'text-embedding-3-small',
+      input: query,
+    })
+    
+    const embedding = embeddingResponse.data[0].embedding
+    
+    // Query documents based on vector similarity
+    const { data: documents, error } = await supabase.rpc(
+      'match_documents',
+      {
+        query_embedding: embedding,
+        match_threshold: 0.5,
+        match_count: limit
+      }
+    )
+    
+    if (error) {
+      console.error('Error finding relevant documents:', error)
+      return []
+    }
+    
+    return documents || []
+  } catch (error) {
+    console.error('Error in findRelevantDocuments:', error)
+    return []
+  }
 }
 
 Deno.serve(async (req) => {
@@ -35,7 +80,7 @@ Deno.serve(async (req) => {
     // Get request payload
     const payload: ChatCompletionRequest = await req.json()
     
-    // Create Supabase client for logging (optional)
+    // Create Supabase client for logging
     const authHeader = req.headers.get('Authorization')
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
@@ -48,19 +93,60 @@ Deno.serve(async (req) => {
       },
     })
     
-    // Get OpenAI response
-    const { messages, model, temperature = 0.7, max_tokens = 1200, session_id } = payload
+    // Destructure payload
+    const { 
+      messages, 
+      model, 
+      temperature = 0.7, 
+      max_tokens = 1200, 
+      session_id, 
+      query, 
+      use_rag = false 
+    } = payload
 
+    // Enhanced context from vector database if RAG is enabled
+    let enhancedMessages = [...messages]
+    let contextDocuments: Document[] = []
+    
+    if (use_rag && query) {
+      contextDocuments = await findRelevantDocuments(supabase, query)
+      
+      if (contextDocuments.length > 0) {
+        // Format context documents as system message
+        const contextText = contextDocuments
+          .map(doc => `Document: ${doc.metadata.title || 'Untitled'}\n${doc.content}`)
+          .join('\n\n')
+        
+        // Add context as a system message right after the existing system message
+        const systemMessageIndex = enhancedMessages.findIndex(msg => msg.role === 'system')
+        
+        if (systemMessageIndex >= 0) {
+          // Insert after the existing system message
+          enhancedMessages.splice(systemMessageIndex + 1, 0, {
+            role: 'system',
+            content: `Here is some relevant context that may help you answer the user's question:\n\n${contextText}`,
+          })
+        } else {
+          // No system message found, add context as first system message
+          enhancedMessages.unshift({
+            role: 'system',
+            content: `Here is some relevant context that may help you answer the user's question:\n\n${contextText}`,
+          })
+        }
+      }
+    }
+
+    // Get OpenAI response
     const response = await openai.chat.completions.create({
       model,
-      messages,
+      messages: enhancedMessages,
       temperature,
       max_tokens,
     })
 
     const assistantMessage = response.choices[0].message
 
-    // Log completion to Supabase (optional)
+    // Log completion to Supabase
     if (session_id) {
       try {
         await supabase.from('ai_completions').insert({
@@ -69,6 +155,7 @@ Deno.serve(async (req) => {
           completion: assistantMessage.content,
           model,
           tokens: response.usage?.total_tokens || 0,
+          context_docs: contextDocuments.length > 0 ? JSON.stringify(contextDocuments.map(d => d.id)) : null,
         })
       } catch (logError) {
         // Continue even if logging fails
@@ -82,6 +169,8 @@ Deno.serve(async (req) => {
         id: response.id,
         message: assistantMessage,
         usage: response.usage,
+        used_context: contextDocuments.length > 0,
+        context_count: contextDocuments.length,
       }),
       {
         headers: {

@@ -1,6 +1,6 @@
 
 import React, { useEffect, lazy, Suspense } from 'react';
-import { X, Send, Bot, User, Loader2, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { X, Send, Bot, User, Loader2, ThumbsUp, ThumbsDown, Database } from 'lucide-react';
 import { 
   Sheet,
   SheetContent,
@@ -14,6 +14,8 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { useSupportChat } from '@/hooks/useSupportChat';
 import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface CustomerSupportChatProps {
   isOpen: boolean;
@@ -21,7 +23,7 @@ interface CustomerSupportChatProps {
 }
 
 const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClose }) => {
-  const { messages, inputText, setInputText, sendMessage, isTyping, messageEndRef } = useSupportChat();
+  const { messages, inputText, setInputText, sendMessage, isTyping, messageEndRef, useRAG, toggleRAG } = useSupportChat();
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -51,6 +53,23 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
             <SheetTitle className="flex items-center gap-2">
               <Bot className="h-5 w-5 text-primary" />
               <span>Assistance ComparePrix</span>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant={useRAG ? "default" : "outline"} 
+                      size="icon" 
+                      className="h-6 w-6 rounded-full ml-2" 
+                      onClick={toggleRAG}
+                    >
+                      <Database className="h-3 w-3" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{useRAG ? "Désactiver" : "Activer"} la base de connaissances</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </SheetTitle>
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
@@ -84,6 +103,12 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
                     <span className="text-xs font-medium">
                       {message.sender === 'user' ? 'Vous' : 'Assistant'}
                     </span>
+                    {message.sender === 'bot' && message.usedContext && (
+                      <Badge variant="outline" className="ml-1 py-0 h-5 text-[10px] px-1 border-primary/30 text-primary">
+                        <Database className="h-2.5 w-2.5 mr-1" />
+                        Contextualisé
+                      </Badge>
+                    )}
                     {message.sender === 'bot' && (
                       <div className="ml-auto flex items-center gap-1">
                         <Button variant="ghost" size="icon" className="h-5 w-5 hover:text-primary dark:hover:text-primary rounded-full">
