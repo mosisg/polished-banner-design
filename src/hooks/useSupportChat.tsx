@@ -1,126 +1,48 @@
 
-import { useState, useEffect, useRef } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { throttle } from '@/utils/performance';
 import { ChatMessage, SupportChatState, MessageStatus } from '@/types/support';
-import { createChatSession, saveChatMessage } from '@/services/support/sessionService';
 import { getOpenAIResponse } from '@/services/support/openAiService';
 import { getSmartResponse } from '@/services/support/smartResponseService';
+import { useChatSession } from './chat/useChatSession';
+import { useOpenAIConnection } from './chat/useOpenAIConnection';
+import { useMessageHandling } from './chat/useMessageHandling';
+import { useRAGToggle } from './chat/useRAGToggle';
 
 export type { ChatMessage } from '@/types/support';
 
 export const useSupportChat = (): SupportChatState => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: '1',
-      text: 'Bonjour ! Je suis votre assistant virtuel ComparePrix. Comment puis-je vous aider aujourd\'hui ?',
-      sender: 'bot',
-      timestamp: new Date()
-    }
-  ]);
-  const [inputText, setInputText] = useState('');
-  const [sessionId, setSessionId] = useState<string>('');
-  const [isTyping, setIsTyping] = useState(false);
-  const [hasOpenAIFailed, setHasOpenAIFailed] = useState(false);
-  const [useRAG, setUseRAG] = useState(true);
-  const [lastMessageStatus, setLastMessageStatus] = useState<MessageStatus>('none');
-  const [isConnectedToOpenAI, setIsConnectedToOpenAI] = useState(true);
-  const [retryCount, setRetryCount] = useState(0);
+  const { sessionId } = useChatSession();
+  const { 
+    isConnectedToOpenAI, 
+    hasOpenAIFailed, 
+    setIsConnectedToOpenAI, 
+    setHasOpenAIFailed,
+    incrementRetryCount 
+  } = useOpenAIConnection(sessionId);
+  const { 
+    messages, 
+    inputText, 
+    setInputText, 
+    isTyping, 
+    lastMessageStatus, 
+    messageEndRef,
+    previousMessagesRef,
+    conversationContextRef,
+    updateBotTyping,
+    addUserMessage,
+    addBotMessage,
+    setIsTyping
+  } = useMessageHandling();
+  const { useRAG, toggleRAG } = useRAGToggle();
   const { toast } = useToast();
-  const messageEndRef = useRef<HTMLDivElement>(null);
-  const previousMessagesRef = useRef<ChatMessage[]>([]);
-  const conversationContextRef = useRef<string[]>([]);
-
-  useEffect(() => {
-    const initSession = async () => {
-      try {
-        const newSessionId = await createChatSession();
-        setSessionId(newSessionId);
-      } catch (err) {
-        console.error("Failed to initialize session:", err);
-        // Generate a local ID for fallback
-        setSessionId(uuidv4());
-      }
-    };
-    
-    initSession();
-    
-    // Test OpenAI connectivity on start
-    const testOpenAIConnection = async () => {
-      try {
-        // Just create a simple ping message that won't be displayed
-        const testResponse = await getOpenAIResponse("ping", [], sessionId, false);
-        setIsConnectedToOpenAI(true);
-        setHasOpenAIFailed(false);
-      } catch (err) {
-        console.error("Failed to connect to OpenAI:", err);
-        setIsConnectedToOpenAI(false);
-        setHasOpenAIFailed(true);
-      }
-    };
-    
-    testOpenAIConnection();
-  }, []);
-
-  const updateBotTyping = throttle((isTyping: boolean) => {
-    setIsTyping(isTyping);
-  }, 500);
-
-  useEffect(() => {
-    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    previousMessagesRef.current = messages;
-  }, [messages]);
-  
-  // Add this new effect to periodically retry OpenAI connection if it fails
-  useEffect(() => {
-    // Only retry if we've previously had a failure
-    if (hasOpenAIFailed && retryCount < 3) {
-      const retryTimeout = setTimeout(async () => {
-        try {
-          const testResponse = await getOpenAIResponse("ping", [], sessionId, false);
-          console.log("Successfully reconnected to OpenAI");
-          setIsConnectedToOpenAI(true);
-          setHasOpenAIFailed(false);
-          
-          toast({
-            title: "Connexion rétablie",
-            description: "La connexion au service intelligent a été rétablie.",
-            variant: "default"
-          });
-        } catch (err) {
-          console.error("Failed to reconnect to OpenAI:", err);
-          setRetryCount(prev => prev + 1);
-        }
-      }, 30000); // Try every 30 seconds
-      
-      return () => clearTimeout(retryTimeout);
-    }
-  }, [hasOpenAIFailed, retryCount, sessionId, toast]);
 
   const sendMessage = async () => {
     if (!inputText.trim()) return;
     
-    const userMessage: ChatMessage = {
-      id: Date.now().toString(),
-      text: inputText,
-      sender: 'user',
-      timestamp: new Date()
-    };
-    
-    setMessages(prev => [...prev, userMessage]);
+    // Add user message to the conversation
+    addUserMessage(inputText, sessionId);
     setInputText('');
-    setLastMessageStatus('sent');
-    
-    // Store this message for context
-    conversationContextRef.current.push(`User: ${inputText}`);
-    
-    // Try to save the message and handle potential errors silently
-    saveChatMessage(sessionId, inputText, false).catch(console.error);
-
-    setTimeout(() => {
-      setLastMessageStatus('delivered');
-    }, 500);
     
     setIsTyping(true);
     
@@ -130,26 +52,14 @@ export const useSupportChat = (): SupportChatState => {
       }
       
       const { text: aiResponse, usedContext, documentReferences } = 
-        await getOpenAIResponse(userMessage.text, previousMessagesRef.current, sessionId, useRAG);
+        await getOpenAIResponse(inputText, previousMessagesRef.current, sessionId, useRAG);
       
       updateBotTyping(false);
       setIsConnectedToOpenAI(true);
       setHasOpenAIFailed(false);
       
-      // Store the AI response for context
-      conversationContextRef.current.push(`Assistant: ${aiResponse}`);
-      
-      const botMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        text: aiResponse,
-        sender: 'bot',
-        timestamp: new Date(),
-        usedContext,
-        documentReferences
-      };
-      
-      setMessages(prev => [...prev, botMessage]);
-      saveChatMessage(sessionId, aiResponse, true).catch(console.error);
+      // Add bot message to the conversation
+      addBotMessage(aiResponse, sessionId, usedContext, documentReferences);
       
       if (usedContext) {
         toast({
@@ -168,26 +78,16 @@ export const useSupportChat = (): SupportChatState => {
       
       // Generate a contextual fallback response based on conversation history
       const conversationContext = conversationContextRef.current.join("\n");
-      const fallbackPrompt = `${conversationContext}\nUser: ${userMessage.text}\nAssistant:`;
+      const fallbackPrompt = `${conversationContext}\nUser: ${inputText}\nAssistant:`;
       
       // Get a smart response that tries to maintain context
-      const fallbackResponse = getSmartResponse(userMessage.text, fallbackPrompt);
+      const fallbackResponse = getSmartResponse(inputText, fallbackPrompt);
       
-      const botMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        text: fallbackResponse,
-        sender: 'bot',
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, botMessage]);
-      saveChatMessage(sessionId, fallbackResponse, true).catch(console.error);
-      
-      // Store the fallback response for context
-      conversationContextRef.current.push(`Assistant: ${fallbackResponse}`);
+      // Add bot message with fallback response
+      addBotMessage(fallbackResponse, sessionId);
       
       // Only show the toast if this is the first failure
-      if (retryCount === 0) {
+      if (!hasOpenAIFailed) {
         toast({
           title: "Problème de connexion",
           description: "Impossible de se connecter au service intelligent. Un mode limité est utilisé.",
@@ -196,17 +96,8 @@ export const useSupportChat = (): SupportChatState => {
       }
       
       // Increment retry count
-      setRetryCount(prev => prev + 1);
+      incrementRetryCount();
     }
-  };
-
-  const toggleRAG = () => {
-    setUseRAG(prev => !prev);
-    toast({
-      title: useRAG ? "Mode base de connaissances désactivé" : "Mode base de connaissances activé",
-      description: useRAG ? "Les réponses ne seront plus enrichies par votre base de connaissances." : "Les réponses seront enrichies par votre base de connaissances.",
-      variant: "default"
-    });
   };
 
   return {
