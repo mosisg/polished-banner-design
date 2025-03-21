@@ -44,8 +44,8 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
   
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="sm:max-w-md p-0 flex flex-col h-full border-l dark:border-slate-800">
-        <SheetHeader className="px-4 py-3 border-b dark:border-slate-700">
+      <SheetContent className="sm:max-w-md p-0 flex flex-col h-[85vh] sm:h-[75vh] border-l dark:border-slate-800">
+        <SheetHeader className="px-4 py-2 border-b dark:border-slate-700">
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2">
               <Bot className="h-5 w-5 text-primary" />
@@ -57,8 +57,8 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
           </div>
         </SheetHeader>
         
-        <ScrollArea className="flex-1 px-4 py-4">
-          <div className="space-y-4 pb-2">
+        <ScrollArea className="flex-1 px-4 py-3">
+          <div className="space-y-3 pb-2">
             {messages.map((message) => (
               <div 
                 key={message.id} 
@@ -66,7 +66,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
               >
                 <div 
                   className={cn(
-                    "max-w-[85%] rounded-lg p-3 shadow-sm", 
+                    "max-w-[85%] rounded-lg p-2 shadow-sm", 
                     message.sender === 'user' 
                       ? "bg-primary text-primary-foreground rounded-tr-none" 
                       : "bg-muted/70 dark:bg-slate-800 border border-border dark:border-slate-700 rounded-tl-none"
@@ -83,10 +83,10 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
                     </span>
                     {message.sender === 'bot' && (
                       <div className="ml-auto flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-6 w-6 hover:text-primary dark:hover:text-primary rounded-full">
+                        <Button variant="ghost" size="icon" className="h-5 w-5 hover:text-primary dark:hover:text-primary rounded-full">
                           <ThumbsUp className="h-3 w-3" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 hover:text-destructive dark:hover:text-destructive rounded-full">
+                        <Button variant="ghost" size="icon" className="h-5 w-5 hover:text-destructive dark:hover:text-destructive rounded-full">
                           <ThumbsDown className="h-3 w-3" />
                         </Button>
                       </div>
@@ -105,7 +105,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
             {/* Typing indicator */}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-lg p-3 bg-muted/70 dark:bg-slate-800 border border-border dark:border-slate-700 rounded-tl-none shadow-sm">
+                <div className="max-w-[85%] rounded-lg p-2 bg-muted/70 dark:bg-slate-800 border border-border dark:border-slate-700 rounded-tl-none shadow-sm">
                   <div className="flex items-center gap-2">
                     <Bot className="h-4 w-4 text-primary" />
                     <span className="text-xs font-medium">Assistant</span>
@@ -125,26 +125,26 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
         
         <Separator className="dark:bg-slate-700" />
         
-        <SheetFooter className="p-4 mt-0">
+        <SheetFooter className="p-3 mt-0">
           <div className="flex w-full gap-2">
             <Textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Écrivez votre message..."
-              className="flex-1 min-h-[80px] max-h-[120px] resize-none focus-visible:ring-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+              className="flex-1 min-h-[60px] max-h-[100px] resize-none focus-visible:ring-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
               rows={2}
             />
             <Button 
               onClick={sendMessage} 
               size="icon" 
-              className="self-end h-10 w-10 rounded-full bg-primary hover:bg-primary/90"
+              className="self-end h-9 w-9 rounded-full bg-primary hover:bg-primary/90"
               disabled={!inputText.trim()}
             >
               <Send className="h-4 w-4" />
             </Button>
           </div>
-          <div className="w-full text-xs text-muted-foreground mt-2">
+          <div className="w-full text-xs text-muted-foreground mt-1">
             Appuyez sur <kbd className="px-1 bg-muted dark:bg-slate-800 rounded">Entrée</kbd> pour envoyer, <kbd className="px-1 bg-muted dark:bg-slate-800 rounded">Maj+Entrée</kbd> pour une nouvelle ligne
           </div>
         </SheetFooter>
