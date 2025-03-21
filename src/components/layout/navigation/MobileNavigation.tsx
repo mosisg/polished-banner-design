@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Phone, Wifi, FileText, LogIn, LogOut, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NavItem } from './types';
+import { useToast } from '@/hooks/use-toast';
 
 interface MobileNavigationProps {
   navItems: NavItem[];
@@ -22,6 +23,26 @@ const MobileNavigation = ({
   user,
   handleLogout
 }: MobileNavigationProps) => {
+  const { toast } = useToast();
+
+  const onLogout = async () => {
+    try {
+      await handleLogout();
+      handleCloseMobileMenu();
+      toast({
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès."
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Erreur de déconnexion",
+        description: "Une erreur est survenue lors de la déconnexion.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <>
       <div 
@@ -68,7 +89,7 @@ const MobileNavigation = ({
             <button
               className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer w-full text-left"
               role="menuitem"
-              onClick={handleLogout}
+              onClick={onLogout}
             >
               <LogOut className="w-5 h-5 mr-3" />
               <span className="text-base">Déconnexion</span>

@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { LogIn, LogOut, ShieldAlert, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import { useToast } from '@/hooks/use-toast';
 
 interface HeaderActionsProps {
   user: any;
@@ -18,6 +19,25 @@ const HeaderActions = ({
   toggleMobileMenu, 
   isMobileMenuOpen 
 }: HeaderActionsProps) => {
+  const { toast } = useToast();
+
+  const onLogout = async () => {
+    try {
+      await handleLogout();
+      toast({
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès."
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Erreur de déconnexion",
+        description: "Une erreur est survenue lors de la déconnexion.",
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="flex items-center space-x-2">
       {/* Admin link - showing for all logged in users */}
@@ -36,7 +56,7 @@ const HeaderActions = ({
         <Button
           variant="ghost"
           size="sm"
-          onClick={handleLogout}
+          onClick={onLogout}
           className="flex items-center"
         >
           <LogOut className="w-4 h-4 mr-2" />

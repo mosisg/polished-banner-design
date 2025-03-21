@@ -59,7 +59,7 @@ const SystemStatusChecker: React.FC = () => {
     }
     
     try {
-      // Set a timeout to prevent endless loading
+      // Set a timeout to prevent endless loading (10 seconds)
       timeoutRef.current = window.setTimeout(() => {
         if (abortControllerRef.current === controller) {
           controller.abort();
@@ -74,7 +74,7 @@ const SystemStatusChecker: React.FC = () => {
             });
           }
         }
-      }, 10000); // 10 seconds timeout
+      }, 10000);
       
       const status = await checkSystemStatus(controller.signal);
       

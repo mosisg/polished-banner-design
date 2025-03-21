@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SystemStatus {
@@ -31,6 +32,12 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
   };
   
   try {
+    // Check if the operation was aborted before starting
+    if (abortSignal?.aborted) {
+      console.log("Operation aborted before starting");
+      return status;
+    }
+    
     // Verify session is valid before proceeding
     const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     
@@ -46,6 +53,11 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
         .select('id')
         .limit(1);
       
+      if (abortSignal?.aborted) {
+        console.log("Table check aborted");
+        return status;
+      }
+      
       status.tableExists = !tableError;
     } catch (err) {
       console.log("Table check error:", err);
@@ -54,12 +66,14 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
     
     // Check if search function exists by trying to call it with safe parameters
     try {
+      if (abortSignal?.aborted) {
+        console.log("Function check aborted before starting");
+        return status;
+      }
+      
       // Create a zero-filled array of length 1536 for the embedding vector
-      // Convert the array to a stringified JSON for the query_embedding parameter
       const zeroEmbedding = JSON.stringify(Array(1536).fill(0));
       
-      // Call the RPC function without passing the abort signal directly to the third parameter
-      // as that parameter is for query options, not for controlling fetch behavior
       const { error: functionError } = await supabase.rpc(
         'match_documents',
         { 
@@ -69,9 +83,9 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
         }
       );
       
-      // Check if the API call was aborted
+      // Check if the operation was aborted after the call
       if (abortSignal?.aborted) {
-        console.log("Function check aborted");
+        console.log("Function check aborted after call");
         return status;
       }
       
@@ -83,6 +97,11 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
     
     // Check if Edge Functions are deployed
     try {
+      if (abortSignal?.aborted) {
+        console.log("Edge function check aborted before starting");
+        return status;
+      }
+      
       // Set up the options with the health check parameter
       const options: { body: { health_check: boolean }, signal?: AbortSignal } = {
         body: { health_check: true }
@@ -95,6 +114,11 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
       
       // Call the edge function with the correct parameters structure
       const { data, error } = await supabase.functions.invoke('openai-chat', options);
+      
+      if (abortSignal?.aborted) {
+        console.log("Edge function check aborted after call");
+        return status;
+      }
       
       if (error) {
         console.log("Edge function error:", error);
