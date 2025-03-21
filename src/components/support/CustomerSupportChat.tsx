@@ -1,6 +1,6 @@
 
 import React, { useEffect, lazy, Suspense } from 'react';
-import { X, Send, Bot, User, Loader2, ThumbsUp, ThumbsDown, Database } from 'lucide-react';
+import { X, Send, Bot, User, Loader2, ThumbsUp, ThumbsDown, Database, FileText } from 'lucide-react';
 import { 
   Sheet,
   SheetContent,
@@ -16,6 +16,11 @@ import { useSupportChat } from '@/hooks/useSupportChat';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface CustomerSupportChatProps {
   isOpen: boolean;
@@ -121,6 +126,27 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
                     )}
                   </div>
                   <p className="whitespace-pre-line text-sm">{message.text}</p>
+                  
+                  {/* Document References Section */}
+                  {message.sender === 'bot' && message.documentReferences && message.documentReferences.length > 0 && (
+                    <Collapsible className="mt-2 pt-2 border-t border-border/30">
+                      <CollapsibleTrigger className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                        <FileText className="h-3 w-3" />
+                        <span>{message.documentReferences.length} source{message.documentReferences.length > 1 ? 's' : ''} consultée{message.documentReferences.length > 1 ? 's' : ''}</span>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="mt-2 space-y-2">
+                          {message.documentReferences.map((doc, idx) => (
+                            <div key={doc.id} className="bg-background/50 dark:bg-slate-900/50 p-2 rounded border border-border/30 text-xs">
+                              <p className="font-medium">{doc.title}</p>
+                              <p className="text-muted-foreground mt-1">{doc.excerpt}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </CollapsibleContent>
+                    </Collapsible>
+                  )}
+                  
                   <div className="text-right">
                     <span className="text-xs opacity-70">
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

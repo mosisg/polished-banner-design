@@ -63,7 +63,7 @@ export const useSupportChat = (): SupportChatState => {
     setIsTyping(true);
     
     try {
-      const { text: aiResponse, usedContext } = hasOpenAIFailed 
+      const { text: aiResponse, usedContext, documentReferences } = hasOpenAIFailed 
         ? { text: getSmartResponse(userMessage.text), usedContext: false }
         : await getOpenAIResponse(userMessage.text, previousMessagesRef.current, sessionId, useRAG);
       
@@ -74,7 +74,8 @@ export const useSupportChat = (): SupportChatState => {
         text: aiResponse,
         sender: 'bot',
         timestamp: new Date(),
-        usedContext
+        usedContext,
+        documentReferences
       };
       
       setMessages(prev => [...prev, botMessage]);
@@ -83,7 +84,9 @@ export const useSupportChat = (): SupportChatState => {
       if (usedContext) {
         toast({
           title: "Contextualisation activée",
-          description: "La réponse a été enrichie avec des informations spécifiques",
+          description: documentReferences ? 
+            `${documentReferences.length} document(s) utilisé(s) pour enrichir la réponse` : 
+            "La réponse a été enrichie avec des informations spécifiques",
           variant: "default"
         });
       }

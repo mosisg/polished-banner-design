@@ -12,6 +12,13 @@ export interface ChatMessage {
   sender: 'user' | 'bot';
   timestamp: Date;
   usedContext?: boolean;
+  documentReferences?: DocumentReference[];
+}
+
+export interface DocumentReference {
+  id: string;
+  title: string;
+  excerpt: string;
 }
 
 /**
@@ -22,7 +29,7 @@ export async function getOpenAIResponse(
   chatHistory: ChatMessage[],
   sessionId: string,
   useRAG: boolean
-): Promise<{text: string, usedContext: boolean}> {
+): Promise<{text: string, usedContext: boolean, documentReferences?: DocumentReference[]}> {
   try {
     const systemMessage = getAssistantSystemMessage();
     
@@ -45,9 +52,17 @@ export async function getOpenAIResponse(
       useRag: useRAG
     });
     
+    // Extract document references if available
+    const documentReferences = response.context_documents?.map(doc => ({
+      id: doc.id,
+      title: doc.metadata?.title || 'Document sans titre',
+      excerpt: doc.content.substring(0, 150) + '...'
+    })) || [];
+    
     return {
       text: response.message.content,
-      usedContext: response.used_context || false
+      usedContext: response.used_context || false,
+      documentReferences: documentReferences.length > 0 ? documentReferences : undefined
     };
   } catch (error) {
     console.error('Error getting OpenAI response:', error);

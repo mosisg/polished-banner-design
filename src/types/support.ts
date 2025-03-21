@@ -3,12 +3,19 @@
  * Support Chat Types
  */
 
+export interface DocumentReference {
+  id: string;
+  title: string;
+  excerpt: string;
+}
+
 export interface ChatMessage {
   id: string;
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
   usedContext?: boolean;
+  documentReferences?: DocumentReference[];
 }
 
 export interface SupportChatState {
