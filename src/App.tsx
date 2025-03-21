@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +10,7 @@ import { Analytics } from "@vercel/analytics/react";
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import AdminUsers from '@/pages/AdminUsers';
 import Login from '@/pages/Login';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 // Optimize lazy loading by using named chunks
 const Index = lazy(() => import(/* webpackChunkName: "index" */ "./pages/Index"));
@@ -79,38 +79,40 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <Router>
-            <ScrollToTop />
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/mobile" element={<MobilePlans />} />
-                <Route path="/internet" element={<InternetBoxes />} />
-                <Route path="/telephones" element={<Telephones />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/blog/:slug" element={<BlogArticle />} />
-                <Route path="/packages" element={<NotFound />} />
-                
-                {/* Policy Pages */}
-                <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
-                <Route path="/politique-cookies" element={<PolitiqueCookies />} />
-                <Route path="/mentions-legales" element={<MentionsLegales />} />
-                <Route path="/cgv" element={<CGV />} />
-                
-                {/* Sitemap routes */}
-                <Route path="/sitemap.xml" element={<Sitemap />} />
-                <Route path="/sitemap" element={<Sitemap />} />
-                
-                {/* Admin routes */}
-                <Route path="/admin/knowledge-base" element={<KnowledgeBase />} />
-                <Route path="/admin/users" element={<AdminUsers />} />
-                <Route path="/login" element={<Login />} />
-                
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </Router>
+          <AuthProvider>
+            <Router>
+              <ScrollToTop />
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/mobile" element={<MobilePlans />} />
+                  <Route path="/internet" element={<InternetBoxes />} />
+                  <Route path="/telephones" element={<Telephones />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/:slug" element={<BlogArticle />} />
+                  <Route path="/packages" element={<NotFound />} />
+                  
+                  {/* Policy Pages */}
+                  <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+                  <Route path="/politique-cookies" element={<PolitiqueCookies />} />
+                  <Route path="/mentions-legales" element={<MentionsLegales />} />
+                  <Route path="/cgv" element={<CGV />} />
+                  
+                  {/* Sitemap routes */}
+                  <Route path="/sitemap.xml" element={<Sitemap />} />
+                  <Route path="/sitemap" element={<Sitemap />} />
+                  
+                  {/* Admin routes */}
+                  <Route path="/admin/knowledge-base" element={<KnowledgeBase />} />
+                  <Route path="/admin/users" element={<AdminUsers />} />
+                  <Route path="/login" element={<Login />} />
+                  
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </Router>
+          </AuthProvider>
           <Analytics />
         </TooltipProvider>
       </HelmetProvider>
