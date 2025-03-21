@@ -11,9 +11,7 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      // Use faster Babel transforms in development
-      fastRefresh: true,
-      // Optimize SWC settings for better performance
+      // SWC options for better performance
       swcOptions: {
         jsc: {
           transform: {
