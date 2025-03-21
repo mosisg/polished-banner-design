@@ -68,10 +68,14 @@ export const useHeaderController = () => {
   // Handle logout
   const handleLogout = async () => {
     try {
+      console.log("Header controller: Initiating logout");
       await signOut();
-      navigate('/');
+      console.log("Header controller: Logout successful, navigating to home");
+      navigate('/', { replace: true });
+      return Promise.resolve();
     } catch (error) {
       console.error('Logout error:', error);
+      return Promise.reject(error);
     }
   };
 

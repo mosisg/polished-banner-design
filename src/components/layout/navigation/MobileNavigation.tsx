@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Phone, Wifi, FileText, LogIn, LogOut, ShieldAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { NavItem } from './types';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 interface MobileNavigationProps {
   navItems: NavItem[];
@@ -24,11 +24,17 @@ const MobileNavigation = ({
   handleLogout
 }: MobileNavigationProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const onLogout = async () => {
     try {
+      console.log("MobileNavigation: Logout initiated");
       await handleLogout();
       handleCloseMobileMenu();
+      
+      // Force navigation to home page
+      navigate('/', { replace: true });
+      
       toast({
         title: "Déconnexion réussie",
         description: "Vous avez été déconnecté avec succès."

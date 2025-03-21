@@ -133,6 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) throw error;
       
       console.log("Sign out successful");
+      // Force state reset to ensure UI updates
       setIsAdmin(false);
       setUser(null);
       setSession(null);
