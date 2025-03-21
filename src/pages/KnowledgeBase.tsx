@@ -1,8 +1,11 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { Link } from 'react-router-dom';
 import KnowledgeBaseManager from '@/components/admin/KnowledgeBaseManager';
 import SystemStatusChecker from '@/components/admin/SystemStatusChecker';
+import { Button } from '@/components/ui/button';
+import { ShieldCheck } from 'lucide-react';
 
 const KnowledgeBase = () => {
   return (
@@ -14,9 +17,18 @@ const KnowledgeBase = () => {
       
       <main className="min-h-screen bg-background">
         <div className="container mx-auto py-8">
-          <h1 className="text-3xl font-bold mb-6">
-            Administration de la Base de Connaissances
-          </h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">
+              Administration de la Base de Connaissances
+            </h1>
+            
+            <Link to="/admin/users">
+              <Button variant="outline" size="sm" className="flex items-center gap-1">
+                <ShieldCheck className="h-4 w-4" />
+                Gérer les administrateurs
+              </Button>
+            </Link>
+          </div>
           
           <div className="mb-8">
             <SystemStatusChecker />

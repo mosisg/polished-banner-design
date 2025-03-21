@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -69,6 +70,11 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
       setIsLoading(false);
     }
   };
+  
+  // Check system on component mount
+  useEffect(() => {
+    checkSystem();
+  }, []);
   
   const handleRefresh = () => {
     checkSystem();
