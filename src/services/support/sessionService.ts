@@ -21,11 +21,12 @@ export async function createChatSession(): Promise<string> {
     
     if (error) {
       console.error('Error creating chat session:', error);
-      // If RLS error occurs, still return the ID for client-side usage
-      // This allows the chat to function even without saving to database
+      // Silently continue with local session
+      return newSessionId;
     }
   } catch (err) {
     console.error('Failed to create session:', err);
+    // Silently continue with local session
   }
   
   // Return the ID even if there was an error to allow local-only sessions
@@ -58,17 +59,11 @@ export async function saveChatMessage(
       ]);
     
     if (error) {
-      console.error('Error saving chat message:', error);
-      // Continue execution even if saving fails
-      
-      // If we're getting RLS errors, we could implement a local storage fallback here
-      if (error.code === '42501') { // RLS policy violation
-        saveMessageToLocalStorage(sessionId, messageId, message, isBot);
-      }
+      // Silently fall back to local storage
+      saveMessageToLocalStorage(sessionId, messageId, message, isBot);
     }
   } catch (err) {
-    console.error('Failed to save message:', err);
-    // Fallback to local storage
+    // Silently fall back to local storage
     saveMessageToLocalStorage(sessionId, messageId, message, isBot);
   }
 }

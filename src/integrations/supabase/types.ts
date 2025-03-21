@@ -679,6 +679,12 @@ export type Database = {
             }
             Returns: string
           }
+      approve_admin: {
+        Args: {
+          user_email: string
+        }
+        Returns: undefined
+      }
       binary_quantize:
         | {
             Args: {

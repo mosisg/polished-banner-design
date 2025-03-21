@@ -1,3 +1,4 @@
+
 import { getStrapiURL, getStrapiAPIKey, getStrapiMedia, USE_MOCK_DATA, ALLOWED_ORIGINS } from './utils';
 import { MOCK_ARTICLES } from './mockData';
 import { 
@@ -6,7 +7,7 @@ import {
   Article 
 } from './types';
 
-// Simplified direct fetch approach for Strapi API
+// Improved fetch approach for Strapi API with better error handling
 export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
   console.log('Attempting to fetch from Strapi API');
   
@@ -28,14 +29,11 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${getStrapiAPIKey()}`,
       },
-      mode: 'cors', // Explicitly set CORS mode
-      // Don't use credentials or other complex CORS settings since Strapi is configured correctly
+      mode: 'cors',
       cache: 'no-store'
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`Strapi API error (${response.status}): ${errorText}`);
       throw new Error(`Failed to fetch from Strapi: ${response.status} ${response.statusText}`);
     }
 
@@ -102,21 +100,63 @@ export const fetchAPI = async <T>(endpoint: string): Promise<T> => {
     }
     
     // If we get here, rethrow the error to be handled by the caller
-    throw new Error(`Failed to fetch data from Strapi: ${(error as Error).message}`);
+    throw error;
   }
 };
 
 // Use original endpoints for articles
 export const getArticles = async (page = 1, pageSize = 6): Promise<StrapiResponse<StrapiArticle[]>> => {
-  return fetchAPI<StrapiResponse<StrapiArticle[]>>(
-    `articles?populate=cover,author.avatar,category&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=publishedAt:desc`
-  );
+  try {
+    return await fetchAPI<StrapiResponse<StrapiArticle[]>>(
+      `articles?populate=cover,author.avatar,category&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort=publishedAt:desc`
+    );
+  } catch (error) {
+    console.error("Failed to get articles:", error);
+    // Directly return mock data when API fails
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedArticles = MOCK_ARTICLES.slice(startIndex, endIndex);
+    
+    return {
+      data: paginatedArticles,
+      meta: {
+        pagination: {
+          page,
+          pageSize,
+          pageCount: Math.ceil(MOCK_ARTICLES.length / pageSize),
+          total: MOCK_ARTICLES.length
+        }
+      }
+    };
+  }
 };
 
 export const getArticle = async (slug: string): Promise<StrapiResponse<StrapiArticle[]>> => {
-  return fetchAPI<StrapiResponse<StrapiArticle[]>>(
-    `articles?filters[slug][$eq]=${slug}&populate=cover,author.avatar,category,blocks.file,blocks.files`
-  );
+  try {
+    return await fetchAPI<StrapiResponse<StrapiArticle[]>>(
+      `articles?filters[slug][$eq]=${slug}&populate=cover,author.avatar,category,blocks.file,blocks.files`
+    );
+  } catch (error) {
+    console.error("Failed to get article:", error);
+    // Directly return mock data when API fails
+    const article = MOCK_ARTICLES.find(a => a.attributes.slug === slug);
+    
+    if (!article) {
+      throw new Error("Article not found");
+    }
+    
+    return {
+      data: [article],
+      meta: {
+        pagination: {
+          page: 1,
+          pageSize: 1,
+          pageCount: 1,
+          total: 1
+        }
+      }
+    };
+  }
 };
 
 // Helper function to transform StrapiArticle[] to simplified Article[]

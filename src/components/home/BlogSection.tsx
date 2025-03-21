@@ -19,9 +19,16 @@ const BlogSection = () => {
   const { data, isLoading, error } = useQuery({
     queryKey: ['homepageArticles'],
     queryFn: async () => {
-      const response = await getArticles(1, 5);
-      return transformArticlesToSimpleFormat(response.data);
-    }
+      try {
+        const response = await getArticles(1, 5);
+        return transformArticlesToSimpleFormat(response.data);
+      } catch (error) {
+        console.error("Error in blog section:", error);
+        return []; // Return empty array to avoid breaking the UI
+      }
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: 1 // Only retry once
   });
 
   return (
@@ -59,10 +66,32 @@ const BlogSection = () => {
                 </Card>
               ))}
             </div>
-          ) : error ? (
-            <p className="text-center text-muted-foreground">
-              Impossible de charger les derniers articles pour le moment.
-            </p>
+          ) : error || !data || data.length === 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="overflow-hidden h-full hover:shadow-md transition-shadow border border-border">
+                  <div className="w-full h-40 overflow-hidden bg-muted">
+                    <img 
+                      src="/placeholder.svg" 
+                      alt="Article placeholder"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <CardContent className="p-4">
+                    <p className="text-sm text-muted-foreground mb-1">
+                      {new Date().toLocaleDateString('fr-FR', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </p>
+                    <h3 className="font-semibold hover:text-primary transition-colors line-clamp-2">
+                      Découvrez nos derniers articles
+                    </h3>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           ) : (
             <Carousel
               opts={{
@@ -72,7 +101,7 @@ const BlogSection = () => {
               className="w-full"
             >
               <CarouselContent>
-                {data?.map((article) => (
+                {data.map((article) => (
                   <CarouselItem key={article.id} className="md:basis-1/2 lg:basis-1/3">
                     <Link to={`/blog/${article.slug}`}>
                       <Card className="overflow-hidden h-full hover:shadow-md transition-shadow border border-border">
@@ -81,6 +110,7 @@ const BlogSection = () => {
                             src={article.cover.url} 
                             alt={article.title}
                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            loading="lazy"
                           />
                         </div>
                         <CardContent className="p-4">

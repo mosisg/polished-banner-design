@@ -5,6 +5,7 @@ import BannerIllustration from './banner/BannerIllustration';
 import PlanCarousel from './banner/PlanCarousel';
 import { plans } from './banner/BannerData';
 import { useIsMobile } from '@/hooks/use-mobile';
+import GeolocatedOffer from './banner/GeolocatedOffer';
 
 const Banner = () => {
   const isMobile = useIsMobile();
@@ -17,6 +18,11 @@ const Banner = () => {
           <div className="hidden md:block">
             <BannerIllustration />
           </div>
+        </div>
+
+        {/* Geolocated Offer - Add this new component */}
+        <div className="mt-4 flex justify-center md:justify-end">
+          <GeolocatedOffer />
         </div>
 
         {/* Plan Carousel */}
