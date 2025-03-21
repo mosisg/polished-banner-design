@@ -1,6 +1,5 @@
 
 import { StrapiArticle } from '@/services/strapi/types';
-import { getStrapiURL } from '@/services/strapi/utils';
 
 // Base URL de l'application
 const BASE_URL = 'https://compareprix.net';
@@ -10,9 +9,9 @@ const BASE_URL = 'https://compareprix.net';
  */
 export const generateSitemapXML = (articles: StrapiArticle[]): string => {
   // Date de dernière modification pour les pages statiques
-  const now = new Date().toISOString();
+  const now = new Date().toISOString().split('T')[0]; // Format YYYY-MM-DD
   
-  // Début du document XML
+  // Début du document XML - pas d'espaces avant cette ligne
   let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
   xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
   
@@ -82,16 +81,22 @@ export const generateSitemapXML = (articles: StrapiArticle[]): string => {
   </url>\n`;
   
   // Ajouter les articles du blog
-  articles.forEach(article => {
-    const updatedAt = new Date(article.attributes.updatedAt).toISOString();
-    
-    xml += `  <url>
+  if (articles && articles.length > 0) {
+    articles.forEach(article => {
+      if (article && article.attributes) {
+        const updatedAt = article.attributes.updatedAt ? 
+          new Date(article.attributes.updatedAt).toISOString().split('T')[0] : 
+          now;
+        
+        xml += `  <url>
     <loc>${BASE_URL}/blog/${article.attributes.slug}</loc>
     <lastmod>${updatedAt}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>\n`;
-  });
+      }
+    });
+  }
   
   // Fermer le document XML
   xml += '</urlset>';
