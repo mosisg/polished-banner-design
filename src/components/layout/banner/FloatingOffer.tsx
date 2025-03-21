@@ -27,14 +27,18 @@ const FloatingOffer: React.FC<FloatingOfferProps> = ({
   return (
     <motion.div 
       className={className}
-      animate={{ y: [0, -10, 0] }}
+      animate={{ y: [0, -8, 0] }} // Reduced movement range
       transition={{ 
         repeat: Infinity, 
-        duration: 3,
+        duration: 4, // Slower animation uses less CPU
         ease: "easeInOut",
-        delay
+        delay,
+        times: [0, 0.5, 1], // Explicit keyframes for better performance
       }}
-      style={{ willChange: 'transform' }}
+      style={{ 
+        willChange: 'transform',
+        contain: 'layout paint style', // Use content containment
+      }}
     >
       <span className={title.includes('Forfait') ? 'text-primary font-bold' : 'text-purple-600 font-bold'}>
         {title}

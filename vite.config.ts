@@ -1,4 +1,3 @@
-
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
@@ -43,38 +42,53 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         assetFileNames: 'assets/[name]-[hash].[ext]',
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-components': [
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-select',
-            '@radix-ui/react-slider',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-separator',
-            '@radix-ui/react-toast',
-          ],
-          'animation': ['framer-motion'],
-          'data-management': ['@tanstack/react-query'],
-          'landing-components': [
-            '/src/components/home',
-            '/src/components/layout/Banner.tsx',
-            '/src/components/layout/NotificationBar.tsx',
-          ],
-          'product-components': [
-            '/src/components/mobile',
-            '/src/components/internet',
-            '/src/components/phones',
-          ],
-          'blog-components': [
-            '/src/components/blog',
-          ],
-          'utils': [
-            '/src/utils',
-            '/src/lib',
-          ],
+        manualChunks: (id) => {
+          // Core React libraries
+          if (id.includes('node_modules/react') || 
+              id.includes('node_modules/react-dom') ||
+              id.includes('node_modules/react-router-dom')) {
+            return 'react-vendor';
+          }
+          
+          // UI components
+          if (id.includes('@radix-ui/react-')) {
+            return 'ui-components';
+          }
+          
+          // Animation
+          if (id.includes('framer-motion')) {
+            return 'animation';
+          }
+          
+          // Data management
+          if (id.includes('@tanstack/react-query')) {
+            return 'data-management';
+          }
+          
+          // Group app components by features
+          if (id.includes('/src/components/home') ||
+              id.includes('/src/components/layout/Banner') ||
+              id.includes('/src/components/layout/NotificationBar')) {
+            return 'landing-components';
+          }
+          
+          if (id.includes('/src/components/mobile') ||
+              id.includes('/src/components/internet') ||
+              id.includes('/src/components/phones')) {
+            return 'product-components';
+          }
+          
+          if (id.includes('/src/components/blog')) {
+            return 'blog-components';
+          }
+          
+          if (id.includes('/src/utils') ||
+              id.includes('/src/lib')) {
+            return 'utils';
+          }
+          
+          // Keep other modules separate
+          return null;
         }
       }
     },
@@ -90,6 +104,8 @@ export default defineConfig(({ mode }) => ({
   esbuild: {
     jsxInject: "import React from 'react'",
     jsx: 'automatic',
+    legalComments: 'none',
+    treeShaking: true,
   },
   css: {
     modules: {

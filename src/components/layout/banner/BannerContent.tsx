@@ -6,74 +6,78 @@ import { motion } from 'framer-motion';
 import GeolocatedOffer from './GeolocatedOffer';
 import FeatureCheckItem from './FeatureCheckItem';
 
+// Define animation variants outside component to prevent recreation on each render
+const containerVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { 
+    opacity: 1, 
+    x: 0,
+    transition: { duration: 0.4, ease: "easeOut" } 
+  }
+};
+
+const tagVariants = {
+  hidden: { opacity: 0, y: -10 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { delay: 0.1, duration: 0.3 } 
+  }
+};
+
+const headingVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { delay: 0.2, duration: 0.4 } 
+  }
+};
+
+const paragraphVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { delay: 0.25, duration: 0.4 } 
+  }
+};
+
+const offerVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1, 
+    transition: { delay: 0.3, duration: 0.4 } 
+  }
+};
+
+const buttonVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { delay: 0.35, duration: 0.4 } 
+  }
+};
+
+const featureVariants = {
+  hidden: { opacity: 0 },
+  visible: { 
+    opacity: 1,
+    transition: { delay: 0.4, duration: 0.4 } 
+  }
+};
+
 // Optimized banner content component that reduces unnecessary re-renders
 const BannerContent: React.FC = () => {
-  // Precompute animation variants to avoid object creation on each render
-  const containerVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: { 
-      opacity: 1, 
-      x: 0,
-      transition: { duration: 0.6, ease: "easeOut" } 
-    }
-  };
-  
-  const tagVariants = {
-    hidden: { opacity: 0, y: -10 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { delay: 0.2, duration: 0.4 } 
-    }
-  };
-  
-  const headingVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { delay: 0.3, duration: 0.6 } 
-    }
-  };
-  
-  const paragraphVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { delay: 0.4, duration: 0.6 } 
-    }
-  };
-  
-  const offerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1, 
-      transition: { delay: 0.5, duration: 0.6 } 
-    }
-  };
-  
-  const buttonVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      transition: { delay: 0.6, duration: 0.6 } 
-    }
-  };
-  
-  const featureVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { delay: 0.7, duration: 0.6 } 
-    }
-  };
-  
   return (
     <motion.div 
       className="space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
+      style={{ 
+        willChange: 'transform, opacity',
+        contain: 'content', // Add content containment for better performance
+      }}
     >
       <motion.span 
         className="inline-block bg-primary/20 backdrop-blur-sm text-primary px-4 py-1 rounded-full text-sm font-medium"
@@ -84,6 +88,10 @@ const BannerContent: React.FC = () => {
       <motion.h1 
         className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight"
         variants={headingVariants}
+        style={{ 
+          willChange: 'opacity',
+          contain: 'content', 
+        }}
       >
         Économisez sur vos <span className="text-gradient-blue-purple">forfaits</span> <span className="text-gradient-purple-pink">mobiles</span>
       </motion.h1>

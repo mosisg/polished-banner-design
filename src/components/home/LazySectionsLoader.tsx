@@ -75,37 +75,29 @@ const LazySectionsLoader = ({ onComparisonSectionMount }: LazySectionsLoaderProp
   useEffect(() => {
     const progressiveLoad = async () => {
       // Wait for first paint to complete
-      await new Promise(resolve => requestIdleCallback(() => resolve(true), { timeout: 2000 }));
+      await new Promise(resolve => {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => resolve(true), { timeout: 2000 });
+        } else {
+          setTimeout(() => resolve(true), 2000);
+        }
+      });
       
       // Start loading sections in sequence with delays
       const sections = ['internet', 'comparison', 'blog', 'partners', 'testimonials'];
       
-      await processInChunks(sections, (section, index) => {
+      await processInChunks(sections, (section) => {
         setTimeout(() => {
           setVisibleSections(prev => ({
             ...prev,
             [section]: true
           }));
-        }, index * 300); // Stagger loading
+        }, sections.indexOf(section) * 300); // Stagger loading
         return section;
       }, 2);
     };
     
-    if ('requestIdleCallback' in window) {
-      progressiveLoad();
-    } else {
-      // Fallback for browsers without requestIdleCallback
-      setTimeout(() => {
-        setVisibleSections({
-          mobile: true,
-          internet: true,
-          comparison: true,
-          blog: true,
-          partners: true,
-          testimonials: true
-        });
-      }, 1000);
-    }
+    progressiveLoad();
   }, []);
   
   return (

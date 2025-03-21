@@ -46,9 +46,11 @@ const IndexPageHead = () => {
       <meta name="twitter:title" content="ComparePrix - Comparateur de forfaits" />
       <meta name="twitter:description" content="Comparez et économisez sur vos forfaits mobiles et box internet avec notre service gratuit et indépendant." />
       <meta name="twitter:image" content="https://compareprix.fr/og-image.png" />
-      {/* Preconnect to critical domains */}
-      <link rel="preconnect" href="https://ygzelivzpmrxsdqljskh.supabase.co" />
+      {/* Preconnect and DNS prefetch to critical domains */}
+      <link rel="preconnect" href="https://ygzelivzpmrxsdqljskh.supabase.co" crossOrigin="anonymous" />
       <link rel="dns-prefetch" href="https://ygzelivzpmrxsdqljskh.supabase.co" />
+      <link rel="preconnect" href="https://supabase.co" crossOrigin="anonymous" />
+      <link rel="dns-prefetch" href="https://supabase.co" />
       {/* Freshness indicator for search engines */}
       <meta name="lastmod" content={currentDate} />
     </Helmet>

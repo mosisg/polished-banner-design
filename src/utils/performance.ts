@@ -106,7 +106,7 @@ export function memoize<T extends (...args: any[]) => any>(
 }
 
 /**
- * Load a script dynamically with priority control
+ * Load a script dynamically with priority control and resource hints
  * @param src Script source URL
  * @param options Loading options
  * @returns Promise that resolves when the script is loaded
@@ -117,12 +117,14 @@ export function loadScript(
     async = true, 
     defer = false, 
     priority = 'low',
-    attributes = {}
+    attributes = {},
+    preconnect = false
   }: { 
     async?: boolean, 
     defer?: boolean, 
     priority?: 'high' | 'low',
-    attributes?: Record<string, string>
+    attributes?: Record<string, string>,
+    preconnect?: boolean
   } = {}
 ): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -130,6 +132,26 @@ export function loadScript(
     if (document.querySelector(`script[src="${src}"]`)) {
       resolve();
       return;
+    }
+    
+    // Add preconnect for third-party domains
+    if (preconnect && src.startsWith('https://') && typeof document !== 'undefined') {
+      const urlObj = new URL(src);
+      const origin = urlObj.origin;
+      
+      if (!document.querySelector(`link[rel="preconnect"][href="${origin}"]`)) {
+        const linkEl = document.createElement('link');
+        linkEl.rel = 'preconnect';
+        linkEl.href = origin;
+        linkEl.crossOrigin = 'anonymous';
+        document.head.appendChild(linkEl);
+        
+        // Also add dns-prefetch as fallback
+        const dnsEl = document.createElement('link');
+        dnsEl.rel = 'dns-prefetch';
+        dnsEl.href = origin;
+        document.head.appendChild(dnsEl);
+      }
     }
     
     const script = document.createElement('script');
@@ -208,7 +230,7 @@ export function setupLazyLoading(): void {
  */
 export function processInChunks<T, R>(
   items: T[],
-  processor: (item: T) => R,
+  processor: (item: T, index: number) => R,
   chunkSize = 5
 ): Promise<R[]> {
   return new Promise((resolve) => {
@@ -219,7 +241,7 @@ export function processInChunks<T, R>(
       const startTime = performance.now();
       
       while (index < items.length) {
-        results.push(processor(items[index]));
+        results.push(processor(items[index], index));
         index++;
         
         // Process items in chunks of time (max 50ms per chunk)
@@ -234,4 +256,82 @@ export function processInChunks<T, R>(
     
     processNextChunk();
   });
+}
+
+/**
+ * Pre-renders critical components into document fragments to speed up mounting
+ * @param componentFactory Function that returns the component's DOM
+ * @param id Unique identifier for the component
+ */
+export function preRenderComponent(
+  componentFactory: () => HTMLElement,
+  id: string
+): void {
+  if (typeof window === 'undefined' || !('requestIdleCallback' in window)) return;
+  
+  // Store pre-rendered components in a global cache
+  if (!window.__PRE_RENDERED_COMPONENTS__) {
+    window.__PRE_RENDERED_COMPONENTS__ = new Map();
+  }
+  
+  // Don't re-render if already cached
+  if (window.__PRE_RENDERED_COMPONENTS__.has(id)) return;
+  
+  // Create during idle time
+  requestIdleCallback(() => {
+    try {
+      const fragment = document.createDocumentFragment();
+      const element = componentFactory();
+      fragment.appendChild(element);
+      window.__PRE_RENDERED_COMPONENTS__.set(id, fragment);
+    } catch (e) {
+      console.warn('Failed to pre-render component:', e);
+    }
+  }, { timeout: 2000 });
+}
+
+// Add global type for pre-rendered components
+declare global {
+  interface Window {
+    __PRE_RENDERED_COMPONENTS__?: Map<string, DocumentFragment>;
+  }
+}
+
+/**
+ * Checks if a value is a primitive type that can be safely stored
+ */
+export function isPrimitive(value: any): boolean {
+  return (
+    value === null ||
+    value === undefined ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  );
+}
+
+/**
+ * Creates a safe serializable version of an object for logging
+ * (useful to prevent circular reference errors)
+ */
+export function safeSerialize(obj: any, maxDepth = 3, currentDepth = 0): any {
+  if (currentDepth > maxDepth) return '[Max Depth Exceeded]';
+  if (isPrimitive(obj)) return obj;
+  if (typeof obj === 'function') return '[Function]';
+  
+  if (Array.isArray(obj)) {
+    return obj.map(item => safeSerialize(item, maxDepth, currentDepth + 1));
+  }
+  
+  if (typeof obj === 'object') {
+    const result: Record<string, any> = {};
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        result[key] = safeSerialize(obj[key], maxDepth, currentDepth + 1);
+      }
+    }
+    return result;
+  }
+  
+  return String(obj);
 }

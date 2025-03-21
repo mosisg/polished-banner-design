@@ -35,8 +35,9 @@ const Layout: React.FC = () => {
       new PerformanceObserver((entryList) => {
         let clsValue = 0;
         for (const entry of entryList.getEntries()) {
-          if (!entry.hadRecentInput) {
-            clsValue += entry.value;
+          // Check if the entry has the hadRecentInput property (LayoutShift entries only)
+          if (entry.entryType === 'layout-shift' && !(entry as any).hadRecentInput) {
+            clsValue += (entry as any).value;
           }
         }
         console.log(`CLS: ${clsValue}`);
