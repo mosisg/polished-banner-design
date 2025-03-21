@@ -10,7 +10,6 @@ import MobilePlansSEO from '@/components/mobile/MobilePlansSEO';
 import MobileHero from '@/components/mobile/MobileHero';
 import MobilePlansContent from '@/components/mobile/MobilePlansContent';
 import LoadingState from '@/components/mobile/LoadingState';
-import PageBreadcrumb from '@/components/navigation/PageBreadcrumb';
 import RelatedContent, { RelatedLink } from '@/components/navigation/RelatedContent';
 
 /**
@@ -84,7 +83,6 @@ const MobilePlans = () => {
 
       <div className="flex flex-col min-h-screen">
         <Header />
-        <PageBreadcrumb />
         <main>
           <h1 className="sr-only">Forfaits Mobiles - ComparePrix</h1>
           <MobileHero />

@@ -17,8 +17,6 @@ const pathNames: Record<string, string> = {
   'internet': 'Box Internet',
   'telephones': 'Téléphones',
   'blog': 'Blog',
-  'login': 'Connexion',
-  'signup': 'Inscription',
   'terms': 'CGV',
   'privacy': 'Politique de Confidentialité',
   'cookies': 'Politique des Cookies',
@@ -43,7 +41,7 @@ const PageBreadcrumb = ({ customPaths }: PageBreadcrumbProps) => {
   }
 
   return (
-    <Breadcrumb className="px-4 py-3 md:px-8 bg-muted/30">
+    <Breadcrumb className="px-4 py-3 md:px-8 bg-muted/30 border-b border-border/40">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink asChild>
