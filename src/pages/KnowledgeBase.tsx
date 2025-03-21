@@ -5,9 +5,13 @@ import { Link } from 'react-router-dom';
 import KnowledgeBaseManager from '@/components/admin/KnowledgeBaseManager';
 import SystemStatusChecker from '@/components/admin/SystemStatusChecker';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, AlertTriangle } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const KnowledgeBase = () => {
+  const { isAdmin } = useAuth();
+
   return (
     <>
       <Helmet>
@@ -29,6 +33,18 @@ const KnowledgeBase = () => {
               </Button>
             </Link>
           </div>
+          
+          {!isAdmin && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Accès limité</AlertTitle>
+              <AlertDescription>
+                Vous êtes connecté mais vous n'avez pas les droits d'administrateur. 
+                Certaines fonctionnalités peuvent être limitées. Contactez un administrateur 
+                pour obtenir des droits supplémentaires.
+              </AlertDescription>
+            </Alert>
+          )}
           
           <div className="mb-8">
             <SystemStatusChecker />

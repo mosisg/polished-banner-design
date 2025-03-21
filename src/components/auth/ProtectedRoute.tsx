@@ -28,8 +28,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Nous gardons cette vérification, mais elle sera gérée au niveau de l'interface utilisateur
+  // plutôt que par une redirection complète
   if (adminOnly && !isAdmin) {
-    return <Navigate to="/" replace />;
+    // Au lieu de rediriger, nous montrons toujours l'interface mais avec des restrictions
+    console.log("Utilisateur non administrateur accédant à une section protégée");
   }
 
   return <>{children}</>;

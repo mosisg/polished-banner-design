@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, Phone, Wifi, Home, Book, Smartphone, FileText, LogIn, LogOut, User } from 'lucide-react';
+import { Menu, Phone, Wifi, Home, Book, Smartphone, FileText, LogIn, LogOut, User, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import { cn } from '@/lib/utils';
@@ -129,17 +129,18 @@ const Header = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center space-x-2">
-            {isAdmin && (
+            {/* Admin link - now showing for all logged in users */}
+            {user && (
               <Link
                 to="/admin/knowledge-base"
-                className="hidden md:flex items-center px-3 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted/50 transition-all duration-200 text-sm font-medium"
+                className="flex items-center px-3 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted/50 transition-all duration-200 text-sm font-medium"
               >
-                <Book className="w-4 h-4 mr-2" />
-                Admin
+                <ShieldAlert className="w-4 h-4 mr-2" />
+                <span className="hidden md:inline">Admin</span>
               </Link>
             )}
             
-            {/* Login/Logout Button - Modified to show on all screen sizes */}
+            {/* Login/Logout Button */}
             {user ? (
               <Button
                 variant="ghost"
@@ -208,29 +209,29 @@ const Header = () => {
             </Link>
           ))}
           
+          {/* Admin link in mobile menu - also showing for all logged in users */}
+          {user && (
+            <Link
+              to="/admin/knowledge-base"
+              className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer"
+              role="menuitem"
+              onClick={handleCloseMobileMenu}
+            >
+              <ShieldAlert className="w-5 h-5 mr-3" />
+              <span className="text-base">Admin</span>
+            </Link>
+          )}
+          
           {/* Auth links in mobile menu */}
           {user ? (
-            <>
-              {isAdmin && (
-                <Link
-                  to="/admin/knowledge-base"
-                  className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer"
-                  role="menuitem"
-                  onClick={handleCloseMobileMenu}
-                >
-                  <Book className="w-5 h-5 mr-3" />
-                  <span className="text-base">Admin</span>
-                </Link>
-              )}
-              <button
-                className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer w-full text-left"
-                role="menuitem"
-                onClick={handleLogout}
-              >
-                <LogOut className="w-5 h-5 mr-3" />
-                <span className="text-base">Déconnexion</span>
-              </button>
-            </>
+            <button
+              className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer w-full text-left"
+              role="menuitem"
+              onClick={handleLogout}
+            >
+              <LogOut className="w-5 h-5 mr-3" />
+              <span className="text-base">Déconnexion</span>
+            </button>
           ) : (
             <Link
               to="/login"
