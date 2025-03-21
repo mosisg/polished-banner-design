@@ -1,109 +1,139 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
-import { RefreshCcw, Loader2, XCircle } from 'lucide-react';
+import { Loader2, RefreshCw } from 'lucide-react';
 import StatusItem from './status/StatusItem';
 import StatusAlert from './status/StatusAlert';
 import { checkSystemStatus, getSystemReadiness, SystemStatus } from '@/services/admin/statusChecker';
+import { useToast } from '@/hooks/use-toast';
 
-interface SystemStatusCheckerProps {
-  onRefresh?: () => void;
-}
+const DEFAULT_STATUS: SystemStatus = {
+  tableExists: false,
+  functionExists: false,
+  edgeFunctionsReady: false,
+  apiKeyConfigured: false
+};
 
-const SystemStatusChecker: React.FC<SystemStatusCheckerProps> = ({ onRefresh }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [systemStatus, setSystemStatus] = useState<SystemStatus>({
-    tableExists: false,
-    functionExists: false,
-    edgeFunctionsReady: false,
-    apiKeyConfigured: false
-  });
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  
-  const checkSystem = async () => {
+const SystemStatusChecker: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [systemStatus, setSystemStatus] = useState<SystemStatus>(DEFAULT_STATUS);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const { toast } = useToast();
+
+  const checkStatus = async () => {
+    // Clean up previous controller if exists
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Create new abort controller for this request
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    
     setIsLoading(true);
-    setErrorMessage(null);
-    
-    // Create AbortController for the timeout
-    const abortController = new AbortController();
-    
-    // Set a timeout to avoid infinite loading
-    const timeoutId = setTimeout(() => {
-      abortController.abort();
-      setIsLoading(false);
-      setErrorMessage("La vérification du système a pris trop de temps. Veuillez réessayer.");
-    }, 10000); // 10 seconds timeout
+    setHasError(false);
     
     try {
-      const status = await checkSystemStatus(abortController.signal);
-      setSystemStatus(status);
-    } catch (err) {
-      console.error('Error checking system:', err);
-      setErrorMessage(err instanceof Error ? err.message : 'Une erreur est survenue lors de la vérification du système. Veuillez réessayer.');
-    } finally {
+      // Set a timeout to prevent endless loading
+      const timeoutId = setTimeout(() => {
+        if (abortControllerRef.current === controller) {
+          controller.abort();
+          console.log("Status check aborted due to timeout");
+          throw new Error("La vérification du statut a pris trop de temps. Veuillez réessayer.");
+        }
+      }, 10000); // 10 seconds timeout
+      
+      const status = await checkSystemStatus(controller.signal);
+      
       clearTimeout(timeoutId);
-      setIsLoading(false);
+      
+      if (abortControllerRef.current === controller) {
+        setSystemStatus(status);
+        abortControllerRef.current = null;
+      }
+    } catch (error) {
+      console.error("Error checking system status:", error);
+      setHasError(true);
+      
+      toast({
+        title: "Erreur",
+        description: error instanceof Error ? error.message : "Une erreur est survenue lors de la vérification du statut. Veuillez réessayer.",
+        variant: "destructive"
+      });
+    } finally {
+      if (abortControllerRef.current === controller) {
+        setIsLoading(false);
+        abortControllerRef.current = null;
+      }
     }
   };
-  
-  // Check system on component mount
+
   useEffect(() => {
-    checkSystem();
+    checkStatus();
+    
+    return () => {
+      // Cleanup on unmount
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, []);
-  
-  const handleRefresh = () => {
-    checkSystem();
-    if (onRefresh) onRefresh();
-  };
-  
-  const readinessStatus = getSystemReadiness(systemStatus);
-  
+
+  const readiness = getSystemReadiness(systemStatus);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          État du système RAG
-          <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
-            {isLoading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <RefreshCcw className="h-4 w-4" />
-            )}
-          </Button>
-        </CardTitle>
+        <CardTitle>Statut du système</CardTitle>
         <CardDescription>
-          Vérification de la configuration nécessaire pour le système de réponses contextualisées
+          Vérifiez si tous les composants nécessaires sont correctement configurés.
         </CardDescription>
       </CardHeader>
       
       <CardContent>
-        {isLoading ? (
-          <div className="flex justify-center py-4">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="space-y-6">
+          <StatusAlert readiness={readiness} hasError={hasError} />
+          
+          <div className="space-y-4">
+            <StatusItem 
+              label="Table de documents" 
+              status={systemStatus.tableExists} 
+            />
+            <StatusItem 
+              label="Fonction de recherche vectorielle" 
+              status={systemStatus.functionExists} 
+            />
+            <StatusItem 
+              label="Edge Functions déployées" 
+              status={systemStatus.edgeFunctionsReady} 
+            />
+            <StatusItem 
+              label="API OpenAI configurée" 
+              status={systemStatus.apiKeyConfigured} 
+            />
           </div>
-        ) : errorMessage ? (
-          <Alert variant="destructive">
-            <XCircle className="h-4 w-4" />
-            <AlertTitle>Erreur</AlertTitle>
-            <AlertDescription>{errorMessage}</AlertDescription>
-          </Alert>
-        ) : (
-          <>
-            <div className="space-y-4">
-              <StatusItem label="Table 'documents'" status={systemStatus.tableExists} />
-              <StatusItem label="Fonction 'match_documents'" status={systemStatus.functionExists} />
-              <StatusItem label="Edge Functions" status={systemStatus.edgeFunctionsReady} />
-              <StatusItem label="Clé API OpenAI" status={systemStatus.apiKeyConfigured} />
-            </div>
-            
-            <Separator className="my-4" />
-            
-            <StatusAlert status={readinessStatus} />
-          </>
-        )}
+          
+          <Button 
+            onClick={checkStatus} 
+            disabled={isLoading}
+            variant="outline" 
+            className="w-full"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Vérification en cours...
+              </>
+            ) : (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Actualiser le statut
+              </>
+            )}
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
