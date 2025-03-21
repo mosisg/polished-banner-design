@@ -22,7 +22,7 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
         {article.cover?.url ? (
           <OptimizedImage 
             src={article.cover.url} 
-            alt={article.cover.alternativeText || `Image pour l'article: ${article.title}`}
+            alt={`Image pour l'article: ${article.title}`}
             width={400}
             height={225}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"

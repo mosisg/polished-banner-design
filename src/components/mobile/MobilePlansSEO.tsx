@@ -19,7 +19,7 @@ const MobilePlansSEO = ({ filteredPlans }: MobilePlansSEOProps) => {
         "item": {
           "@type": "Product",
           "name": `${plan.operator} ${plan.name}`,
-          "description": `Forfait mobile ${plan.data} avec ${plan.coverage} - ${plan.engagement ? 'Avec engagement' : 'Sans engagement'}`,
+          "description": `Forfait mobile ${plan.data} avec ${plan.coverage}`,
           "offers": {
             "@type": "Offer",
             "price": parseFloat(plan.price.match(/\d+\.\d+/)?.[0] || '0'),
