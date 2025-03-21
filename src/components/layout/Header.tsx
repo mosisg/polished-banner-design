@@ -139,25 +139,26 @@ const Header = () => {
               </Link>
             )}
             
+            {/* Login/Logout Button - Modified to show on all screen sizes */}
             {user ? (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
-                className="hidden md:flex items-center"
+                className="flex items-center"
               >
                 <LogOut className="w-4 h-4 mr-2" />
-                Déconnexion
+                <span className="hidden md:inline">Déconnexion</span>
               </Button>
             ) : (
               <Link to="/login">
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  className="hidden md:flex items-center"
+                  className="flex items-center"
                 >
                   <LogIn className="w-4 h-4 mr-2" />
-                  Connexion
+                  <span className="hidden md:inline">Connexion</span>
                 </Button>
               </Link>
             )}
