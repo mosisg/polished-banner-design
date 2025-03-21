@@ -74,8 +74,8 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
       'openai-chat',
       { 
         body: { health_check: true },
-        // AbortSignal is passed for timeout management
-        abortSignal
+        // Use abortSignal directly in the invoke options
+        signal: abortSignal
       }
     );
     

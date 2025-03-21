@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -109,6 +110,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const isUserAdmin = await checkAdminStatus(data.user.id);
         setIsAdmin(isUserAdmin);
       }
+      
+      // Return void rather than the data object
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
