@@ -41,6 +41,16 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     }
   }, [user, isAdmin, adminOnly, isLoading, toast, session, navigate]);
 
+  // Debug logs to help identify issues
+  console.log("ProtectedRoute state:", {
+    isLoading,
+    hasUser: !!user,
+    hasSession: !!session,
+    isAdmin,
+    adminOnly,
+    currentPath: location.pathname
+  });
+
   if (isLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">

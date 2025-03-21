@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SystemStatus {
@@ -102,18 +101,10 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
         return status;
       }
       
-      // Set up the options with the health check parameter
-      const options: { body: { health_check: boolean }, signal?: AbortSignal } = {
+      // Call the edge function with health check parameter
+      const { data, error } = await supabase.functions.invoke('openai-chat', {
         body: { health_check: true }
-      };
-      
-      // Add the abort signal if provided
-      if (abortSignal) {
-        options.signal = abortSignal;
-      }
-      
-      // Call the edge function with the correct parameters structure
-      const { data, error } = await supabase.functions.invoke('openai-chat', options);
+      });
       
       if (abortSignal?.aborted) {
         console.log("Edge function check aborted after call");

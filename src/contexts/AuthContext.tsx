@@ -24,6 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkAdminStatus = async (userId: string) => {
     try {
+      console.log("Checking admin status for user:", userId);
       const { data, error } = await supabase
         .from('profiles')
         .select('is_admin')
@@ -35,6 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return false;
       }
       
+      console.log("Admin status result:", data);
       return data?.is_admin || false;
     } catch (err) {
       console.error('Failed to check admin status:', err);
@@ -48,14 +50,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     const initSession = async () => {
       try {
+        console.log("Initializing auth session");
         const { data: { session } } = await supabase.auth.getSession();
         
         if (mounted) {
+          console.log("Session from getSession:", session ? "exists" : "null");
           setSession(session);
           setUser(session?.user ?? null);
 
           if (session?.user) {
             const isUserAdmin = await checkAdminStatus(session.user.id);
+            console.log("User admin status:", isUserAdmin);
             setIsAdmin(isUserAdmin);
           } else {
             setIsAdmin(false);
@@ -75,8 +80,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
     
+    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
+        console.log("Auth state changed:", event, session ? "session exists" : "no session");
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
@@ -93,6 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
+    // THEN check for existing session
     initSession();
 
     return () => {
@@ -103,15 +111,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signIn = async (email: string, password: string): Promise<void> => {
     try {
+      console.log("Attempting sign in for:", email);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
       
+      console.log("Sign in successful:", data.user?.id);
       if (data.user) {
         const isUserAdmin = await checkAdminStatus(data.user.id);
         setIsAdmin(isUserAdmin);
       }
-      
-      // Return void rather than the data object
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -120,9 +128,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     try {
+      console.log("Attempting sign out");
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
+      console.log("Sign out successful");
       setIsAdmin(false);
       setUser(null);
       setSession(null);
