@@ -3,8 +3,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Filter } from 'lucide-react';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
-import FilterPanel from '@/components/mobile/FilterPanel';
 import { NetworkType } from '@/types/mobile';
+import FilterPanel from '@/components/mobile/FilterPanel';
 
 interface MobileFilterDialogProps {
   dataRange: number[];
