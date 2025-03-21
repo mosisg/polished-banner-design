@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, Phone, Wifi, Home, Flame, Package, Smartphone, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from '@/components/ui/ThemeToggle';
@@ -24,6 +24,13 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const headerRef = useRef<HTMLElement>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   // Gestion du défilement
   useEffect(() => {
@@ -57,6 +64,19 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Handle navigation with Link component to prevent full page reloads
+  const handleNavigation = (path: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    if (path === location.pathname) {
+      // If it's the same route, just close the menu
+      setIsMobileMenuOpen(false);
+      return;
+    }
+    
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header 
       ref={headerRef}
@@ -73,7 +93,7 @@ const Header = () => {
           <Link 
             to="/" 
             className="flex items-center space-x-2 group transition-all"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={(e) => handleNavigation('/', e)}
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-blue-purple flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-105">
               <span className="text-white font-bold text-lg">C</span>
@@ -91,6 +111,7 @@ const Header = () => {
                 key={index}
                 to={item.href}
                 className="relative px-3 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted/50 transition-all duration-200 flex items-center text-sm font-medium"
+                onClick={(e) => handleNavigation(item.href, e)}
               >
                 {item.icon}
                 {item.label}
@@ -137,7 +158,7 @@ const Header = () => {
               key={index}
               to={item.href}
               className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground"
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={(e) => handleNavigation(item.href, e)}
               role="menuitem"
             >
               {React.cloneElement(item.icon, { className: "w-5 h-5 mr-3" })}
