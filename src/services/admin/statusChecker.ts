@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SystemStatus {
@@ -23,14 +22,7 @@ export const getSystemReadiness = (status: SystemStatus): SystemReadiness => {
 };
 
 export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<SystemStatus> => {
-  // Verify session is valid before proceeding
-  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-  
-  if (sessionError || !sessionData.session) {
-    throw new Error("Session invalide ou expirée. Veuillez vous reconnecter.");
-  }
-  
-  // Initialize status object
+  // Initialize status object with default values
   const status: SystemStatus = {
     tableExists: false,
     functionExists: false,
@@ -38,67 +30,72 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
     apiKeyConfigured: false
   };
   
-  // Check if documents table exists
   try {
-    const { data: tableData, error: tableError } = await supabase
-      .from('documents')
-      .select('id')
-      .limit(1);
+    // Verify session is valid before proceeding
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
     
-    status.tableExists = !tableError;
-  } catch (err) {
-    console.log("Table check error:", err);
-    status.tableExists = false;
-  }
-  
-  // Check if search function exists by trying to call it with safe parameters
-  try {
-    const { data: functionData, error: functionError } = await supabase.rpc(
-      'match_documents',
-      { 
-        query_embedding: Array(1536).fill(0),
-        match_threshold: 0.0,
-        match_count: 1
+    if (sessionError || !sessionData.session) {
+      console.log("Session invalid or expired:", sessionError);
+      return status; // Return early with default status
+    }
+    
+    // Check if documents table exists
+    try {
+      const { error: tableError } = await supabase
+        .from('documents')
+        .select('id')
+        .limit(1)
+        .abortSignal(abortSignal);
+      
+      status.tableExists = !tableError;
+    } catch (err) {
+      console.log("Table check error:", err);
+      // Keep status.tableExists as false
+    }
+    
+    // Check if search function exists by trying to call it with safe parameters
+    try {
+      const { error: functionError } = await supabase.rpc(
+        'match_documents',
+        { 
+          query_embedding: Array(1536).fill(0),
+          match_threshold: 0.0,
+          match_count: 1
+        },
+        { abortSignal }
+      );
+      
+      status.functionExists = !functionError;
+    } catch (err) {
+      console.log("Function check error:", err);
+      // Keep status.functionExists as false
+    }
+    
+    // Check if Edge Functions are deployed
+    try {
+      // Set up the options with the health check parameter
+      const options = {
+        body: { health_check: true }
+      };
+      
+      // Call the edge function with the correct parameters structure
+      const { data, error } = await supabase.functions.invoke('openai-chat', options);
+      
+      if (error) {
+        console.log("Edge function error:", error);
+        // Keep status values as false
+      } else if (data) {
+        status.edgeFunctionsReady = data.status === 'ok';
+        status.apiKeyConfigured = data.openai_key_configured === true;
       }
-    );
-    
-    status.functionExists = !functionError;
-  } catch (err) {
-    console.log("Function check error:", err);
-    status.functionExists = false;
-  }
-  
-  // Check if Edge Functions are deployed
-  try {
-    // Create options object combining request body and signal if available
-    const options: {
-      body: { health_check: boolean };
-      signal?: AbortSignal;
-    } = {
-      body: { health_check: true }
-    };
-    
-    // Add abort signal to the options if provided
-    if (abortSignal) {
-      options.signal = abortSignal;
+    } catch (err) {
+      console.log("Edge function invocation error:", err);
+      // Keep edgeFunctionsReady and apiKeyConfigured as false
     }
     
-    // Call the edge function with the correct parameters structure
-    const response = await supabase.functions.invoke('openai-chat', options);
-    
-    if (response.error) {
-      console.log("Edge function error:", response.error);
-      status.edgeFunctionsReady = false;
-      status.apiKeyConfigured = false;
-    } else {
-      const healthCheck = response.data;
-      status.edgeFunctionsReady = healthCheck?.status === 'ok';
-      status.apiKeyConfigured = healthCheck?.openai_key_configured === true;
-    }
-  } catch (err) {
-    console.log("Edge function invocation error:", err);
-    status.edgeFunctionsReady = false;
-    status.apiKeyConfigured = false;
+  } catch (error) {
+    console.error("General error checking system status:", error);
+    // Return default status in case of general error
   }
   
   return status;

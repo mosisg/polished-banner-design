@@ -97,8 +97,11 @@ const SystemStatusChecker: React.FC = () => {
   };
 
   useEffect(() => {
-    // Only run on mount
-    checkStatus();
+    // Only run on mount and only for admin pages
+    const path = window.location.pathname;
+    if (path.includes('admin')) {
+      checkStatus();
+    }
   }, []);
 
   const readiness = getSystemReadiness(systemStatus);
