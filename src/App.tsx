@@ -44,21 +44,17 @@ function App() {
           </Route>
 
           {/* Routes d'authentification admin */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin/signup" element={<AdminSignup />} />
+          <Route path="admin/login" element={<AdminLogin />} />
+          <Route path="admin/signup" element={<AdminSignup />} />
           
           {/* Routes admin protégées */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route path="knowledge-base" element={
-              <ProtectedRoute>
-                <KnowledgeBase />
-              </ProtectedRoute>
-            } />
-            <Route path="users" element={
-              <ProtectedRoute>
-                <AdminUsers />
-              </ProtectedRoute>
-            } />
+          <Route path="admin" element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }>
+            <Route path="knowledge-base" element={<KnowledgeBase />} />
+            <Route path="users" element={<AdminUsers />} />
           </Route>
         </Routes>
       </Suspense>
