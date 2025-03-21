@@ -71,7 +71,6 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
   // Check if Edge Functions are deployed
   try {
     // Create an object that wraps the options and abortSignal
-    // This works around the TypeScript error by using the correct properties
     const invokeOptions = { body: { health_check: true } };
     
     // If abortSignal exists, create a fetch controller to handle it
@@ -88,7 +87,7 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
       'openai-chat',
       invokeOptions,
       // Use the controller's signal if available
-      { fetcher: controller ? fetch : undefined, abortController: controller }
+      controller ? { fetcher: fetch, abortController: controller } : undefined
     );
     
     if (response.error) {

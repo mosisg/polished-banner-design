@@ -2,15 +2,27 @@
 import React from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
-
-export type SystemReadiness = 'ready' | 'partial' | 'not-ready';
+import { SystemReadiness } from '@/services/admin/statusChecker';
 
 interface StatusAlertProps {
-  status: SystemReadiness;
+  readiness: SystemReadiness;
+  hasError: boolean;
 }
 
-const StatusAlert: React.FC<StatusAlertProps> = ({ status }) => {
-  if (status === 'ready') {
+const StatusAlert: React.FC<StatusAlertProps> = ({ readiness, hasError }) => {
+  if (hasError) {
+    return (
+      <Alert variant="destructive">
+        <XCircle className="h-4 w-4" />
+        <AlertTitle>Erreur de connexion</AlertTitle>
+        <AlertDescription>
+          Impossible de vérifier le statut du système. Veuillez réessayer dans quelques instants.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+  
+  if (readiness === 'ready') {
     return (
       <Alert className="bg-green-500/10 border-green-500/50">
         <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -21,7 +33,7 @@ const StatusAlert: React.FC<StatusAlertProps> = ({ status }) => {
         </AlertDescription>
       </Alert>
     );
-  } else if (status === 'partial') {
+  } else if (readiness === 'partial') {
     return (
       <Alert>
         <AlertTriangle className="h-4 w-4" />
