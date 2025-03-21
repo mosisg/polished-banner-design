@@ -1,17 +1,44 @@
 
 import React from 'react';
-import { Outlet, Navigate, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '@/components/ui/use-toast';
 
 const AdminLayout: React.FC = () => {
-  const { user, isLoading, session, signOut } = useAuth();
-  const location = useLocation();
+  const { user, isLoading, session, signOut, isAdmin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { toast } = useToast();
 
-  // Rediriger vers la page de login si l'utilisateur n'est pas connecté
+  console.log("AdminLayout state:", {
+    isLoading,
+    hasUser: !!user,
+    hasSession: !!session,
+    isAdmin,
+    currentPath: location.pathname
+  });
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast({
+        title: "Déconnexion réussie",
+        description: "Vous avez été déconnecté avec succès.",
+      });
+      navigate('/admin/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast({
+        title: "Erreur de déconnexion",
+        description: "Une erreur est survenue lors de la déconnexion.",
+        variant: "destructive"
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
@@ -20,19 +47,15 @@ const AdminLayout: React.FC = () => {
     );
   }
 
-  // Si l'utilisateur n'est pas connecté et n'est pas déjà sur la page de login
   if (!user || !session) {
-    return <Navigate to="/admin/login" state={{ from: location.pathname }} replace />;
+    toast({
+      title: "Accès non autorisé",
+      description: "Veuillez vous connecter pour accéder à cette page.",
+      variant: "destructive"
+    });
+    navigate('/admin/login', { replace: true, state: { from: location.pathname } });
+    return null;
   }
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      navigate('/');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">

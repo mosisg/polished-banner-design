@@ -23,7 +23,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, user, session } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
@@ -32,16 +32,13 @@ const AdminLogin = () => {
   const from = (location.state as { from?: string })?.from || '/admin/knowledge-base';
 
   useEffect(() => {
-    // Check if we already have a session
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate('/admin/knowledge-base', { replace: true });
-      }
-    };
-    
-    checkSession();
-  }, [navigate]);
+    console.log("AdminLogin - Auth state:", { user, session, from });
+    // If user is already logged in with valid session, redirect to admin dashboard
+    if (user && session) {
+      console.log("User already logged in, redirecting to:", from);
+      navigate(from, { replace: true });
+    }
+  }, [user, session, navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +55,7 @@ const AdminLogin = () => {
       });
       
       // Redirect to the previous page or admin dashboard
+      console.log("Login successful, redirecting to:", from);
       navigate(from, { replace: true });
     } catch (error) {
       console.error('Login error:', error);

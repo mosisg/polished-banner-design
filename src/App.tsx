@@ -21,6 +21,8 @@ import Sitemap from './pages/Sitemap';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { Toaster } from '@/components/ui/toaster';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
 function App() {
   return (
@@ -40,6 +42,8 @@ function App() {
             <Route path="cookies" element={<PolitiqueCookies />} />
             <Route path="legal" element={<MentionsLegales />} />
             <Route path="sitemap" element={<Sitemap />} />
+            <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
             <Route path="*" element={<NotFound />} />
           </Route>
 

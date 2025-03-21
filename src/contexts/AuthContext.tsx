@@ -48,39 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let mounted = true;
     setIsLoading(true);
     
-    const initSession = async () => {
-      try {
-        console.log("Initializing auth session");
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (mounted) {
-          console.log("Session from getSession:", session ? "exists" : "null");
-          setSession(session);
-          setUser(session?.user ?? null);
-
-          if (session?.user) {
-            const isUserAdmin = await checkAdminStatus(session.user.id);
-            console.log("User admin status:", isUserAdmin);
-            setIsAdmin(isUserAdmin);
-          } else {
-            setIsAdmin(false);
-          }
-        }
-      } catch (err) {
-        console.error('Error initializing session:', err);
-        toast({
-          title: "Erreur de session",
-          description: "Impossible de récupérer votre session. Veuillez vous reconnecter.",
-          variant: "destructive"
-        });
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-    
-    // Set up auth state listener FIRST
+    // IMPORTANT: Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log("Auth state changed:", event, session ? "session exists" : "no session");
@@ -101,13 +69,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // THEN check for existing session
+    const initSession = async () => {
+      try {
+        console.log("Initializing auth session");
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (mounted) {
+          console.log("Session from getSession:", session ? "exists" : "null");
+          setSession(session);
+          setUser(session?.user ?? null);
+
+          if (session?.user) {
+            const isUserAdmin = await checkAdminStatus(session.user.id);
+            console.log("User admin status:", isUserAdmin);
+            setIsAdmin(isUserAdmin);
+          } else {
+            setIsAdmin(false);
+          }
+          setIsLoading(false);
+        }
+      } catch (err) {
+        console.error('Error initializing session:', err);
+        if (mounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+    
     initSession();
 
     return () => {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [toast]);
+  }, []);
 
   const signIn = async (email: string, password: string): Promise<void> => {
     try {
