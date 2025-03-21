@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Phone, Wifi, Smartphone, FileText, LogIn } from 'lucide-react';
+import { Phone, Wifi, Smartphone, FileText } from 'lucide-react';
 import { NavItem } from './types';
 
 export const navItems: NavItem[] = [
@@ -8,5 +8,4 @@ export const navItems: NavItem[] = [
   { label: 'Box Internet', href: '/internet', icon: <Wifi className="w-4 h-4 mr-2" /> },
   { label: 'Téléphones', href: '/telephones', icon: <Phone className="w-4 h-4 mr-2" /> },
   { label: 'Blog', href: '/blog', icon: <FileText className="w-4 h-4 mr-2" /> },
-  { label: 'Connexion / Inscription', href: '/login', icon: <LogIn className="w-4 h-4 mr-2" /> },
 ];

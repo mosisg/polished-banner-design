@@ -45,7 +45,7 @@ const MobileNavigation = ({
             </Link>
           ))}
           
-          {/* Admin links now accessible to anyone */}
+          {/* Admin links */}
           <Link
             to="/admin/knowledge-base"
             className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer"

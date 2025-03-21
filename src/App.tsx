@@ -13,8 +13,6 @@ const InternetBoxes = lazy(() => import('./pages/InternetBoxes'));
 const Telephones = lazy(() => import('./pages/Telephones'));
 const Blog = lazy(() => import('./pages/Blog'));
 const BlogArticle = lazy(() => import('./pages/BlogArticle'));
-const Login = lazy(() => import('./pages/Login'));
-const Signup = lazy(() => import('./pages/Signup'));
 
 // Lazy load infrequently accessed routes
 const CGV = lazy(() => import('./pages/CGV'));
@@ -66,18 +64,6 @@ function App() {
             <Route path="blog/:slug" element={
               <Suspense fallback={<LoadingIndicator />}>
                 <BlogArticle />
-              </Suspense>
-            } />
-            
-            {/* Auth routes */}
-            <Route path="login" element={
-              <Suspense fallback={<LoadingIndicator />}>
-                <Login />
-              </Suspense>
-            } />
-            <Route path="signup" element={
-              <Suspense fallback={<LoadingIndicator />}>
-                <Signup />
               </Suspense>
             } />
             

@@ -10,15 +10,17 @@ const Banner = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="w-full pt-28 md:pt-36 pb-8 md:pb-16">
+    <div className="w-full pt-24 md:pt-28 lg:pt-36 pb-6 md:pb-10 lg:pb-16">
       <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
           <BannerContent />
-          {!isMobile && <BannerIllustration />}
+          <div className="hidden md:block">
+            <BannerIllustration />
+          </div>
         </div>
 
         {/* Plan Carousel */}
-        <div className="mt-6 md:mt-12">
+        <div className="mt-6 md:mt-10 lg:mt-12">
           <PlanCarousel plans={plans} />
         </div>
       </div>

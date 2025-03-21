@@ -1,11 +1,7 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Banner from '@/components/layout/Banner';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { LogIn } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
 
 const BackgroundGradient: React.FC = () => {
   return (
@@ -56,26 +52,12 @@ const BackgroundGradient: React.FC = () => {
 };
 
 const HeroSection = () => {
-  const { user } = useAuth();
-
   return (
     <section className="relative overflow-hidden bg-gradient-to-r from-blue-600/5 to-purple-600/5">
       {/* Background Elements with subtle animation */}
       <BackgroundGradient />
       
       <Banner />
-      
-      {/* Login Button */}
-      {!user && (
-        <div className="absolute top-28 right-6 z-10 md:top-32 md:right-12">
-          <Link to="/login">
-            <Button size="lg" variant="default" className="shadow-lg flex items-center gap-2">
-              <LogIn className="h-5 w-5" />
-              <span>Connexion / Inscription</span>
-            </Button>
-          </Link>
-        </div>
-      )}
     </section>
   );
 };
