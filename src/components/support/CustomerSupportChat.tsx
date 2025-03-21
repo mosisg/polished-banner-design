@@ -1,6 +1,6 @@
 
 import React, { useEffect, lazy, Suspense } from 'react';
-import { X, Send, Bot, User, Check, CheckCheck, Database, FileText } from 'lucide-react';
+import { X, Send, Bot, User, Check, CheckCheck, Database, FileText, ThumbsUp as ThumbUpIcon, ThumbsDown as ThumbDownIcon } from 'lucide-react';
 import { 
   Sheet,
   SheetContent,
@@ -127,10 +127,10 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
                     {message.sender === 'bot' && (
                       <div className="ml-auto flex items-center gap-1">
                         <Button variant="ghost" size="icon" className="h-5 w-5 hover:text-primary dark:hover:text-primary rounded-full">
-                          <ThumbsUp className="h-3 w-3" />
+                          <ThumbUpIcon className="h-3 w-3" />
                         </Button>
                         <Button variant="ghost" size="icon" className="h-5 w-5 hover:text-destructive dark:hover:text-destructive rounded-full">
-                          <ThumbsDown className="h-3 w-3" />
+                          <ThumbDownIcon className="h-3 w-3" />
                         </Button>
                       </div>
                     )}
