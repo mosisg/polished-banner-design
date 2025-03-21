@@ -22,24 +22,22 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, isAdmin, user, session } = useAuth();
+  const { signIn, user, session } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
 
-  // Get the intended destination from location state, or default to home/admin dashboard
+  // Get the intended destination from location state, or default to home
   const from = (location.state as { from?: string })?.from || '/';
 
   // Redirect if already logged in with valid session
   useEffect(() => {
-    console.log("Login page - Auth state:", { user, session, isAdmin, from });
+    console.log("Login page - Auth state:", { user, session, from });
     if (user && session) {
-      // If user is admin, redirect to admin page, otherwise redirect to the requested page or home
-      const targetPath = isAdmin ? '/admin/knowledge-base' : from;
-      console.log("Redirecting to:", targetPath);
-      navigate(targetPath, { replace: true });
+      console.log("Redirecting to:", from);
+      navigate(from, { replace: true });
     }
-  }, [user, isAdmin, navigate, from, session]);
+  }, [user, navigate, from, session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
