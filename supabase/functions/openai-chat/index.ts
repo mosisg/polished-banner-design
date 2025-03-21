@@ -8,11 +8,6 @@ import { corsHeaders } from '../_shared/cors.ts'
 import { OpenAI } from 'https://esm.sh/openai@4.20.1'
 
 const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
-if (!openaiApiKey) throw new Error('Missing OpenAI API key')
-
-const openai = new OpenAI({
-  apiKey: openaiApiKey
-})
 
 interface ChatCompletionRequest {
   messages: {
@@ -25,6 +20,7 @@ interface ChatCompletionRequest {
   session_id?: string;
   query?: string; // For RAG search
   use_rag?: boolean; // Whether to use RAG
+  health_check?: boolean; // For system status check
 }
 
 interface Document {
@@ -80,7 +76,7 @@ Deno.serve(async (req) => {
     // Get request payload
     const payload: ChatCompletionRequest = await req.json()
     
-    // Create Supabase client for logging
+    // Create Supabase client
     const authHeader = req.headers.get('Authorization')
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
     const supabaseUrl = Deno.env.get('SUPABASE_URL') || ''
@@ -91,6 +87,43 @@ Deno.serve(async (req) => {
           Authorization: authHeader || `Bearer ${supabaseKey}`,
         },
       },
+    })
+    
+    // Handle health check request
+    if (payload.health_check) {
+      return new Response(
+        JSON.stringify({
+          status: 'ok',
+          openai_key_configured: !!openaiApiKey
+        }),
+        {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+    }
+    
+    // Check if OpenAI API key is configured
+    if (!openaiApiKey) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'OpenAI API key not configured',
+          openai_key_configured: false 
+        }),
+        { 
+          status: 500,
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+    }
+    
+    const openai = new OpenAI({
+      apiKey: openaiApiKey
     })
     
     // Destructure payload
@@ -171,6 +204,7 @@ Deno.serve(async (req) => {
         usage: response.usage,
         used_context: contextDocuments.length > 0,
         context_count: contextDocuments.length,
+        context_documents: contextDocuments.length > 0 ? contextDocuments : undefined,
       }),
       {
         headers: {
@@ -182,7 +216,10 @@ Deno.serve(async (req) => {
   } catch (error) {
     console.error('Error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        openai_key_configured: !!openaiApiKey
+      }),
       { 
         status: 500,
         headers: {
