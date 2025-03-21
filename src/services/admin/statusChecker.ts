@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SystemStatus {
@@ -55,10 +56,13 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
     
     // Check if search function exists by trying to call it with safe parameters
     try {
+      // Create a zero-filled array of length 1536 for the embedding vector
+      const zeroEmbedding = Array(1536).fill(0);
+      
       const { error: functionError } = await supabase.rpc(
         'match_documents',
         { 
-          query_embedding: Array(1536).fill(0),
+          query_embedding: zeroEmbedding,
           match_threshold: 0.0,
           match_count: 1
         },
@@ -73,9 +77,10 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
     
     // Check if Edge Functions are deployed
     try {
-      // Set up the options with the health check parameter
+      // Set up the options with the health check parameter and abort signal
       const options = {
-        body: { health_check: true }
+        body: { health_check: true },
+        signal: abortSignal
       };
       
       // Call the edge function with the correct parameters structure
