@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Smartphone, Wifi, Phone } from 'lucide-react';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { useToast } from '@/hooks/use-toast';
@@ -9,6 +10,8 @@ import MobilePlansSEO from '@/components/mobile/MobilePlansSEO';
 import MobileHero from '@/components/mobile/MobileHero';
 import MobilePlansContent from '@/components/mobile/MobilePlansContent';
 import LoadingState from '@/components/mobile/LoadingState';
+import PageBreadcrumb from '@/components/navigation/PageBreadcrumb';
+import RelatedContent, { RelatedLink } from '@/components/navigation/RelatedContent';
 
 /**
  * MobilePlans page component
@@ -54,12 +57,34 @@ const MobilePlans = () => {
     }
   }, [error, toast]);
 
+  // Define related content links
+  const relatedLinks: RelatedLink[] = [
+    {
+      path: "/internet",
+      label: "Box Internet",
+      description: "Trouvez votre box internet idéale avec notre comparateur de prix.",
+      icon: <Wifi className="h-4 w-4" />
+    },
+    {
+      path: "/telephones",
+      label: "Téléphones",
+      description: "Comparez les derniers modèles de smartphones et leurs prix.",
+      icon: <Phone className="h-4 w-4" />
+    },
+    {
+      path: "/blog",
+      label: "Blog",
+      description: "Conseils et astuces pour choisir votre forfait mobile.",
+    }
+  ];
+
   return (
     <>
       <MobilePlansSEO filteredPlans={filteredPlans} />
 
       <div className="flex flex-col min-h-screen">
         <Header />
+        <PageBreadcrumb />
         <main>
           <h1 className="sr-only">Forfaits Mobiles - ComparePrix</h1>
           <MobileHero />
@@ -88,6 +113,8 @@ const MobilePlans = () => {
               setShowFiltersDialog={setShowFiltersDialog}
             />
           )}
+
+          <RelatedContent links={relatedLinks} />
         </main>
         <Footer />
       </div>
