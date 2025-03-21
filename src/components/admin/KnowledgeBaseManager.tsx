@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -15,21 +14,10 @@ import {
   prepareDocumentForIngestion, 
   ingestDocuments, 
   getDocuments, 
-  deleteDocument 
+  deleteDocument,
+  DocumentItem
 } from '@/services/openai/documentService';
 import { useToast } from '@/hooks/use-toast';
-
-interface DocumentItem {
-  id: string;
-  content: string;
-  metadata: {
-    title?: string;
-    source?: string;
-    category?: string;
-    [key: string]: any;
-  };
-  created_at: string;
-}
 
 const KnowledgeBaseManager = () => {
   const [documents, setDocuments] = useState<DocumentItem[]>([]);

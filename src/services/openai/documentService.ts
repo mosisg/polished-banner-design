@@ -17,6 +17,13 @@ interface Document {
   metadata: DocumentMetadata;
 }
 
+export interface DocumentItem {
+  id: string;
+  content: string;
+  metadata: DocumentMetadata;
+  created_at: string;
+}
+
 interface IngestResponse {
   success: boolean;
   inserted: number;
@@ -55,10 +62,11 @@ export async function ingestDocuments(
 /**
  * Fetches all documents from the database
  */
-export async function getDocuments() {
+export async function getDocuments(): Promise<DocumentItem[]> {
   try {
-    const { data, error } = await supabase
-      .from('documents')
+    // Use 'any' assertion to bypass TypeScript error until types are properly generated
+    const { data, error } = await (supabase
+      .from('documents') as any)
       .select('*')
       .order('created_at', { ascending: false });
     
@@ -79,8 +87,9 @@ export async function getDocuments() {
  */
 export async function deleteDocument(id: string) {
   try {
-    const { error } = await supabase
-      .from('documents')
+    // Use 'any' assertion to bypass TypeScript error until types are properly generated
+    const { error } = await (supabase
+      .from('documents') as any)
       .delete()
       .eq('id', id);
     

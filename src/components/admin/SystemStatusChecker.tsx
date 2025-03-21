@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,8 +23,8 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
     
     try {
       // Check if documents table exists
-      const { data: tableData, error: tableError } = await supabase
-        .from('documents')
+      const { data: tableData, error: tableError } = await (supabase
+        .from('documents') as any)
         .select('id')
         .limit(1);
       
@@ -33,14 +32,14 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
       
       // Check if search function exists by trying to call it
       try {
-        const { data: functionData, error: functionError } = await supabase.rpc(
+        const { data: functionData, error: functionError } = await (supabase.rpc(
           'match_documents',
           { 
             query_embedding: Array(1536).fill(0),
             match_threshold: 0.0,
             match_count: 1
           }
-        );
+        ) as any);
         
         setFunctionExists(!functionError);
       } catch (err) {
@@ -70,10 +69,6 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
       setIsLoading(false);
     }
   };
-  
-  useEffect(() => {
-    checkSystem();
-  }, []);
   
   const handleRefresh = () => {
     checkSystem();
@@ -165,7 +160,7 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
                 </AlertDescription>
               </Alert>
             ) : systemStatus === 'partial' ? (
-              <Alert variant="warning">
+              <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Configuration partielle</AlertTitle>
                 <AlertDescription>
