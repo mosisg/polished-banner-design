@@ -64,9 +64,8 @@ const Header = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Handle navigation with Link component to prevent full page reloads
-  const handleNavigation = (path: string, e: React.MouseEvent) => {
-    e.preventDefault();
+  // Handle navigation without page reloads
+  const handleNavigation = (path: string) => {
     if (path === location.pathname) {
       // If it's the same route, just close the menu
       setIsMobileMenuOpen(false);
@@ -90,10 +89,9 @@ const Header = () => {
       <div className="container mx-auto h-full">
         <div className="flex items-center justify-between h-full">
           {/* Logo */}
-          <Link 
-            to="/" 
-            className="flex items-center space-x-2 group transition-all"
-            onClick={(e) => handleNavigation('/', e)}
+          <div 
+            onClick={() => handleNavigation('/')}
+            className="flex items-center space-x-2 group transition-all cursor-pointer"
           >
             <div className="w-10 h-10 rounded-xl bg-gradient-blue-purple flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-105">
               <span className="text-white font-bold text-lg">C</span>
@@ -102,20 +100,19 @@ const Header = () => {
               <span className="text-gradient-blue-purple">Compare</span>
               <span className="text-gradient-purple-pink">Prix</span>
             </div>
-          </Link>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
             {navItems.map((item, index) => (
-              <Link
+              <div
                 key={index}
-                to={item.href}
-                className="relative px-3 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted/50 transition-all duration-200 flex items-center text-sm font-medium"
-                onClick={(e) => handleNavigation(item.href, e)}
+                onClick={() => handleNavigation(item.href)}
+                className="relative px-3 py-2 rounded-lg text-foreground/80 hover:text-foreground hover:bg-muted/50 transition-all duration-200 flex items-center text-sm font-medium cursor-pointer"
               >
                 {item.icon}
                 {item.label}
-              </Link>
+              </div>
             ))}
           </nav>
 
@@ -154,16 +151,15 @@ const Header = () => {
       >
         <nav className="container mx-auto py-2 px-4 flex flex-col">
           {navItems.map((item, index) => (
-            <Link
+            <div
               key={index}
-              to={item.href}
-              className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground"
-              onClick={(e) => handleNavigation(item.href, e)}
+              onClick={() => handleNavigation(item.href)}
+              className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer"
               role="menuitem"
             >
               {React.cloneElement(item.icon, { className: "w-5 h-5 mr-3" })}
               <span className="text-base">{item.label}</span>
-            </Link>
+            </div>
           ))}
         </nav>
       </div>

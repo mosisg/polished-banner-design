@@ -85,6 +85,7 @@ const App = () => (
               <Route path="/telephones" element={<Telephones />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogArticle />} />
+              <Route path="/packages" element={<NotFound />} />
               
               {/* Policy Pages */}
               <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
