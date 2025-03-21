@@ -127,6 +127,15 @@ const AdminLogin = () => {
           </CardContent>
           <CardFooter className="flex justify-between">
             <div className="text-sm text-muted-foreground">
+              Pas encore de compte?{' '}
+              <Link 
+                to="/admin/signup" 
+                className="text-primary hover:text-primary/90 transition-colors"
+              >
+                Créer un compte
+              </Link>
+            </div>
+            <div className="text-sm text-muted-foreground">
               <Link 
                 to="/" 
                 className="text-primary hover:text-primary/90 transition-colors"
