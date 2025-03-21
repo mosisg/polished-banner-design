@@ -41,13 +41,16 @@ export function lazyLoad<T extends ComponentType<any>>(
         // Return a minimal fallback component when all retries fail
         return {
           default: (() => {
-            const FallbackComponent = (props: any) => (
-              <div className="p-4 border border-red-300 bg-red-50 text-red-800 rounded-md">
-                <h3 className="font-medium">Erreur de chargement</h3>
-                <p className="text-sm">Impossible de charger le composant. Veuillez rafraîchir la page.</p>
-              </div>
-            ) as unknown as T;
-            return FallbackComponent;
+            const FallbackComponent = (props: any) => {
+              // Using React.createElement instead of JSX
+              return React.createElement(
+                'div', 
+                { className: 'p-4 border border-red-300 bg-red-50 text-red-800 rounded-md' },
+                React.createElement('h3', { className: 'font-medium' }, 'Erreur de chargement'),
+                React.createElement('p', { className: 'text-sm' }, 'Impossible de charger le composant. Veuillez rafraîchir la page.')
+              );
+            };
+            return FallbackComponent as unknown as T;
           })()
         };
       }
