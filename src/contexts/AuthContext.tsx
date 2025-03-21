@@ -43,34 +43,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Initialize authentication state
   useEffect(() => {
-    // Set up listener for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          const isUserAdmin = await checkAdminStatus(session.user.id);
-          setIsAdmin(isUserAdmin);
-        } else {
-          setIsAdmin(false);
-        }
-        
-        setIsLoading(false);
-      }
-    );
-
+    let mounted = true;
+    setIsLoading(true);
+    
     // Get initial session
     const initSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        setSession(session);
-        setUser(session?.user ?? null);
+        
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
 
-        if (session?.user) {
-          const isUserAdmin = await checkAdminStatus(session.user.id);
-          setIsAdmin(isUserAdmin);
+          if (session?.user) {
+            const isUserAdmin = await checkAdminStatus(session.user.id);
+            setIsAdmin(isUserAdmin);
+          } else {
+            setIsAdmin(false);
+          }
         }
       } catch (err) {
         console.error('Error initializing session:', err);
@@ -80,16 +72,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           variant: "destructive"
         });
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
+    
+    // Set up listener for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          
+          if (session?.user) {
+            const isUserAdmin = await checkAdminStatus(session.user.id);
+            setIsAdmin(isUserAdmin);
+          } else {
+            setIsAdmin(false);
+          }
+          
+          setIsLoading(false);
+        }
+      }
+    );
 
     initSession();
 
     return () => {
+      mounted = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [toast]);
 
   const signIn = async (email: string, password: string) => {
     try {
@@ -100,6 +114,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const isUserAdmin = await checkAdminStatus(data.user.id);
         setIsAdmin(isUserAdmin);
       }
+      
+      return data;
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -113,6 +129,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Reset states after sign out
       setIsAdmin(false);
+      setUser(null);
+      setSession(null);
+      
+      // Force redirect will be handled by protected routes
     } catch (error) {
       console.error('Sign out error:', error);
       throw error;

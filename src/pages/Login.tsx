@@ -22,21 +22,22 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, isAdmin, user } = useAuth();
+  const { signIn, isAdmin, user, session } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
 
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
+  // Get the intended destination from location state, or default to home/admin dashboard
+  const from = (location.state as { from?: string })?.from || '/';
 
-  // Redirect if already logged in
+  // Redirect if already logged in with valid session
   useEffect(() => {
-    if (user) {
-      // If user is already logged in, redirect to the requested page or admin
+    if (user && session) {
+      // If user is admin, redirect to admin page, otherwise redirect to the requested page or home
       const targetPath = isAdmin ? '/admin/knowledge-base' : from;
       navigate(targetPath, { replace: true });
     }
-  }, [user, isAdmin, navigate, from]);
+  }, [user, isAdmin, navigate, from, session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,11 +56,17 @@ const Login = () => {
       // Let the useEffect handle the redirect based on user state
     } catch (error) {
       console.error('Login error:', error);
-      setError(
-        error instanceof Error 
-          ? error.message 
-          : 'Une erreur est survenue lors de la connexion. Vérifiez vos identifiants.'
-      );
+      
+      // Improved error messages
+      if (error instanceof Error) {
+        if (error.message.includes('Invalid login credentials')) {
+          setError('Identifiants incorrects. Veuillez vérifier votre email et mot de passe.');
+        } else {
+          setError(error.message);
+        }
+      } else {
+        setError('Une erreur est survenue lors de la connexion. Veuillez réessayer.');
+      }
     } finally {
       setIsLoading(false);
     }

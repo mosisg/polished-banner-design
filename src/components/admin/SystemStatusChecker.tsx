@@ -24,14 +24,37 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
     setIsLoading(true);
     setErrorMessage(null);
     
+    // Set a timeout to avoid infinite loading
+    const timeoutId = setTimeout(() => {
+      if (isLoading) {
+        setIsLoading(false);
+        setErrorMessage("La vérification du système a pris trop de temps. Veuillez réessayer.");
+      }
+    }, 10000); // 10 seconds timeout
+    
     try {
-      // Check if documents table exists
-      const { data: tableData, error: tableError } = await supabase
-        .from('documents')
-        .select('id')
-        .limit(1);
+      // Verify session is valid before proceeding
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
       
-      setTableExists(!tableError);
+      if (sessionError || !sessionData.session) {
+        clearTimeout(timeoutId);
+        setIsLoading(false);
+        setErrorMessage("Session invalide ou expirée. Veuillez vous reconnecter.");
+        return;
+      }
+      
+      // Check if documents table exists
+      try {
+        const { data: tableData, error: tableError } = await supabase
+          .from('documents')
+          .select('id')
+          .limit(1);
+        
+        setTableExists(!tableError);
+      } catch (err) {
+        console.log("Table check error:", err);
+        setTableExists(false);
+      }
       
       // Check if search function exists by trying to call it with safe parameters
       try {
@@ -58,7 +81,11 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
           { 
             body: { 
               health_check: true 
-            } 
+            },
+            // Add timeout to prevent hanging
+            options: {
+              signal: AbortSignal.timeout(5000) // 5 second timeout
+            }
           }
         );
         
@@ -80,6 +107,7 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
       console.error('Error checking system:', err);
       setErrorMessage('Une erreur est survenue lors de la vérification du système. Veuillez réessayer.');
     } finally {
+      clearTimeout(timeoutId);
       setIsLoading(false);
     }
   };

@@ -14,12 +14,23 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children, 
   adminOnly = false 
 }) => {
-  const { user, isLoading, isAdmin } = useAuth();
+  const { user, isLoading, isAdmin, session } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check if session is invalid but we still have user data
+    if (!isLoading && !session && user) {
+      toast({
+        title: "Session expirée",
+        description: "Votre session a expiré. Veuillez vous reconnecter.",
+        variant: "destructive"
+      });
+      navigate("/login", { replace: true });
+      return;
+    }
+
     // Show a toast if trying to access admin-only routes without admin privileges
     if (!isLoading && user && adminOnly && !isAdmin) {
       toast({
@@ -28,7 +39,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         variant: "destructive"
       });
     }
-  }, [user, isAdmin, adminOnly, isLoading, toast]);
+  }, [user, isAdmin, adminOnly, isLoading, toast, session, navigate]);
 
   if (isLoading) {
     return (
@@ -38,8 +49,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  // No user or no valid session - redirect to login
+  if (!user || !session) {
+    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
   }
 
   // Redirect non-admin users trying to access admin-only routes
