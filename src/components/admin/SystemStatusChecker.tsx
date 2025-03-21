@@ -76,18 +76,21 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
       
       // Check if Edge Functions are deployed
       try {
+        // Create an AbortController for the timeout
+        const abortController = new AbortController();
+        const timeoutPromise = setTimeout(() => {
+          abortController.abort();
+        }, 5000); // 5 second timeout
+        
         const response = await supabase.functions.invoke(
           'openai-chat',
           { 
-            body: { 
-              health_check: true 
-            },
-            // Add timeout to prevent hanging
-            options: {
-              signal: AbortSignal.timeout(5000) // 5 second timeout
-            }
+            body: { health_check: true },
+            signal: abortController.signal
           }
         );
+        
+        clearTimeout(timeoutPromise);
         
         if (response.error) {
           console.log("Edge function error:", response.error);

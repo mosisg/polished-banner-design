@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,7 +21,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
 
-  // Function to check and set admin status
   const checkAdminStatus = async (userId: string) => {
     try {
       const { data, error } = await supabase
@@ -43,12 +41,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Initialize authentication state
   useEffect(() => {
     let mounted = true;
     setIsLoading(true);
     
-    // Get initial session
     const initSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -78,7 +74,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     };
     
-    // Set up listener for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         if (mounted) {
@@ -105,7 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [toast]);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<void> => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
@@ -114,8 +109,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const isUserAdmin = await checkAdminStatus(data.user.id);
         setIsAdmin(isUserAdmin);
       }
-      
-      return data;
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -127,12 +120,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
       
-      // Reset states after sign out
       setIsAdmin(false);
       setUser(null);
       setSession(null);
-      
-      // Force redirect will be handled by protected routes
     } catch (error) {
       console.error('Sign out error:', error);
       throw error;
