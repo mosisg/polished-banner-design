@@ -26,9 +26,11 @@ export const useSupportChat = (): SupportChatState => {
   const [useRAG, setUseRAG] = useState(true);
   const [lastMessageStatus, setLastMessageStatus] = useState<MessageStatus>('none');
   const [isConnectedToOpenAI, setIsConnectedToOpenAI] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
   const { toast } = useToast();
   const messageEndRef = useRef<HTMLDivElement>(null);
   const previousMessagesRef = useRef<ChatMessage[]>([]);
+  const conversationContextRef = useRef<string[]>([]);
 
   useEffect(() => {
     const initSession = async () => {
@@ -50,6 +52,7 @@ export const useSupportChat = (): SupportChatState => {
         // Just create a simple ping message that won't be displayed
         const testResponse = await getOpenAIResponse("ping", [], sessionId, false);
         setIsConnectedToOpenAI(true);
+        setHasOpenAIFailed(false);
       } catch (err) {
         console.error("Failed to connect to OpenAI:", err);
         setIsConnectedToOpenAI(false);
@@ -68,6 +71,32 @@ export const useSupportChat = (): SupportChatState => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     previousMessagesRef.current = messages;
   }, [messages]);
+  
+  // Add this new effect to periodically retry OpenAI connection if it fails
+  useEffect(() => {
+    // Only retry if we've previously had a failure
+    if (hasOpenAIFailed && retryCount < 3) {
+      const retryTimeout = setTimeout(async () => {
+        try {
+          const testResponse = await getOpenAIResponse("ping", [], sessionId, false);
+          console.log("Successfully reconnected to OpenAI");
+          setIsConnectedToOpenAI(true);
+          setHasOpenAIFailed(false);
+          
+          toast({
+            title: "Connexion rétablie",
+            description: "La connexion au service intelligent a été rétablie.",
+            variant: "default"
+          });
+        } catch (err) {
+          console.error("Failed to reconnect to OpenAI:", err);
+          setRetryCount(prev => prev + 1);
+        }
+      }, 30000); // Try every 30 seconds
+      
+      return () => clearTimeout(retryTimeout);
+    }
+  }, [hasOpenAIFailed, retryCount, sessionId, toast]);
 
   const sendMessage = async () => {
     if (!inputText.trim()) return;
@@ -82,6 +111,9 @@ export const useSupportChat = (): SupportChatState => {
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setLastMessageStatus('sent');
+    
+    // Store this message for context
+    conversationContextRef.current.push(`User: ${inputText}`);
     
     // Try to save the message and handle potential errors silently
     saveChatMessage(sessionId, inputText, false).catch(console.error);
@@ -102,6 +134,10 @@ export const useSupportChat = (): SupportChatState => {
       
       updateBotTyping(false);
       setIsConnectedToOpenAI(true);
+      setHasOpenAIFailed(false);
+      
+      // Store the AI response for context
+      conversationContextRef.current.push(`Assistant: ${aiResponse}`);
       
       const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -130,7 +166,13 @@ export const useSupportChat = (): SupportChatState => {
       setIsConnectedToOpenAI(false);
       setHasOpenAIFailed(true);
       
-      const fallbackResponse = getSmartResponse(userMessage.text);
+      // Generate a contextual fallback response based on conversation history
+      const conversationContext = conversationContextRef.current.join("\n");
+      const fallbackPrompt = `${conversationContext}\nUser: ${userMessage.text}\nAssistant:`;
+      
+      // Get a smart response that tries to maintain context
+      const fallbackResponse = getSmartResponse(userMessage.text, fallbackPrompt);
+      
       const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         text: fallbackResponse,
@@ -141,11 +183,20 @@ export const useSupportChat = (): SupportChatState => {
       setMessages(prev => [...prev, botMessage]);
       saveChatMessage(sessionId, fallbackResponse, true).catch(console.error);
       
-      toast({
-        title: "Problème de connexion",
-        description: "Impossible de se connecter au service intelligent. Un mode limité est utilisé.",
-        variant: "destructive"
-      });
+      // Store the fallback response for context
+      conversationContextRef.current.push(`Assistant: ${fallbackResponse}`);
+      
+      // Only show the toast if this is the first failure
+      if (retryCount === 0) {
+        toast({
+          title: "Problème de connexion",
+          description: "Impossible de se connecter au service intelligent. Un mode limité est utilisé.",
+          variant: "destructive"
+        });
+      }
+      
+      // Increment retry count
+      setRetryCount(prev => prev + 1);
     }
   };
 

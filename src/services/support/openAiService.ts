@@ -33,7 +33,10 @@ export async function getOpenAIResponse(
   try {
     const systemMessage = getAssistantSystemMessage();
     
-    const formattedHistory = chatHistory.slice(1).map(msg => ({
+    // Include more context from chat history (up to last 10 messages)
+    const relevantHistory = chatHistory.slice(-10);
+    
+    const formattedHistory = relevantHistory.map(msg => ({
       role: msg.sender === 'user' ? 'user' : 'assistant',
       content: msg.text
     } as const));
@@ -48,6 +51,7 @@ export async function getOpenAIResponse(
       sessionId, 
       model: 'gpt-4-turbo',
       temperature: 0.7,
+      maxTokens: 1500, // Increased token limit for more comprehensive responses
       query: userMessage,
       useRag: useRAG
     });
@@ -78,8 +82,13 @@ export async function getOpenAIResponse(
   } catch (error) {
     console.error('Error getting OpenAI response:', error);
     
+    // Create a conversation context string
+    const conversationContext = chatHistory
+      .map(msg => `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.text}`)
+      .join('\n');
+    
     return {
-      text: getSmartResponse(userMessage),
+      text: getSmartResponse(userMessage, conversationContext),
       usedContext: false
     };
   }
