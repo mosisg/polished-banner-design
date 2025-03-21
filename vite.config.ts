@@ -64,6 +64,12 @@ export default defineConfig(({ mode }) => ({
           ],
         }
       }
-    }
+    },
+    assetsInlineLimit: 4096, // Inline assets smaller than 4kb
+    sourcemap: mode !== 'production', // Only generate sourcemaps in development
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', 'framer-motion'],
+    exclude: ['@vercel/analytics']
   },
 }));

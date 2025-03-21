@@ -104,3 +104,31 @@ export function loadScript(
     script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
   });
 }
+
+/**
+ * Lazy loader for images that uses IntersectionObserver
+ */
+export function setupLazyLoading(): void {
+  if (!('IntersectionObserver' in window)) return;
+  
+  const imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target as HTMLImageElement;
+        if (img.dataset.src) {
+          img.src = img.dataset.src;
+          img.removeAttribute('data-src');
+        }
+        imageObserver.unobserve(img);
+      }
+    });
+  }, {
+    rootMargin: '200px 0px', // Start loading 200px before the image enters the viewport
+    threshold: 0.01
+  });
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    const lazyImages = document.querySelectorAll('img[data-src]');
+    lazyImages.forEach(img => imageObserver.observe(img));
+  });
+}
