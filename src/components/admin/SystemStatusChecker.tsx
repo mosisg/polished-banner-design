@@ -18,38 +18,42 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
   const [functionExists, setFunctionExists] = useState(false);
   const [edgeFunctionsReady, setEdgeFunctionsReady] = useState(false);
   const [apiKeyConfigured, setApiKeyConfigured] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   const checkSystem = async () => {
     setIsLoading(true);
+    setErrorMessage(null);
     
     try {
       // Check if documents table exists
-      const { data: tableData, error: tableError } = await (supabase
-        .from('documents') as any)
+      const { data: tableData, error: tableError } = await supabase
+        .from('documents')
         .select('id')
         .limit(1);
       
       setTableExists(!tableError);
       
-      // Check if search function exists by trying to call it
+      // Check if search function exists by trying to call it with safe parameters
       try {
-        const { data: functionData, error: functionError } = await (supabase.rpc(
+        // We use a try-catch here because this might throw if the function doesn't exist
+        const { data: functionData, error: functionError } = await supabase.rpc(
           'match_documents',
           { 
             query_embedding: Array(1536).fill(0),
             match_threshold: 0.0,
             match_count: 1
           }
-        ) as any);
+        );
         
         setFunctionExists(!functionError);
       } catch (err) {
+        console.log("Function check error:", err);
         setFunctionExists(false);
       }
       
       // Check if Edge Functions are deployed
       try {
-        const { data: healthCheck, error: healthError } = await supabase.functions.invoke(
+        const response = await supabase.functions.invoke(
           'openai-chat',
           { 
             body: { 
@@ -58,14 +62,23 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
           }
         );
         
-        setEdgeFunctionsReady(!healthError && healthCheck?.status === 'ok');
-        setApiKeyConfigured(!healthError && healthCheck?.openai_key_configured === true);
+        if (response.error) {
+          console.log("Edge function error:", response.error);
+          setEdgeFunctionsReady(false);
+          setApiKeyConfigured(false);
+        } else {
+          const healthCheck = response.data;
+          setEdgeFunctionsReady(healthCheck?.status === 'ok');
+          setApiKeyConfigured(healthCheck?.openai_key_configured === true);
+        }
       } catch (err) {
+        console.log("Edge function invocation error:", err);
         setEdgeFunctionsReady(false);
         setApiKeyConfigured(false);
       }
     } catch (err) {
       console.error('Error checking system:', err);
+      setErrorMessage('Une erreur est survenue lors de la vérification du système. Veuillez réessayer.');
     } finally {
       setIsLoading(false);
     }
@@ -130,6 +143,12 @@ const SystemStatusChecker: React.FC<SystemStatusProps> = ({ onRefresh }) => {
           <div className="flex justify-center py-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
+        ) : errorMessage ? (
+          <Alert variant="destructive">
+            <XCircle className="h-4 w-4" />
+            <AlertTitle>Erreur</AlertTitle>
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
         ) : (
           <>
             <div className="space-y-4">
