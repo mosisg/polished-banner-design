@@ -22,6 +22,7 @@ const SystemStatusChecker: React.FC = () => {
   const abortControllerRef = useRef<AbortController | null>(null);
   const isMountedRef = useRef(true);
   const { toast } = useToast();
+  const timeoutRef = useRef<number | null>(null);
 
   // Clean up function to handle component unmounting
   useEffect(() => {
@@ -30,6 +31,9 @@ const SystemStatusChecker: React.FC = () => {
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
     };
   }, []);
 
@@ -37,6 +41,12 @@ const SystemStatusChecker: React.FC = () => {
     // Clean up previous controller if exists
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
+    }
+    
+    // Clean up previous timeout if exists
+    if (timeoutRef.current) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
     
     // Create new abort controller for this request
@@ -50,7 +60,7 @@ const SystemStatusChecker: React.FC = () => {
     
     try {
       // Set a timeout to prevent endless loading
-      const timeoutId = setTimeout(() => {
+      timeoutRef.current = window.setTimeout(() => {
         if (abortControllerRef.current === controller) {
           controller.abort();
           console.log("Status check aborted due to timeout");
@@ -68,7 +78,10 @@ const SystemStatusChecker: React.FC = () => {
       
       const status = await checkSystemStatus(controller.signal);
       
-      clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
       
       // Only update state if component is still mounted and this is the current request
       if (isMountedRef.current && abortControllerRef.current === controller) {
@@ -79,6 +92,11 @@ const SystemStatusChecker: React.FC = () => {
       }
     } catch (error) {
       console.error("Error checking system status:", error);
+      
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
       
       // Only update state if component is still mounted and this is the current request
       if (isMountedRef.current && abortControllerRef.current === controller) {

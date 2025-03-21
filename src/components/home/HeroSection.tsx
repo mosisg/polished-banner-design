@@ -71,7 +71,7 @@ const HeroSection = () => {
           <Link to="/login">
             <Button size="lg" variant="default" className="shadow-lg flex items-center gap-2">
               <LogIn className="h-5 w-5" />
-              Connexion / Inscription
+              <span>Connexion / Inscription</span>
             </Button>
           </Link>
         </div>

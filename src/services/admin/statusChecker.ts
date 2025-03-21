@@ -44,8 +44,7 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
       const { error: tableError } = await supabase
         .from('documents')
         .select('id')
-        .limit(1)
-        .abortSignal(abortSignal);
+        .limit(1);
       
       status.tableExists = !tableError;
     } catch (err) {
@@ -84,11 +83,15 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
     
     // Check if Edge Functions are deployed
     try {
-      // Set up the options with the health check parameter and abort signal
-      const options = {
-        body: { health_check: true },
-        signal: abortSignal
+      // Set up the options with the health check parameter
+      const options: { body: { health_check: boolean }, signal?: AbortSignal } = {
+        body: { health_check: true }
       };
+      
+      // Add the abort signal if provided
+      if (abortSignal) {
+        options.signal = abortSignal;
+      }
       
       // Call the edge function with the correct parameters structure
       const { data, error } = await supabase.functions.invoke('openai-chat', options);
