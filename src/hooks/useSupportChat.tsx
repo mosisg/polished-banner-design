@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
 import { throttle } from '@/utils/performance';
-import { ChatMessage, SupportChatState } from '@/types/support';
+import { ChatMessage, SupportChatState, MessageStatus } from '@/types/support';
 import { createChatSession, saveChatMessage } from '@/services/support/sessionService';
 import { getOpenAIResponse } from '@/services/support/openAiService';
 import { getSmartResponse } from '@/services/support/smartResponseService';
@@ -24,6 +24,7 @@ export const useSupportChat = (): SupportChatState => {
   const [isTyping, setIsTyping] = useState(false);
   const [hasOpenAIFailed, setHasOpenAIFailed] = useState(false);
   const [useRAG, setUseRAG] = useState(true);
+  const [lastMessageStatus, setLastMessageStatus] = useState<MessageStatus>('none');
   const { toast } = useToast();
   const messageEndRef = useRef<HTMLDivElement>(null);
   const previousMessagesRef = useRef<ChatMessage[]>([]);
@@ -57,8 +58,15 @@ export const useSupportChat = (): SupportChatState => {
     };
     
     setMessages(prev => [...prev, userMessage]);
-    saveChatMessage(sessionId, inputText, false).catch(console.error);
     setInputText('');
+    setLastMessageStatus('sent');
+    
+    // Try to save the message and handle potential errors silently
+    saveChatMessage(sessionId, inputText, false).catch(console.error);
+
+    setTimeout(() => {
+      setLastMessageStatus('delivered');
+    }, 500);
     
     setIsTyping(true);
     
@@ -129,6 +137,7 @@ export const useSupportChat = (): SupportChatState => {
     isTyping,
     messageEndRef,
     useRAG,
-    toggleRAG
+    toggleRAG,
+    lastMessageStatus
   };
 };

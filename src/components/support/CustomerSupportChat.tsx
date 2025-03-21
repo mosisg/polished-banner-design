@@ -1,6 +1,6 @@
 
 import React, { useEffect, lazy, Suspense } from 'react';
-import { X, Send, Bot, User, Loader2, ThumbsUp, ThumbsDown, Database, FileText } from 'lucide-react';
+import { X, Send, Bot, User, Check, CheckCheck, Database, FileText } from 'lucide-react';
 import { 
   Sheet,
   SheetContent,
@@ -28,7 +28,17 @@ interface CustomerSupportChatProps {
 }
 
 const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClose }) => {
-  const { messages, inputText, setInputText, sendMessage, isTyping, messageEndRef, useRAG, toggleRAG } = useSupportChat();
+  const { 
+    messages, 
+    inputText, 
+    setInputText, 
+    sendMessage, 
+    isTyping, 
+    messageEndRef, 
+    useRAG, 
+    toggleRAG,
+    lastMessageStatus
+  } = useSupportChat();
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -147,16 +157,23 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
                     </Collapsible>
                   )}
                   
-                  <div className="text-right">
+                  <div className="flex justify-end items-center gap-1 mt-1">
                     <span className="text-xs opacity-70">
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
+                    {message.sender === 'user' && (
+                      lastMessageStatus === 'sent' ? (
+                        <Check className="h-3 w-3 text-primary" />
+                      ) : lastMessageStatus === 'delivered' ? (
+                        <CheckCheck className="h-3 w-3 text-primary" />
+                      ) : null
+                    )}
                   </div>
                 </div>
               </div>
             ))}
             
-            {/* Typing indicator */}
+            {/* Typing indicator - Messenger style */}
             {isTyping && (
               <div className="flex justify-start">
                 <div className="max-w-[85%] rounded-lg p-2 bg-muted/70 dark:bg-slate-800 border border-border dark:border-slate-700 rounded-tl-none shadow-sm">
@@ -164,9 +181,12 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
                     <Bot className="h-4 w-4 text-primary" />
                     <span className="text-xs font-medium">Assistant</span>
                   </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                    <span className="text-sm">En train d'écrire...</span>
+                  <div className="flex items-center h-6 mt-1 ml-1">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                      <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                      <div className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    </div>
                   </div>
                 </div>
               </div>

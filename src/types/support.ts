@@ -18,6 +18,8 @@ export interface ChatMessage {
   documentReferences?: DocumentReference[];
 }
 
+export type MessageStatus = 'none' | 'sent' | 'delivered' | 'read';
+
 export interface SupportChatState {
   messages: ChatMessage[];
   inputText: string;
@@ -27,4 +29,5 @@ export interface SupportChatState {
   messageEndRef: React.RefObject<HTMLDivElement>;
   useRAG: boolean;
   toggleRAG: () => void;
+  lastMessageStatus: MessageStatus;
 }
