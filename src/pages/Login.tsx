@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { 
@@ -15,17 +15,28 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
 import { AlertCircle, Loader2 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn } = useAuth();
+  const { signIn, isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      // If user is already logged in, redirect to the requested page or admin
+      const targetPath = isAdmin ? '/admin/knowledge-base' : from;
+      navigate(targetPath, { replace: true });
+    }
+  }, [user, isAdmin, navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,13 +45,20 @@ const Login = () => {
 
     try {
       await signIn(email, password);
-      navigate(from, { replace: true });
+      
+      // Success notification
+      toast({
+        title: "Connexion réussie",
+        description: "Vous êtes maintenant connecté.",
+      });
+      
+      // Let the useEffect handle the redirect based on user state
     } catch (error) {
       console.error('Login error:', error);
       setError(
         error instanceof Error 
           ? error.message 
-          : 'Une erreur est survenue lors de la connexion.'
+          : 'Une erreur est survenue lors de la connexion. Vérifiez vos identifiants.'
       );
     } finally {
       setIsLoading(false);
