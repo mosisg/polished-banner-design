@@ -53,6 +53,50 @@ export async function ingestDocuments(
 }
 
 /**
+ * Fetches all documents from the database
+ */
+export async function getDocuments() {
+  try {
+    const { data, error } = await supabase
+      .from('documents')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
+      console.error('Error fetching documents:', error);
+      throw error;
+    }
+    
+    return data || [];
+  } catch (err) {
+    console.error('Error in getDocuments:', err);
+    throw err;
+  }
+}
+
+/**
+ * Deletes a document from the database
+ */
+export async function deleteDocument(id: string) {
+  try {
+    const { error } = await supabase
+      .from('documents')
+      .delete()
+      .eq('id', id);
+    
+    if (error) {
+      console.error('Error deleting document:', error);
+      throw error;
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Error in deleteDocument:', err);
+    throw err;
+  }
+}
+
+/**
  * Helper function to split a long text into smaller chunks
  * for more effective embedding and retrieval
  */
