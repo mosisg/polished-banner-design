@@ -44,20 +44,22 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
   
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="sm:max-w-md p-0 flex flex-col h-[85vh] sm:h-[75vh] border-l dark:border-slate-800">
-        <SheetHeader className="px-4 py-2 border-b dark:border-slate-700">
+      <SheetContent className="sm:max-w-md p-0 flex flex-col h-[85vh] sm:h-[75vh] border-l dark:border-slate-800 right-0 fixed bottom-0 !rounded-t-xl !rounded-b-none !mt-auto !top-auto">
+        <SheetHeader className="px-4 py-2 border-b dark:border-slate-700 bg-primary/5 dark:bg-slate-900">
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2">
               <Bot className="h-5 w-5 text-primary" />
               <span>Assistance ComparePrix</span>
             </SheetTitle>
-            <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-slate-100 dark:hover:bg-slate-800">
-              <X className="h-5 w-5" />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </SheetHeader>
         
-        <ScrollArea className="flex-1 px-4 py-3">
+        <ScrollArea className="flex-1 px-4 py-3 bg-background dark:bg-slate-900">
           <div className="space-y-3 pb-2">
             {messages.map((message) => (
               <div 
@@ -125,14 +127,14 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
         
         <Separator className="dark:bg-slate-700" />
         
-        <SheetFooter className="p-3 mt-0">
+        <div className="bg-background dark:bg-slate-900 p-3">
           <div className="flex w-full gap-2">
             <Textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Écrivez votre message..."
-              className="flex-1 min-h-[60px] max-h-[100px] resize-none focus-visible:ring-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+              className="flex-1 min-h-[60px] max-h-[100px] resize-none focus-visible:ring-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 shadow-sm"
               rows={2}
             />
             <Button 
@@ -147,7 +149,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
           <div className="w-full text-xs text-muted-foreground mt-1">
             Appuyez sur <kbd className="px-1 bg-muted dark:bg-slate-800 rounded">Entrée</kbd> pour envoyer, <kbd className="px-1 bg-muted dark:bg-slate-800 rounded">Maj+Entrée</kbd> pour une nouvelle ligne
           </div>
-        </SheetFooter>
+        </div>
       </SheetContent>
     </Sheet>
   );
