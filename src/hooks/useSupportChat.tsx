@@ -83,12 +83,12 @@ export const useSupportChat = () => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Intelligence améliorée pour l'assistant
+  // Enhanced AI assistant
   const getSmartResponse = (userMessage: string): string => {
-    // Convertir le message utilisateur en minuscules pour faciliter la correspondance
+    // Convert user message to lowercase for easier matching
     const message = userMessage.toLowerCase();
     
-    // Catégories de forfaits mobiles
+    // Mobile plan categories
     if (message.includes('forfait') || message.includes('mobile') || message.includes('téléphone')) {
       if (message.includes('pas cher') || message.includes('économique') || message.includes('moins cher')) {
         return "Pour les forfaits économiques, je vous recommande de consulter les offres de Free ou RED by SFR qui proposent souvent des forfaits à moins de 10€/mois. Vous pouvez comparer toutes les offres sur notre page de comparaison de forfaits.";
@@ -102,7 +102,7 @@ export const useSupportChat = () => {
       return "Nous proposons un comparateur complet de forfaits mobiles. Vous pouvez filtrer selon vos besoins (data, prix, opérateur) sur notre page dédiée. Souhaitez-vous des conseils sur un type de forfait particulier?";
     }
     
-    // Catégories de box internet
+    // Internet box categories
     if (message.includes('box') || message.includes('internet') || message.includes('fibre') || message.includes('adsl')) {
       if (message.includes('fibre')) {
         return "Pour la fibre optique, les offres sont généralement entre 30€ et 50€ par mois. Free propose sa Freebox à partir de 29,99€/mois, Orange a sa Livebox Fibre à partir de 39,99€/mois. Pour trouver l'offre idéale, utilisez notre comparateur de box internet qui vous permet de filtrer selon vos critères.";
@@ -116,22 +116,22 @@ export const useSupportChat = () => {
       return "Notre site vous permet de comparer toutes les box internet des principaux fournisseurs. Vous pouvez filtrer par type de connexion (ADSL/Fibre), débit, prix et options TV. Avez-vous des préférences particulières pour votre box internet?";
     }
     
-    // Questions sur les téléphones
+    // Smartphone questions
     if (message.includes('smartphone') || message.includes('iphone') || message.includes('samsung') || message.includes('xiaomi') || message.includes('android')) {
       return "Nous proposons un comparateur de smartphones qui vous permet de trouver le téléphone idéal selon votre budget et vos besoins. Vous pouvez comparer les caractéristiques techniques et les meilleurs prix du marché. Souhaitez-vous des conseils pour un modèle particulier?";
     }
     
-    // Informations sur le site
+    // Website information
     if (message.includes('comment') && message.includes('fonctionne')) {
       return "Notre site ComparePrix vous permet de comparer les offres de forfaits mobiles, box internet et smartphones. Nous récupérons les informations directement auprès des opérateurs pour vous fournir des comparaisons à jour. Vous pouvez filtrer les offres selon vos critères et être redirigé vers le site de l'opérateur pour souscrire.";
     }
     
-    // Questions sur la méthode de comparaison
+    // Comparison method questions
     if (message.includes('comparer') || message.includes('comparaison')) {
       return "Notre site vous permet de comparer facilement les offres en utilisant des filtres personnalisés. Vous pouvez ajuster les critères comme le prix, la quantité de data, les options, etc. Les résultats sont mis à jour quotidiennement pour vous garantir les informations les plus récentes. Vous pouvez accéder à nos comparateurs depuis le menu principal.";
     }
     
-    // Réponse par défaut plus détaillée
+    // Default response
     return "Je peux vous aider à trouver les meilleures offres de forfaits mobiles, box internet ou smartphones. N'hésitez pas à me poser des questions précises sur vos besoins, ou à utiliser directement nos comparateurs accessibles depuis la page d'accueil. Puis-je vous aider sur un sujet particulier?";
   };
 
@@ -167,7 +167,7 @@ export const useSupportChat = () => {
       
       setMessages(prev => [...prev, botMessage]);
       saveMessage(intelligentResponse, true).catch(console.error);
-    }, 1500 + (Math.random() * 1000)); // Délai dynamique pour simuler une réponse humaine
+    }, 1500 + (Math.random() * 1000)); // Dynamic delay to simulate human response
   };
   
   return {

@@ -30,7 +30,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
     }
   };
 
-  // Autofocus le champ de texte quand le chat s'ouvre
+  // Auto-focus the textarea when chat opens
   useEffect(() => {
     if (isOpen) {
       const textarea = document.querySelector('textarea');
@@ -44,8 +44,8 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
   
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="sm:max-w-md p-0 flex flex-col h-full">
-        <SheetHeader className="px-4 py-3 border-b">
+      <SheetContent className="sm:max-w-md p-0 flex flex-col h-full dark:bg-slate-900">
+        <SheetHeader className="px-4 py-3 border-b dark:border-slate-700">
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2">
               <Bot className="h-5 w-5 text-primary" />
@@ -57,7 +57,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
           </div>
         </SheetHeader>
         
-        <ScrollArea className="flex-1 px-4 py-4">
+        <ScrollArea className="flex-1 px-4 py-4 dark:bg-slate-900">
           <div className="space-y-4">
             {messages.map((message) => (
               <div 
@@ -66,10 +66,10 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
               >
                 <div 
                   className={cn(
-                    "max-w-[85%] rounded-lg p-3 shadow-sm", 
+                    "max-w-[85%] rounded-lg p-3", 
                     message.sender === 'user' 
                       ? "bg-primary text-primary-foreground rounded-tr-none" 
-                      : "bg-muted/50 border border-border rounded-tl-none"
+                      : "bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 rounded-tl-none"
                   )}
                 >
                   <div className="flex items-center gap-2 mb-1">
@@ -105,7 +105,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
             {/* Typing indicator */}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-lg p-3 bg-muted/50 border border-border rounded-tl-none">
+                <div className="max-w-[85%] rounded-lg p-3 bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 rounded-tl-none">
                   <div className="flex items-center gap-2">
                     <Bot className="h-4 w-4" />
                     <span className="text-xs font-medium">Assistant</span>
@@ -123,29 +123,29 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
           </div>
         </ScrollArea>
         
-        <Separator />
+        <Separator className="dark:bg-slate-700" />
         
-        <SheetFooter className="p-4 mt-0">
+        <SheetFooter className="p-4 mt-0 dark:bg-slate-900">
           <div className="flex w-full gap-2">
             <Textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Écrivez votre message..."
-              className="flex-1 min-h-[80px] max-h-[120px] resize-none"
+              className="flex-1 min-h-[80px] max-h-[120px] resize-none dark:bg-slate-800 dark:border-slate-700"
               rows={2}
             />
             <Button 
               onClick={sendMessage} 
               size="icon" 
-              className="self-end h-10 w-10"
+              className="self-end h-10 w-10 rounded-full bg-primary hover:bg-primary/90"
               disabled={!inputText.trim()}
             >
               <Send className="h-4 w-4" />
             </Button>
           </div>
           <div className="w-full text-xs text-muted-foreground mt-2">
-            Appuyez sur <kbd className="px-1 bg-muted rounded">Entrée</kbd> pour envoyer, <kbd className="px-1 bg-muted rounded">Maj+Entrée</kbd> pour une nouvelle ligne
+            Appuyez sur <kbd className="px-1 bg-muted dark:bg-slate-800 rounded">Entrée</kbd> pour envoyer, <kbd className="px-1 bg-muted dark:bg-slate-800 rounded">Maj+Entrée</kbd> pour une nouvelle ligne
           </div>
         </SheetFooter>
       </SheetContent>
