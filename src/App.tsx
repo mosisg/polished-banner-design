@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Analytics } from "@vercel/analytics/react";
 import KnowledgeBase from '@/pages/KnowledgeBase';
 import AdminUsers from '@/pages/AdminUsers';
+import Login from '@/pages/Login';
 
 // Optimize lazy loading by using named chunks
 const Index = lazy(() => import(/* webpackChunkName: "index" */ "./pages/Index"));
@@ -100,9 +101,10 @@ function App() {
                 <Route path="/sitemap.xml" element={<Sitemap />} />
                 <Route path="/sitemap" element={<Sitemap />} />
                 
-                {/* Admin routes - no longer protected */}
+                {/* Admin routes */}
                 <Route path="/admin/knowledge-base" element={<KnowledgeBase />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
+                <Route path="/login" element={<Login />} />
                 
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
