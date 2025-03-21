@@ -27,7 +27,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         description: "Votre session a expiré. Veuillez vous reconnecter.",
         variant: "destructive"
       });
-      navigate("/login", { replace: true });
+      navigate("/admin/login", { replace: true });
       return;
     }
 
@@ -58,9 +58,9 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  // No user or no valid session - redirect to login
+  // No user or no valid session - redirect to admin login
   if (!user || !session) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    return <Navigate to="/admin/login" state={{ from: location.pathname }} replace />;
   }
 
   // Redirect non-admin users trying to access admin-only routes

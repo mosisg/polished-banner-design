@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -18,19 +18,7 @@ const AdminUserForm = () => {
   const [message, setMessage] = useState('');
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { session, user } = useAuth();
-
-  // Vérifier si l'utilisateur est connecté
-  useEffect(() => {
-    if (!session || !user) {
-      toast({
-        title: 'Session expirée',
-        description: 'Votre session a expiré. Veuillez vous reconnecter.',
-        variant: 'destructive',
-      });
-      navigate('/login', { state: { from: '/admin/users' }, replace: true });
-    }
-  }, [session, user, navigate, toast]);
+  const { session } = useAuth();
 
   const handleMakeAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,7 +75,7 @@ const AdminUserForm = () => {
           description: 'Veuillez vous reconnecter pour continuer.',
           variant: 'destructive',
         });
-        navigate('/login', { state: { from: '/admin/users' }, replace: true });
+        navigate('/admin/login', { state: { from: '/admin/users' }, replace: true });
         return;
       }
       
