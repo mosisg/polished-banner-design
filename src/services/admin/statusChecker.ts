@@ -70,24 +70,23 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
   
   // Check if Edge Functions are deployed
   try {
-    // Create an object that wraps the options and abortSignal
+    // Create an object that wraps the options and body
     const invokeOptions = { body: { health_check: true } };
     
-    // If abortSignal exists, create a fetch controller to handle it
-    let controller: AbortController | undefined;
+    // Create a fetch options object when abortSignal exists
+    let fetchOptions = undefined;
     if (abortSignal) {
-      controller = new AbortController();
-      // Forward the abort signal
-      abortSignal.addEventListener('abort', () => {
-        controller?.abort();
-      });
+      fetchOptions = { 
+        fetcher: fetch,
+        signal: abortSignal
+      };
     }
     
+    // Call the edge function with the correct parameters
     const response = await supabase.functions.invoke(
       'openai-chat',
       invokeOptions,
-      // Use the controller's signal if available
-      controller ? { fetcher: fetch, abortController: controller } : undefined
+      fetchOptions
     );
     
     if (response.error) {

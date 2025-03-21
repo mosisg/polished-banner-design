@@ -20,7 +20,18 @@ const SystemStatusChecker: React.FC = () => {
   const [hasError, setHasError] = useState(false);
   const [systemStatus, setSystemStatus] = useState<SystemStatus>(DEFAULT_STATUS);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const isMountedRef = useRef(true);
   const { toast } = useToast();
+
+  // Clean up function to handle component unmounting
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const checkStatus = async () => {
     // Clean up previous controller if exists
@@ -32,8 +43,10 @@ const SystemStatusChecker: React.FC = () => {
     const controller = new AbortController();
     abortControllerRef.current = controller;
     
-    setIsLoading(true);
-    setHasError(false);
+    if (isMountedRef.current) {
+      setIsLoading(true);
+      setHasError(false);
+    }
     
     try {
       // Set a timeout to prevent endless loading
@@ -41,7 +54,15 @@ const SystemStatusChecker: React.FC = () => {
         if (abortControllerRef.current === controller) {
           controller.abort();
           console.log("Status check aborted due to timeout");
-          throw new Error("La vérification du statut a pris trop de temps. Veuillez réessayer.");
+          if (isMountedRef.current) {
+            setIsLoading(false);
+            setHasError(true);
+            toast({
+              title: "Timeout",
+              description: "La vérification du statut a pris trop de temps. Veuillez réessayer.",
+              variant: "destructive"
+            });
+          }
         }
       }, 10000); // 10 seconds timeout
       
@@ -49,36 +70,35 @@ const SystemStatusChecker: React.FC = () => {
       
       clearTimeout(timeoutId);
       
-      if (abortControllerRef.current === controller) {
+      // Only update state if component is still mounted and this is the current request
+      if (isMountedRef.current && abortControllerRef.current === controller) {
         setSystemStatus(status);
+        setIsLoading(false);
+        setHasError(false);
         abortControllerRef.current = null;
       }
     } catch (error) {
       console.error("Error checking system status:", error);
-      setHasError(true);
       
-      toast({
-        title: "Erreur",
-        description: error instanceof Error ? error.message : "Une erreur est survenue lors de la vérification du statut. Veuillez réessayer.",
-        variant: "destructive"
-      });
-    } finally {
-      if (abortControllerRef.current === controller) {
+      // Only update state if component is still mounted and this is the current request
+      if (isMountedRef.current && abortControllerRef.current === controller) {
         setIsLoading(false);
+        setHasError(true);
+        
+        toast({
+          title: "Erreur",
+          description: error instanceof Error ? error.message : "Une erreur est survenue lors de la vérification du statut. Veuillez réessayer.",
+          variant: "destructive"
+        });
+        
         abortControllerRef.current = null;
       }
     }
   };
 
   useEffect(() => {
+    // Only run on mount
     checkStatus();
-    
-    return () => {
-      // Cleanup on unmount
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
   }, []);
 
   const readiness = getSystemReadiness(systemStatus);
