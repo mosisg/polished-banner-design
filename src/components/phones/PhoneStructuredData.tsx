@@ -27,8 +27,18 @@ const PhoneStructuredData: React.FC<PhoneStructuredDataProps> = ({ phones }) => 
           '@type': 'Offer',
           'price': phone.price,
           'priceCurrency': 'EUR',
-          'availability': phone.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'
-        }
+          'availability': phone.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+          'seller': {
+            '@type': 'Organization',
+            'name': phone.merchant || 'ComparePrix'
+          },
+          'url': phone.productUrl || `https://compareprix.net/telephones/${phone.id}`
+        },
+        'aggregateRating': phone.rating ? {
+          '@type': 'AggregateRating',
+          'ratingValue': phone.rating,
+          'reviewCount': phone.reviewCount || 5
+        } : undefined
       }
     }))
   };

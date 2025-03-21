@@ -40,20 +40,37 @@ const Telephones = () => {
   return (
     <>
       <Helmet>
-        <title>Comparateur de Téléphones Mobiles | Les Meilleurs Smartphones | ComparePrix</title>
-        <meta name="description" content="Comparez les meilleurs smartphones du marché. Trouvez le téléphone mobile idéal au meilleur prix avec notre comparateur d'offres de téléphonie." />
-        <meta name="keywords" content="comparateur téléphones, smartphones, meilleur smartphone, téléphone mobile, comparateur mobile, téléphonie, téléphone pas cher" />
-        <link rel="canonical" href="https://compareprix.fr/telephones" />
+        <title>Comparateur de Téléphones et Smartphones | Prix et Caractéristiques | ComparePrix</title>
+        <meta name="description" content="Comparez les meilleurs smartphones du marché français. Trouvez le téléphone idéal selon votre budget avec notre comparateur de téléphones mobiles ✓ Prix ✓ Avis ✓ Caractéristiques" />
+        <meta name="keywords" content="comparateur téléphones, smartphones, iPhone, Samsung Galaxy, Xiaomi, téléphone pas cher, smartphone reconditionné, meilleur smartphone 2024, achat téléphone, téléphone Android, téléphone iOS, téléphones mobiles, comparatif smartphones" />
+        <link rel="canonical" href="https://compareprix.net/telephones" />
         <meta name="robots" content="index, follow" />
-        <meta property="og:title" content="Comparateur de Téléphones Mobiles | ComparePrix" />
-        <meta property="og:description" content="Comparez les smartphones et trouvez le téléphone idéal au meilleur prix." />
-        <meta property="og:url" content="https://compareprix.fr/telephones" />
+        <meta property="og:title" content="Comparateur de Téléphones et Smartphones | ComparePrix" />
+        <meta property="og:description" content="Comparez les prix et caractéristiques des smartphones et trouvez le téléphone idéal selon votre budget. Téléphones neufs et reconditionnés disponibles." />
+        <meta property="og:url" content="https://compareprix.net/telephones" />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="https://compareprix.fr/og-image.png" />
+        <meta property="og:image" content="https://compareprix.net/og-image.png" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Comparateur de Téléphones Mobiles | ComparePrix" />
-        <meta name="twitter:description" content="Comparez et choisissez le smartphone idéal pour vos besoins." />
-        <meta name="twitter:image" content="https://compareprix.fr/og-image.png" />
+        <meta name="twitter:title" content="Comparateur de Téléphones et Smartphones | ComparePrix" />
+        <meta name="twitter:description" content="Comparez les prix et caractéristiques des smartphones. Neufs ou reconditionnés, trouvez le téléphone parfait pour vos besoins." />
+        <meta name="twitter:image" content="https://compareprix.net/og-image.png" />
+        <script type="application/ld+json">{`
+          {
+            "@context": "https://schema.org",
+            "@type": "WebPage",
+            "name": "Comparateur de Téléphones et Smartphones",
+            "description": "Comparez les meilleurs smartphones du marché français. Trouvez le téléphone idéal selon votre budget.",
+            "publisher": {
+              "@type": "Organization",
+              "name": "ComparePrix",
+              "logo": "https://compareprix.net/logo.png"
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": "https://compareprix.net/telephones"
+            }
+          }
+        `}</script>
       </Helmet>
 
       <div className="flex flex-col min-h-screen">
