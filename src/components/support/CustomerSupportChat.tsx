@@ -44,21 +44,21 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
   
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="sm:max-w-md p-0 flex flex-col h-full dark:bg-slate-900">
+      <SheetContent className="sm:max-w-md p-0 flex flex-col h-full dark:bg-slate-900 border-l dark:border-slate-800">
         <SheetHeader className="px-4 py-3 border-b dark:border-slate-700">
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2">
               <Bot className="h-5 w-5 text-primary" />
               <span>Assistance ComparePrix</span>
             </SheetTitle>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-slate-100 dark:hover:bg-slate-800">
               <X className="h-5 w-5" />
             </Button>
           </div>
         </SheetHeader>
         
         <ScrollArea className="flex-1 px-4 py-4 dark:bg-slate-900">
-          <div className="space-y-4">
+          <div className="space-y-4 pb-2">
             {messages.map((message) => (
               <div 
                 key={message.id} 
@@ -66,7 +66,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
               >
                 <div 
                   className={cn(
-                    "max-w-[85%] rounded-lg p-3", 
+                    "max-w-[85%] rounded-lg p-3 shadow-sm", 
                     message.sender === 'user' 
                       ? "bg-primary text-primary-foreground rounded-tr-none" 
                       : "bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 rounded-tl-none"
@@ -74,7 +74,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
                 >
                   <div className="flex items-center gap-2 mb-1">
                     {message.sender === 'bot' ? (
-                      <Bot className="h-4 w-4" />
+                      <Bot className="h-4 w-4 text-primary" />
                     ) : (
                       <User className="h-4 w-4" />
                     )}
@@ -83,10 +83,10 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
                     </span>
                     {message.sender === 'bot' && (
                       <div className="ml-auto flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-6 w-6 hover:text-primary">
+                        <Button variant="ghost" size="icon" className="h-6 w-6 hover:text-primary dark:hover:text-primary rounded-full">
                           <ThumbsUp className="h-3 w-3" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 hover:text-destructive">
+                        <Button variant="ghost" size="icon" className="h-6 w-6 hover:text-destructive dark:hover:text-destructive rounded-full">
                           <ThumbsDown className="h-3 w-3" />
                         </Button>
                       </div>
@@ -105,13 +105,13 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
             {/* Typing indicator */}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] rounded-lg p-3 bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 rounded-tl-none">
+                <div className="max-w-[85%] rounded-lg p-3 bg-muted dark:bg-slate-800 border border-border dark:border-slate-700 rounded-tl-none shadow-sm">
                   <div className="flex items-center gap-2">
-                    <Bot className="h-4 w-4" />
+                    <Bot className="h-4 w-4 text-primary" />
                     <span className="text-xs font-medium">Assistant</span>
                   </div>
                   <div className="flex items-center gap-2 mt-1">
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
                     <span className="text-sm">En train d'écrire...</span>
                   </div>
                 </div>
@@ -132,7 +132,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Écrivez votre message..."
-              className="flex-1 min-h-[80px] max-h-[120px] resize-none dark:bg-slate-800 dark:border-slate-700"
+              className="flex-1 min-h-[80px] max-h-[120px] resize-none dark:bg-slate-800 dark:border-slate-700 focus-visible:ring-primary"
               rows={2}
             />
             <Button 
