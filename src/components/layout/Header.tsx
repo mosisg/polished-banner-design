@@ -69,6 +69,13 @@ const Header = () => {
     setIsMobileMenuOpen(false);
   };
 
+  // Handle navigation without page reload
+  const handleNavigate = (href: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    navigate(href);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header 
       ref={headerRef}
