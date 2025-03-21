@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { LogIn, LogOut, ShieldAlert, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ThemeToggle from '@/components/ui/ThemeToggle';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/components/ui/use-toast';
 
 interface HeaderActionsProps {
   user: any;

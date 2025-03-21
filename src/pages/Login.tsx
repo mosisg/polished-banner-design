@@ -32,9 +32,11 @@ const Login = () => {
 
   // Redirect if already logged in with valid session
   useEffect(() => {
+    console.log("Login page - Auth state:", { user, session, isAdmin, from });
     if (user && session) {
       // If user is admin, redirect to admin page, otherwise redirect to the requested page or home
       const targetPath = isAdmin ? '/admin/knowledge-base' : from;
+      console.log("Redirecting to:", targetPath);
       navigate(targetPath, { replace: true });
     }
   }, [user, isAdmin, navigate, from, session]);
@@ -45,6 +47,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
+      console.log("Attempting login with:", email);
       await signIn(email, password);
       
       // Success notification
