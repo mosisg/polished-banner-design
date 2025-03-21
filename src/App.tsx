@@ -1,7 +1,7 @@
 
 import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
-import Layout from '@/components/layout/Layout';
+import Layout from './components/layout/Layout';
 import IndexPage from './pages/Index';
 import MobilePlans from './pages/MobilePlans';
 import InternetBoxes from './pages/InternetBoxes';
