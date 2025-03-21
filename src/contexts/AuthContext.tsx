@@ -10,7 +10,6 @@ type AuthContextType = {
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
-  isAdmin: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,56 +18,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
-
-  const checkAdminStatus = async (userId: string) => {
-    try {
-      console.log("Checking admin status for user:", userId);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('is_admin')
-        .eq('id', userId)
-        .single();
-      
-      if (error) {
-        console.error('Error fetching admin status:', error);
-        return false;
-      }
-      
-      console.log("Admin status result:", data);
-      return data?.is_admin || false;
-    } catch (err) {
-      console.error('Failed to check admin status:', err);
-      return false;
-    }
-  };
 
   useEffect(() => {
     let mounted = true;
     setIsLoading(true);
     
-    // IMPORTANT: Set up auth state listener FIRST
+    // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log("Auth state changed:", event, session ? "session exists" : "no session");
         if (mounted) {
           setSession(session);
           setUser(session?.user ?? null);
-          
-          if (session?.user) {
-            const isUserAdmin = await checkAdminStatus(session.user.id);
-            setIsAdmin(isUserAdmin);
-          } else {
-            setIsAdmin(false);
-          }
-          
           setIsLoading(false);
         }
       }
     );
 
-    // THEN check for existing session
+    // Check for existing session
     const initSession = async () => {
       try {
         console.log("Initializing auth session");
@@ -78,14 +46,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.log("Session from getSession:", session ? "exists" : "null");
           setSession(session);
           setUser(session?.user ?? null);
-
-          if (session?.user) {
-            const isUserAdmin = await checkAdminStatus(session.user.id);
-            console.log("User admin status:", isUserAdmin);
-            setIsAdmin(isUserAdmin);
-          } else {
-            setIsAdmin(false);
-          }
           setIsLoading(false);
         }
       } catch (err) {
@@ -111,10 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) throw error;
       
       console.log("Sign in successful:", data.user?.id);
-      if (data.user) {
-        const isUserAdmin = await checkAdminStatus(data.user.id);
-        setIsAdmin(isUserAdmin);
-      }
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -129,7 +85,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       console.log("Sign out successful");
       // Force state reset to ensure UI updates
-      setIsAdmin(false);
       setUser(null);
       setSession(null);
     } catch (error) {
@@ -139,7 +94,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, isLoading, signIn, signOut, isAdmin }}>
+    <AuthContext.Provider value={{ session, user, isLoading, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );
