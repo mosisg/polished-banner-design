@@ -2,19 +2,10 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import PlanCard from '@/components/ui/PlanCard';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-
-interface Plan {
-  id: number;
-  name: string;
-  data: string;
-  price: string;
-  features: string[];
-  operator?: string;
-  coverage?: string;
-}
+import { Plan } from './types';
+import PlanCard from './PlanCard';
 
 interface PlanCarouselProps {
   plans: Plan[];
@@ -63,48 +54,74 @@ const PlanCarousel: React.FC<PlanCarouselProps> = ({ plans }) => {
         >
           {plans.map((plan) => (
             <div key={plan.id} className="w-full flex-shrink-0 px-4">
-              <PlanCard plan={plan} />
+              <PlanCard plan={plan} isActive={plans.indexOf(plan) === activeSlide} />
             </div>
           ))}
         </div>
       </div>
       
-      {/* Navigation Buttons */}
-      <div className="flex justify-center items-center space-x-4 mt-8">
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="rounded-full h-12 w-12 border-2 shadow-sm hover:scale-105 transition-all"
-          onClick={handlePrev}
-        >
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
-        
-        <div className="flex space-x-2">
-          {plans.map((_, index) => (
-            <button
-              key={index}
-              className={cn(
-                "w-2.5 h-2.5 rounded-full transition-all duration-300",
-                index === activeSlide 
-                  ? "w-10 bg-primary" 
-                  : "bg-muted hover:bg-muted-foreground/50"
-              )}
-              onClick={() => setActiveSlide(index)}
-            />
-          ))}
-        </div>
-        
-        <Button 
-          variant="outline" 
-          size="icon" 
-          className="rounded-full h-12 w-12 border-2 shadow-sm hover:scale-105 transition-all"
-          onClick={handleNext}
-        >
-          <ChevronRight className="h-6 w-6" />
-        </Button>
-      </div>
+      {/* Navigation Controls */}
+      <CarouselControls 
+        activeSlide={activeSlide}
+        totalSlides={plans.length}
+        onPrev={handlePrev}
+        onNext={handleNext}
+        onSelect={setActiveSlide}
+      />
     </motion.div>
+  );
+};
+
+interface CarouselControlsProps {
+  activeSlide: number;
+  totalSlides: number;
+  onPrev: () => void;
+  onNext: () => void;
+  onSelect: (index: number) => void;
+}
+
+const CarouselControls: React.FC<CarouselControlsProps> = ({
+  activeSlide,
+  totalSlides,
+  onPrev,
+  onNext,
+  onSelect
+}) => {
+  return (
+    <div className="flex justify-center items-center space-x-4 mt-8">
+      <Button 
+        variant="outline" 
+        size="icon" 
+        className="rounded-full h-12 w-12 border-2 shadow-sm hover:scale-105 transition-all"
+        onClick={onPrev}
+      >
+        <ChevronLeft className="h-6 w-6" />
+      </Button>
+      
+      <div className="flex space-x-2">
+        {Array.from({ length: totalSlides }).map((_, index) => (
+          <button
+            key={index}
+            className={cn(
+              "w-2.5 h-2.5 rounded-full transition-all duration-300",
+              index === activeSlide 
+                ? "w-10 bg-primary" 
+                : "bg-muted hover:bg-muted-foreground/50"
+            )}
+            onClick={() => onSelect(index)}
+          />
+        ))}
+      </div>
+      
+      <Button 
+        variant="outline" 
+        size="icon" 
+        className="rounded-full h-12 w-12 border-2 shadow-sm hover:scale-105 transition-all"
+        onClick={onNext}
+      >
+        <ChevronRight className="h-6 w-6" />
+      </Button>
+    </div>
   );
 };
 

@@ -2,6 +2,8 @@
 import React from 'react';
 import { Smartphone } from 'lucide-react';
 import { motion } from 'framer-motion';
+import PromotionalBadge from './PromotionalBadge';
+import FloatingOffer from './FloatingOffer';
 
 const BannerIllustration: React.FC = () => {
   return (
@@ -14,46 +16,23 @@ const BannerIllustration: React.FC = () => {
     >
       <div className="relative w-64 h-64 md:w-72 md:h-72 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center p-4">
         <Smartphone className="w-40 h-40 text-white" />
-        <motion.div 
-          className="absolute -top-4 -right-4 bg-yellow-400 text-blue-800 font-bold rounded-full w-16 h-16 flex items-center justify-center text-xl"
-          animate={{ rotate: [0, 10, 0, -10, 0] }}
-          transition={{ 
-            repeat: Infinity, 
-            duration: 5, 
-            ease: "easeInOut" 
-          }}
-          style={{ willChange: 'transform' }}
-        >
-          -40%
-        </motion.div>
+        <PromotionalBadge discount="-40%" className="-top-4 -right-4" />
       </div>
-      <motion.div 
-        className="absolute top-1/4 -left-4 bg-white dark:bg-slate-800 shadow-lg rounded-lg p-3"
-        animate={{ y: [0, -10, 0] }}
-        transition={{ 
-          repeat: Infinity, 
-          duration: 3,
-          ease: "easeInOut" 
-        }}
-        style={{ willChange: 'transform' }}
-      >
-        <span className="text-primary font-bold">Forfait 5G</span>
-        <div className="text-sm">9,99€ <span className="line-through text-muted-foreground">19,99€</span></div>
-      </motion.div>
-      <motion.div 
-        className="absolute bottom-1/4 -right-4 bg-white dark:bg-slate-800 shadow-lg rounded-lg p-3"
-        animate={{ y: [0, -10, 0] }}
-        transition={{ 
-          repeat: Infinity, 
-          duration: 3, 
-          ease: "easeInOut", 
-          delay: 1 
-        }}
-        style={{ willChange: 'transform' }}
-      >
-        <span className="text-purple-600 font-bold">Box Fibre</span>
-        <div className="text-sm">22,99€ <span className="line-through text-muted-foreground">42,99€</span></div>
-      </motion.div>
+      
+      <FloatingOffer 
+        title="Forfait 5G" 
+        price="9,99€" 
+        originalPrice="19,99€" 
+        position="top-left" 
+      />
+      
+      <FloatingOffer 
+        title="Box Fibre" 
+        price="22,99€" 
+        originalPrice="42,99€" 
+        position="bottom-right" 
+        delay={1} 
+      />
     </motion.div>
   );
 };

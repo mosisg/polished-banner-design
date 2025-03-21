@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Search, ShoppingCart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import GeolocatedOffer from './GeolocatedOffer';
+import FeatureCheckItem from './FeatureCheckItem';
 
 const BannerContent: React.FC = () => {
   return (
@@ -69,18 +70,9 @@ const BannerContent: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7, duration: 0.6 }}
       >
-        <div className="flex items-center">
-          <span className="bg-primary/20 p-1 rounded-full mr-1 text-primary">✓</span>
-          Comparaison gratuite
-        </div>
-        <div className="flex items-center">
-          <span className="bg-primary/20 p-1 rounded-full mr-1 text-primary">✓</span>
-          100% indépendant
-        </div>
-        <div className="flex items-center">
-          <span className="bg-primary/20 p-1 rounded-full mr-1 text-primary">✓</span>
-          Mis à jour quotidiennement
-        </div>
+        <FeatureCheckItem text="Comparaison gratuite" />
+        <FeatureCheckItem text="100% indépendant" />
+        <FeatureCheckItem text="Mis à jour quotidiennement" />
       </motion.div>
     </motion.div>
   );
