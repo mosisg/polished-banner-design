@@ -52,12 +52,23 @@ export async function getOpenAIResponse(
       useRag: useRAG
     });
     
-    // Extract document references if available
-    const documentReferences = response.context_documents?.map(doc => ({
-      id: doc.id,
-      title: doc.metadata?.title || 'Document sans titre',
-      excerpt: doc.content.substring(0, 150) + '...'
-    })) || [];
+    // Create document references array if context is returned from the Edge Function
+    let documentReferences: DocumentReference[] = [];
+    
+    // Check if the response has context information
+    if (response.used_context && response.context_count && response.context_count > 0) {
+      // Since context_documents is not available in the response type,
+      // we'll handle the case where documents are available but not properly typed
+      const contextDocuments = (response as any).context_documents;
+      
+      if (contextDocuments && Array.isArray(contextDocuments)) {
+        documentReferences = contextDocuments.map(doc => ({
+          id: doc.id,
+          title: doc.metadata?.title || 'Document sans titre',
+          excerpt: doc.content.substring(0, 150) + '...'
+        }));
+      }
+    }
     
     return {
       text: response.message.content,
