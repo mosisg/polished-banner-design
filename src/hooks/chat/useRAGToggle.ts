@@ -1,13 +1,14 @@
 
-import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useSupportChatContext } from '@/contexts/SupportChatContext';
 
 export const useRAGToggle = () => {
-  const [useRAG, setUseRAG] = useState(true);
+  const { state, dispatch } = useSupportChatContext();
+  const { useRAG } = state;
   const { toast } = useToast();
 
   const toggleRAG = () => {
-    setUseRAG(prev => !prev);
+    dispatch({ type: 'TOGGLE_RAG' });
     toast({
       title: useRAG ? "Mode base de connaissances désactivé" : "Mode base de connaissances activé",
       description: useRAG ? "Les réponses ne seront plus enrichies par votre base de connaissances." : "Les réponses seront enrichies par votre base de connaissances.",

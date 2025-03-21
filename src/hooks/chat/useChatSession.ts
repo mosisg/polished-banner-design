@@ -1,25 +1,26 @@
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { createChatSession } from '@/services/support/sessionService';
 import { v4 as uuidv4 } from 'uuid';
+import { useSupportChatContext } from '@/contexts/SupportChatContext';
 
 export const useChatSession = () => {
-  const [sessionId, setSessionId] = useState<string>('');
+  const { state, dispatch } = useSupportChatContext();
 
   useEffect(() => {
     const initSession = async () => {
       try {
         const newSessionId = await createChatSession();
-        setSessionId(newSessionId);
+        dispatch({ type: 'SET_SESSION_ID', payload: newSessionId });
       } catch (err) {
         console.error("Failed to initialize session:", err);
         // Generate a local ID for fallback
-        setSessionId(uuidv4());
+        dispatch({ type: 'SET_SESSION_ID', payload: uuidv4() });
       }
     };
     
     initSession();
-  }, []);
+  }, [dispatch]);
 
-  return { sessionId };
+  return { sessionId: state.sessionId };
 };

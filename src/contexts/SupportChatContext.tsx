@@ -1,6 +1,7 @@
 
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-import { ChatMessage, MessageStatus } from '@/types/support';
+import React, { createContext, useContext, useReducer, ReactNode, useRef } from 'react';
+import { ChatMessage, MessageStatus, DocumentReference } from '@/types/support';
+import { throttle } from '@/utils/performance';
 
 // Define the chat state interface
 interface ChatState {
@@ -55,7 +56,7 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
     case 'SET_MESSAGES':
       return { ...state, messages: action.payload };
     case 'ADD_USER_MESSAGE':
-      return { ...state, messages: [...state.messages, action.payload] };
+      return { ...state, messages: [...state.messages, action.payload], lastMessageStatus: 'sent' };
     case 'ADD_BOT_MESSAGE':
       return { ...state, messages: [...state.messages, action.payload] };
     case 'SET_INPUT_TEXT':
@@ -79,20 +80,98 @@ function chatReducer(state: ChatState, action: ChatAction): ChatState {
   }
 }
 
-// Create context
-type ChatContextType = {
+// Create context with additional refs and functions
+interface ChatContextType {
   state: ChatState;
   dispatch: React.Dispatch<ChatAction>;
-};
+  messageEndRef: React.RefObject<HTMLDivElement>;
+  previousMessagesRef: React.RefObject<ChatMessage[]>;
+  conversationContextRef: React.RefObject<string[]>;
+  updateBotTyping: (isTyping: boolean) => void;
+  addUserMessage: (text: string, sessionId: string) => ChatMessage;
+  addBotMessage: (text: string, sessionId: string, usedContext?: boolean, documentReferences?: DocumentReference[]) => ChatMessage;
+}
 
 const SupportChatContext = createContext<ChatContextType | undefined>(undefined);
 
 // Create provider
 export const SupportChatProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(chatReducer, initialState);
+  const messageEndRef = useRef<HTMLDivElement>(null);
+  const previousMessagesRef = useRef<ChatMessage[]>([]);
+  const conversationContextRef = useRef<string[]>([]);
+
+  // Create a throttled version of the typing indicator update
+  const updateBotTyping = throttle((isTyping: boolean) => {
+    dispatch({ type: 'SET_IS_TYPING', payload: isTyping });
+  }, 500);
+
+  // Add a user message to the conversation
+  const addUserMessage = (text: string, sessionId: string): ChatMessage => {
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      text: text,
+      sender: 'user',
+      timestamp: new Date()
+    };
+    
+    dispatch({ type: 'ADD_USER_MESSAGE', payload: userMessage });
+    
+    // Update previous messages reference
+    const newMessages = [...state.messages, userMessage];
+    previousMessagesRef.current = newMessages;
+    
+    // Scroll to bottom
+    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    
+    // Store this message for context
+    conversationContextRef.current.push(`User: ${text}`);
+    
+    // Set message status to delivered after a delay
+    setTimeout(() => {
+      dispatch({ type: 'SET_MESSAGE_STATUS', payload: 'delivered' });
+    }, 500);
+    
+    return userMessage;
+  };
+
+  // Add a bot message to the conversation
+  const addBotMessage = (text: string, sessionId: string, usedContext?: boolean, documentReferences?: DocumentReference[]): ChatMessage => {
+    const botMessage: ChatMessage = {
+      id: (Date.now() + 1).toString(),
+      text: text,
+      sender: 'bot',
+      timestamp: new Date(),
+      usedContext,
+      documentReferences
+    };
+    
+    dispatch({ type: 'ADD_BOT_MESSAGE', payload: botMessage });
+    
+    // Update previous messages reference
+    const newMessages = [...state.messages, botMessage];
+    previousMessagesRef.current = newMessages;
+    
+    // Scroll to bottom
+    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    
+    // Store the AI response for context
+    conversationContextRef.current.push(`Assistant: ${text}`);
+    
+    return botMessage;
+  };
 
   return (
-    <SupportChatContext.Provider value={{ state, dispatch }}>
+    <SupportChatContext.Provider value={{ 
+      state, 
+      dispatch, 
+      messageEndRef, 
+      previousMessagesRef, 
+      conversationContextRef,
+      updateBotTyping,
+      addUserMessage,
+      addBotMessage
+    }}>
       {children}
     </SupportChatContext.Provider>
   );

@@ -1,17 +1,19 @@
 
-import { useRef } from 'react';
 import { useToast } from '@/hooks/use-toast';
-import { ChatMessage, SupportChatState, MessageStatus } from '@/types/support';
+import { SupportChatState } from '@/types/support';
 import { getOpenAIResponse } from '@/services/support/openAiService';
 import { getSmartResponse } from '@/services/support/smartResponseService';
 import { useChatSession } from './chat/useChatSession';
 import { useOpenAIConnection } from './chat/useOpenAIConnection';
 import { useMessageHandling } from './chat/useMessageHandling';
 import { useRAGToggle } from './chat/useRAGToggle';
+import { SupportChatProvider, useSupportChatContext } from '@/contexts/SupportChatContext';
 
 export type { ChatMessage } from '@/types/support';
 
-export const useSupportChat = (): SupportChatState => {
+// Inner hook that uses the context
+const useSupportChatInner = (): SupportChatState => {
+  const { state, conversationContextRef } = useSupportChatContext();
   const { sessionId } = useChatSession();
   const { 
     isConnectedToOpenAI, 
@@ -19,7 +21,7 @@ export const useSupportChat = (): SupportChatState => {
     setIsConnectedToOpenAI, 
     setHasOpenAIFailed,
     incrementRetryCount 
-  } = useOpenAIConnection(sessionId);
+  } = useOpenAIConnection();
   const { 
     messages, 
     inputText, 
@@ -28,7 +30,6 @@ export const useSupportChat = (): SupportChatState => {
     lastMessageStatus, 
     messageEndRef,
     previousMessagesRef,
-    conversationContextRef,
     updateBotTyping,
     addUserMessage,
     addBotMessage,
@@ -112,4 +113,19 @@ export const useSupportChat = (): SupportChatState => {
     lastMessageStatus,
     isConnectedToOpenAI
   };
+};
+
+// Wrapper hook that provides the context
+export const useSupportChat = (): SupportChatState => {
+  return (
+    <SupportChatProvider>
+      <SupportChatConsumer />
+    </SupportChatProvider>
+  );
+};
+
+// Consumer component to use the context
+const SupportChatConsumer = () => {
+  const chatState = useSupportChatInner();
+  return chatState;
 };

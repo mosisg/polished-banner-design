@@ -1,13 +1,13 @@
 
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { getOpenAIResponse } from '@/services/support/openAiService';
+import { useSupportChatContext } from '@/contexts/SupportChatContext';
 
-export const useOpenAIConnection = (sessionId: string) => {
-  const [hasOpenAIFailed, setHasOpenAIFailed] = useState(false);
-  const [isConnectedToOpenAI, setIsConnectedToOpenAI] = useState(true);
-  const [retryCount, setRetryCount] = useState(0);
+export const useOpenAIConnection = () => {
+  const { state, dispatch } = useSupportChatContext();
   const { toast } = useToast();
+  const { sessionId, hasOpenAIFailed, retryCount, isConnectedToOpenAI } = state;
 
   // Test OpenAI connectivity on start
   useEffect(() => {
@@ -17,19 +17,19 @@ export const useOpenAIConnection = (sessionId: string) => {
       try {
         // Just create a simple ping message that won't be displayed
         const testResponse = await getOpenAIResponse("ping", [], sessionId, false);
-        setIsConnectedToOpenAI(true);
-        setHasOpenAIFailed(false);
+        dispatch({ type: 'SET_OPENAI_CONNECTED', payload: true });
+        dispatch({ type: 'SET_OPENAI_FAILED', payload: false });
       } catch (err) {
         console.error("Failed to connect to OpenAI:", err);
-        setIsConnectedToOpenAI(false);
-        setHasOpenAIFailed(true);
+        dispatch({ type: 'SET_OPENAI_CONNECTED', payload: false });
+        dispatch({ type: 'SET_OPENAI_FAILED', payload: true });
       }
     };
     
     testOpenAIConnection();
-  }, [sessionId]);
+  }, [sessionId, dispatch]);
 
-  // Add this new effect to periodically retry OpenAI connection if it fails
+  // Periodically retry OpenAI connection if it fails
   useEffect(() => {
     // Only retry if we've previously had a failure
     if (hasOpenAIFailed && retryCount < 3) {
@@ -37,8 +37,8 @@ export const useOpenAIConnection = (sessionId: string) => {
         try {
           const testResponse = await getOpenAIResponse("ping", [], sessionId, false);
           console.log("Successfully reconnected to OpenAI");
-          setIsConnectedToOpenAI(true);
-          setHasOpenAIFailed(false);
+          dispatch({ type: 'SET_OPENAI_CONNECTED', payload: true });
+          dispatch({ type: 'SET_OPENAI_FAILED', payload: false });
           
           toast({
             title: "Connexion rétablie",
@@ -47,20 +47,23 @@ export const useOpenAIConnection = (sessionId: string) => {
           });
         } catch (err) {
           console.error("Failed to reconnect to OpenAI:", err);
-          setRetryCount(prev => prev + 1);
+          dispatch({ type: 'INCREMENT_RETRY_COUNT' });
         }
       }, 30000); // Try every 30 seconds
       
       return () => clearTimeout(retryTimeout);
     }
-  }, [hasOpenAIFailed, retryCount, sessionId, toast]);
+  }, [hasOpenAIFailed, retryCount, sessionId, toast, dispatch]);
 
   return { 
     isConnectedToOpenAI, 
     hasOpenAIFailed, 
     retryCount,
-    setIsConnectedToOpenAI, 
-    setHasOpenAIFailed,
-    incrementRetryCount: () => setRetryCount(prev => prev + 1) 
+    setIsConnectedToOpenAI: (connected: boolean) => 
+      dispatch({ type: 'SET_OPENAI_CONNECTED', payload: connected }),
+    setHasOpenAIFailed: (failed: boolean) => 
+      dispatch({ type: 'SET_OPENAI_FAILED', payload: failed }),
+    incrementRetryCount: () => 
+      dispatch({ type: 'INCREMENT_RETRY_COUNT' })
   };
 };

@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { useSupportChat } from '@/hooks/useSupportChat';
+import { SupportChatProvider } from '@/contexts/SupportChatContext';
 import ChatHeader from './chat/ChatHeader';
 import MessageList from './chat/MessageList';
 import ChatInput from './chat/ChatInput';
@@ -12,6 +13,14 @@ interface CustomerSupportChatProps {
 }
 
 const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClose }) => {
+  return (
+    <SupportChatProvider>
+      <CustomerSupportChatInner isOpen={isOpen} onClose={onClose} />
+    </SupportChatProvider>
+  );
+};
+
+const CustomerSupportChatInner: React.FC<CustomerSupportChatProps> = ({ isOpen, onClose }) => {
   const { 
     messages, 
     inputText, 
