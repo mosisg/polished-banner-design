@@ -132,6 +132,99 @@ export type Database = {
         }
         Relationships: []
       }
+      phones: {
+        Row: {
+          additional_images: string[] | null
+          category: string | null
+          color: string | null
+          condition: string | null
+          created_at: string | null
+          description: string
+          discount: number | null
+          ean: string | null
+          full_description: string | null
+          id: string
+          image: string
+          in_stock: boolean | null
+          installment_months: number | null
+          installment_price: number | null
+          is_eco_friendly: boolean | null
+          merchant: string | null
+          operating_system: string | null
+          original_price: number | null
+          price: number
+          product_url: string | null
+          promotion: string | null
+          rating: number | null
+          review_count: number | null
+          shipping: string | null
+          storage: string | null
+          title: string
+          trademark: string
+          updated_at: string | null
+        }
+        Insert: {
+          additional_images?: string[] | null
+          category?: string | null
+          color?: string | null
+          condition?: string | null
+          created_at?: string | null
+          description: string
+          discount?: number | null
+          ean?: string | null
+          full_description?: string | null
+          id?: string
+          image: string
+          in_stock?: boolean | null
+          installment_months?: number | null
+          installment_price?: number | null
+          is_eco_friendly?: boolean | null
+          merchant?: string | null
+          operating_system?: string | null
+          original_price?: number | null
+          price: number
+          product_url?: string | null
+          promotion?: string | null
+          rating?: number | null
+          review_count?: number | null
+          shipping?: string | null
+          storage?: string | null
+          title: string
+          trademark: string
+          updated_at?: string | null
+        }
+        Update: {
+          additional_images?: string[] | null
+          category?: string | null
+          color?: string | null
+          condition?: string | null
+          created_at?: string | null
+          description?: string
+          discount?: number | null
+          ean?: string | null
+          full_description?: string | null
+          id?: string
+          image?: string
+          in_stock?: boolean | null
+          installment_months?: number | null
+          installment_price?: number | null
+          is_eco_friendly?: boolean | null
+          merchant?: string | null
+          operating_system?: string | null
+          original_price?: number | null
+          price?: number
+          product_url?: string | null
+          promotion?: string | null
+          rating?: number | null
+          review_count?: number | null
+          shipping?: string | null
+          storage?: string | null
+          title?: string
+          trademark?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

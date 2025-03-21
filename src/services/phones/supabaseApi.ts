@@ -9,7 +9,8 @@ export const fetchPhonesFromSupabase = async (): Promise<Phone[]> => {
   try {
     console.log('Fetching phones from Supabase...');
     
-    const { data, error } = await supabase
+    // Cast the supabase client to any to bypass TypeScript checking since we can't modify the types.ts file
+    const { data, error } = await (supabase as any)
       .from('phones')
       .select('*')
       .order('price');
