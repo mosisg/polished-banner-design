@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { useToast } from '@/hooks/use-toast';
+import { getChatCompletion, getAssistantSystemMessage } from '@/services/openai/client';
+import { throttle } from '@/utils/performance';
 
 export interface ChatMessage {
   id: string;
@@ -23,8 +25,10 @@ export const useSupportChat = () => {
   const [inputText, setInputText] = useState('');
   const [sessionId, setSessionId] = useState<string>('');
   const [isTyping, setIsTyping] = useState(false);
+  const [hasOpenAIFailed, setHasOpenAIFailed] = useState(false);
   const { toast } = useToast();
   const messageEndRef = useRef<HTMLDivElement>(null);
+  const previousMessagesRef = useRef<ChatMessage[]>([]);
 
   // Initialize session
   useEffect(() => {
@@ -78,9 +82,15 @@ export const useSupportChat = () => {
     }
   };
 
+  // Throttled function to avoid too many state updates
+  const updateBotTyping = throttle((isTyping: boolean) => {
+    setIsTyping(isTyping);
+  }, 500);
+
   // Scroll to bottom of messages
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    previousMessagesRef.current = messages;
   }, [messages]);
 
   // Enhanced AI assistant
@@ -135,7 +145,43 @@ export const useSupportChat = () => {
     return "Je peux vous aider à trouver les meilleures offres de forfaits mobiles, box internet ou smartphones. N'hésitez pas à me poser des questions précises sur vos besoins, ou à utiliser directement nos comparateurs accessibles depuis la page d'accueil. Puis-je vous aider sur un sujet particulier?";
   };
 
-  const sendMessage = () => {
+  // Get OpenAI response
+  const getOpenAIResponse = async (userMessage: string): Promise<string> => {
+    try {
+      // Prepare conversation history for OpenAI
+      const systemMessage = getAssistantSystemMessage();
+      
+      // Convert previous messages to OpenAI format (exclude the first welcome message)
+      const chatHistory = previousMessagesRef.current.slice(1).map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.text
+      } as const));
+      
+      // Add current user message
+      const aiMessages = [
+        systemMessage,
+        ...chatHistory,
+        { role: 'user', content: userMessage } as const
+      ];
+      
+      // Get response from OpenAI
+      const response = await getChatCompletion(aiMessages, { 
+        sessionId, 
+        model: 'gpt-4-turbo',
+        temperature: 0.7
+      });
+      
+      return response.message.content;
+    } catch (error) {
+      console.error('Error getting OpenAI response:', error);
+      setHasOpenAIFailed(true);
+      
+      // Fallback to rule-based responses
+      return getSmartResponse(userMessage);
+    }
+  };
+
+  const sendMessage = async () => {
     if (!inputText.trim()) return;
     
     // Add user message
@@ -153,21 +199,45 @@ export const useSupportChat = () => {
     // Show typing indicator
     setIsTyping(true);
     
-    // Simulate bot response after a short delay with smart response
-    setTimeout(() => {
-      setIsTyping(false);
+    try {
+      // Get response from OpenAI or fallback
+      const aiResponse = hasOpenAIFailed 
+        ? getSmartResponse(userMessage.text)
+        : await getOpenAIResponse(userMessage.text);
       
-      const intelligentResponse = getSmartResponse(userMessage.text);
+      // Hide typing indicator
+      updateBotTyping(false);
+      
       const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        text: intelligentResponse,
+        text: aiResponse,
         sender: 'bot',
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, botMessage]);
-      saveMessage(intelligentResponse, true).catch(console.error);
-    }, 1500 + (Math.random() * 1000)); // Dynamic delay to simulate human response
+      saveMessage(aiResponse, true).catch(console.error);
+    } catch (error) {
+      // In case of error, use fallback and show toast
+      updateBotTyping(false);
+      
+      const fallbackResponse = getSmartResponse(userMessage.text);
+      const botMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        text: fallbackResponse,
+        sender: 'bot',
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, botMessage]);
+      saveMessage(fallbackResponse, true).catch(console.error);
+      
+      toast({
+        title: "Problème de connexion",
+        description: "Impossible de se connecter au service intelligent. Un mode limité est utilisé.",
+        variant: "destructive"
+      });
+    }
   };
   
   return {
