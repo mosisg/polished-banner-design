@@ -2,6 +2,7 @@
 import React from 'react';
 import { Handshake } from 'lucide-react';
 import { motion } from 'framer-motion';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 const partners = [
   { name: 'Orange', logo: '/logo-orange.svg', color: 'from-orange-500/20 to-orange-600/10' },
@@ -64,9 +65,11 @@ const PartnersSection = () => {
             >
               <div className="flex flex-col items-center gap-2">
                 <div className="w-full h-16 flex items-center justify-center">
-                  <img 
+                  <OptimizedImage 
                     src={partner.logo} 
                     alt={`Logo ${partner.name}`}
+                    width={96}
+                    height={48}
                     className="max-h-12 max-w-full object-contain"
                   />
                 </div>

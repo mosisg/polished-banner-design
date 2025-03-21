@@ -4,6 +4,7 @@ import { Smartphone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PromotionalBadge from './PromotionalBadge';
 import FloatingOffer from './FloatingOffer';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 const BannerIllustration: React.FC = () => {
   return (

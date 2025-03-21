@@ -5,6 +5,7 @@ import { Phone, Signal, CheckCircle2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { mobilePlans } from '@/data/mobilePlans';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 const MobileSection = () => {
   // Sélection de quelques forfaits pour l'aperçu
@@ -25,10 +26,10 @@ const MobileSection = () => {
             </p>
             
             <div className="flex flex-wrap gap-5 mb-8 items-center">
-              <img src="/logo-bouygues.svg" alt="Bouygues Telecom" className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
-              <img src="/logo-coriolis.svg" alt="Coriolis" className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
-              <img src="/logo-orange.svg" alt="Orange" className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
-              <img src="/logo-auchan-telecom.svg" alt="Auchan Telecom" className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
+              <OptimizedImage src="/logo-bouygues.svg" alt="Bouygues Telecom" width={80} height={32} className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
+              <OptimizedImage src="/logo-coriolis.svg" alt="Coriolis" width={80} height={32} className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
+              <OptimizedImage src="/logo-orange.svg" alt="Orange" width={80} height={32} className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
+              <OptimizedImage src="/logo-auchan-telecom.svg" alt="Auchan Telecom" width={80} height={32} className="h-8 opacity-80 hover:opacity-100 transition-opacity" />
             </div>
             
             <Button asChild size="lg" className="group shadow-lg hover:shadow-xl transition-all">

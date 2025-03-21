@@ -3,6 +3,7 @@ import React, { memo } from 'react';
 import { Info } from 'lucide-react';
 import BoxCard, { BoxCardSkeleton } from '@/components/ui/BoxCard';
 import { InternetBox } from '@/types/internet';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 // Composant pour afficher le logo de l'opérateur
 const OperatorLogo = memo(({ operator }: { operator: string }) => {
@@ -50,7 +51,7 @@ const OperatorLogo = memo(({ operator }: { operator: string }) => {
 
   return (
     <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center shadow-sm p-2">
-      <img src={logoPath} alt={operator} className="max-h-10 max-w-12" />
+      <OptimizedImage src={logoPath} alt={operator} width={40} height={40} className="max-h-10 max-w-12" />
     </div>
   );
 });
