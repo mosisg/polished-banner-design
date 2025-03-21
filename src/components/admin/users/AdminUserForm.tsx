@@ -1,11 +1,13 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 type AdminFormStatus = 'idle' | 'success' | 'error';
 
@@ -15,6 +17,20 @@ const AdminUserForm = () => {
   const [status, setStatus] = useState<AdminFormStatus>('idle');
   const [message, setMessage] = useState('');
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const { session, user } = useAuth();
+
+  // Vérifier si l'utilisateur est connecté
+  useEffect(() => {
+    if (!session || !user) {
+      toast({
+        title: 'Session expirée',
+        description: 'Votre session a expiré. Veuillez vous reconnecter.',
+        variant: 'destructive',
+      });
+      navigate('/login', { state: { from: '/admin/users' }, replace: true });
+    }
+  }, [session, user, navigate, toast]);
 
   const handleMakeAdmin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,16 +48,14 @@ const AdminUserForm = () => {
     setStatus('idle');
     
     try {
-      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-
-      if (sessionError || !sessionData.session) {
+      if (!session) {
         throw new Error('Session non valide, veuillez vous reconnecter');
       }
       
       const { data, error } = await supabase.functions.invoke('make-admin', {
         body: { email },
         headers: {
-          Authorization: `Bearer ${sessionData.session.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
       });
       
@@ -60,6 +74,23 @@ const AdminUserForm = () => {
     } catch (error) {
       console.error('Error making admin:', error);
       setStatus('error');
+      
+      // Rediriger vers la page de connexion si la session est expirée
+      if (error instanceof Error && 
+        (error.message.includes('Session non valide') || 
+        error.message.includes('Auth session missing') || 
+        error.message.includes('JWT expired') ||
+        error.message.includes('Invalid token'))) {
+        
+        toast({
+          title: 'Session expirée',
+          description: 'Veuillez vous reconnecter pour continuer.',
+          variant: 'destructive',
+        });
+        navigate('/login', { state: { from: '/admin/users' }, replace: true });
+        return;
+      }
+      
       setMessage(error instanceof Error ? error.message : 'Une erreur est survenue');
       toast({
         title: 'Erreur',

@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,11 +7,36 @@ import AdminUserForm from '@/components/admin/users/AdminUserForm';
 import AdminUserInfo from '@/components/admin/users/AdminUserInfo';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Shield } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const AdminUsers = () => {
-  const { user } = useAuth();
+  const { user, isAdmin, session } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  useEffect(() => {
+    // Vérifier si l'utilisateur est connecté
+    if (!session || !user) {
+      toast({
+        title: 'Session expirée',
+        description: 'Votre session a expiré. Veuillez vous reconnecter.',
+        variant: 'destructive',
+      });
+      navigate('/login', { state: { from: '/admin/users' }, replace: true });
+      return;
+    }
+    
+    // Vérifier si l'utilisateur est admin
+    if (!isAdmin) {
+      toast({
+        title: 'Accès restreint',
+        description: 'Vous n\'avez pas les droits d\'administrateur nécessaires pour accéder à cette page.',
+        variant: 'destructive',
+      });
+      navigate('/', { replace: true });
+    }
+  }, [user, isAdmin, session, navigate, toast]);
   
   const handleGoBack = () => {
     navigate(-1);
@@ -39,6 +64,9 @@ const AdminUsers = () => {
             <h1 className="text-3xl font-bold">
               Gestion des Administrateurs
             </h1>
+            {isAdmin && (
+              <Shield className="h-5 w-5 ml-2 text-primary" />
+            )}
           </div>
           
           <Card className="mb-8">
