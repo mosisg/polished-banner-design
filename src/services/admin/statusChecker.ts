@@ -57,7 +57,8 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
     // Check if search function exists by trying to call it with safe parameters
     try {
       // Create a zero-filled array of length 1536 for the embedding vector
-      const zeroEmbedding = Array(1536).fill(0);
+      // Convert the array to a stringified JSON for the query_embedding parameter
+      const zeroEmbedding = JSON.stringify(Array(1536).fill(0));
       
       const { error: functionError } = await supabase.rpc(
         'match_documents',
