@@ -10,6 +10,10 @@ import MobileHero from '@/components/mobile/MobileHero';
 import MobilePlansContent from '@/components/mobile/MobilePlansContent';
 import LoadingState from '@/components/mobile/LoadingState';
 
+/**
+ * MobilePlans page component
+ * Displays mobile plans with filtering and sorting functionality
+ */
 const MobilePlans = () => {
   const {
     dataRange,
@@ -56,33 +60,35 @@ const MobilePlans = () => {
 
       <div className="flex flex-col min-h-screen">
         <Header />
-        <MobileHero />
+        <main>
+          <h1 className="sr-only">Forfaits Mobiles - ComparePrix</h1>
+          <MobileHero />
 
-        {isLoading && !isFiltering ? (
-          <LoadingState />
-        ) : (
-          <MobilePlansContent
-            dataRange={dataRange}
-            setDataRange={setDataRange}
-            priceRange={priceRange}
-            setPriceRange={setPriceRange}
-            networkType={networkType}
-            setNetworkType={setNetworkType}
-            selectedOperators={selectedOperators}
-            operators={operators}
-            handleOperatorChange={handleOperatorChange}
-            filteredPlans={filteredPlans}
-            sortOption={sortOption}
-            setSortOption={setSortOption}
-            filtersOpen={filtersOpen}
-            setFiltersOpen={setFiltersOpen}
-            isLoading={isLoading}
-            isFiltering={isFiltering}
-            showFiltersDialog={showFiltersDialog}
-            setShowFiltersDialog={setShowFiltersDialog}
-          />
-        )}
-
+          {isLoading && !isFiltering ? (
+            <LoadingState />
+          ) : (
+            <MobilePlansContent
+              dataRange={dataRange}
+              setDataRange={setDataRange}
+              priceRange={priceRange}
+              setPriceRange={setPriceRange}
+              networkType={networkType}
+              setNetworkType={setNetworkType}
+              selectedOperators={selectedOperators}
+              operators={operators}
+              handleOperatorChange={handleOperatorChange}
+              filteredPlans={filteredPlans}
+              sortOption={sortOption}
+              setSortOption={setSortOption}
+              filtersOpen={filtersOpen}
+              setFiltersOpen={setFiltersOpen}
+              isLoading={isLoading}
+              isFiltering={isFiltering}
+              showFiltersDialog={showFiltersDialog}
+              setShowFiltersDialog={setShowFiltersDialog}
+            />
+          )}
+        </main>
         <Footer />
       </div>
     </>

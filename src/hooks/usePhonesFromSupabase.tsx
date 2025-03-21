@@ -9,6 +9,12 @@ import {
 import { SortOption, Phone } from '@/types/phones';
 import { getExamplePhones } from '@/services/phones/exampleData';
 
+/**
+ * Custom hook to fetch and manage phones data from Supabase
+ * 
+ * Provides filtering, sorting, and pagination functionality for phone listings
+ * @returns Object containing phone data, filter states, and utility functions
+ */
 export const usePhonesFromSupabase = () => {
   // Filter state
   const [priceRange, setPriceRange] = useState<number[]>([0, 2000]);

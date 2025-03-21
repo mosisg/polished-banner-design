@@ -16,6 +16,9 @@ import LazySectionsLoader from '@/components/home/LazySectionsLoader';
 // Lazy loaded chat component
 const CustomerSupportChat = lazy(() => import('@/components/support/CustomerSupportChat'));
 
+/**
+ * Index page component - Homepage of the application
+ */
 const Index = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const { showExitPopup } = useExitIntent();
@@ -36,6 +39,8 @@ const Index = () => {
         <NotificationBar />
         
         <main className="flex-1">
+          <h1 className="sr-only">ComparePrix - Comparateur de forfaits mobiles et box internet en France</h1>
+          
           {/* Hero Banner Section */}
           <HeroSection />
           

@@ -31,30 +31,42 @@ const LazySectionsLoader = ({ onComparisonSectionMount }: LazySectionsLoaderProp
   return (
     <>
       <Suspense fallback={<SectionFallback />}>
-        <MobileSection />
+        <section aria-labelledby="mobile-section-title">
+          <MobileSection />
+        </section>
       </Suspense>
       
       <Suspense fallback={<SectionFallback />}>
-        <InternetSection />
+        <section aria-labelledby="internet-section-title">
+          <InternetSection />
+        </section>
       </Suspense>
       
       {/* Comparison section with ID for feedback trigger */}
       <div id="comparison-section" ref={onComparisonSectionMount}>
         <Suspense fallback={<SectionFallback />}>
-          <ComparisonSection />
+          <section aria-labelledby="comparison-section-title">
+            <ComparisonSection />
+          </section>
         </Suspense>
       </div>
       
       <Suspense fallback={<SectionFallback />}>
-        <BlogSection />
+        <section aria-labelledby="blog-section-title">
+          <BlogSection />
+        </section>
       </Suspense>
       
       <Suspense fallback={<SectionFallback />}>
-        <PartnersSection />
+        <section aria-labelledby="partners-section-title">
+          <PartnersSection />
+        </section>
       </Suspense>
       
       <Suspense fallback={<SectionFallback />}>
-        <TestimonialsSection />
+        <section aria-labelledby="testimonials-section-title">
+          <TestimonialsSection />
+        </section>
       </Suspense>
     </>
   );
