@@ -60,6 +60,9 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
       // Convert the array to a stringified JSON for the query_embedding parameter
       const zeroEmbedding = JSON.stringify(Array(1536).fill(0));
       
+      // The correct way to pass an abort signal to RPC calls
+      const options = abortSignal ? { signal: abortSignal } : undefined;
+      
       const { error: functionError } = await supabase.rpc(
         'match_documents',
         { 
@@ -67,7 +70,7 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
           match_threshold: 0.0,
           match_count: 1
         },
-        { abortSignal }
+        options
       );
       
       status.functionExists = !functionError;
