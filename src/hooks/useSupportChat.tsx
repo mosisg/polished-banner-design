@@ -7,12 +7,12 @@ import { useChatSession } from './chat/useChatSession';
 import { useOpenAIConnection } from './chat/useOpenAIConnection';
 import { useMessageHandling } from './chat/useMessageHandling';
 import { useRAGToggle } from './chat/useRAGToggle';
-import { SupportChatProvider, useSupportChatContext } from '@/contexts/SupportChatContext';
+import { useSupportChatContext } from '@/contexts/SupportChatContext';
 
 export type { ChatMessage } from '@/types/support';
 
-// Inner hook that uses the context
-const useSupportChatInner = (): SupportChatState => {
+// Proper implementation of the hook that uses the context
+export const useSupportChat = (): SupportChatState => {
   const { state, conversationContextRef } = useSupportChatContext();
   const { sessionId } = useChatSession();
   const { 
@@ -113,19 +113,4 @@ const useSupportChatInner = (): SupportChatState => {
     lastMessageStatus,
     isConnectedToOpenAI
   };
-};
-
-// Wrapper hook that provides the context
-export const useSupportChat = (): SupportChatState => {
-  return (
-    <SupportChatProvider>
-      <SupportChatConsumer />
-    </SupportChatProvider>
-  );
-};
-
-// Consumer component to use the context
-const SupportChatConsumer = () => {
-  const chatState = useSupportChatInner();
-  return chatState;
 };
