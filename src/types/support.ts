@@ -30,4 +30,5 @@ export interface SupportChatState {
   useRAG: boolean;
   toggleRAG: () => void;
   lastMessageStatus: MessageStatus;
+  isConnectedToOpenAI: boolean;
 }

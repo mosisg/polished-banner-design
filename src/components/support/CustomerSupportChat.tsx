@@ -1,6 +1,6 @@
 
 import React, { useEffect, lazy, Suspense } from 'react';
-import { X, Send, Bot, User, Check, CheckCheck, Database, FileText, ThumbsUp as ThumbUpIcon, ThumbsDown as ThumbDownIcon } from 'lucide-react';
+import { X, Send, Bot, User, Check, CheckCheck, Database, FileText, ThumbsUp as ThumbUpIcon, ThumbsDown as ThumbDownIcon, WifiOff } from 'lucide-react';
 import { 
   Sheet,
   SheetContent,
@@ -37,7 +37,8 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
     messageEndRef, 
     useRAG, 
     toggleRAG,
-    lastMessageStatus
+    lastMessageStatus,
+    isConnectedToOpenAI
   } = useSupportChat();
   
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -85,6 +86,22 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+              
+              {!isConnectedToOpenAI && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="destructive" className="ml-1 py-0 h-5 px-1 border-red-500">
+                        <WifiOff className="h-3 w-3 mr-1" />
+                        IA Hors ligne
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Le service d'IA est actuellement indisponible. Réponses basiques seulement.</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </SheetTitle>
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="icon" onClick={onClose} className="h-7 w-7 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full">

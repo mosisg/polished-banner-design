@@ -25,17 +25,39 @@ export const useSupportChat = (): SupportChatState => {
   const [hasOpenAIFailed, setHasOpenAIFailed] = useState(false);
   const [useRAG, setUseRAG] = useState(true);
   const [lastMessageStatus, setLastMessageStatus] = useState<MessageStatus>('none');
+  const [isConnectedToOpenAI, setIsConnectedToOpenAI] = useState(true);
   const { toast } = useToast();
   const messageEndRef = useRef<HTMLDivElement>(null);
   const previousMessagesRef = useRef<ChatMessage[]>([]);
 
   useEffect(() => {
     const initSession = async () => {
-      const newSessionId = await createChatSession();
-      setSessionId(newSessionId);
+      try {
+        const newSessionId = await createChatSession();
+        setSessionId(newSessionId);
+      } catch (err) {
+        console.error("Failed to initialize session:", err);
+        // Generate a local ID for fallback
+        setSessionId(uuidv4());
+      }
     };
     
     initSession();
+    
+    // Test OpenAI connectivity on start
+    const testOpenAIConnection = async () => {
+      try {
+        // Just create a simple ping message that won't be displayed
+        const testResponse = await getOpenAIResponse("ping", [], sessionId, false);
+        setIsConnectedToOpenAI(true);
+      } catch (err) {
+        console.error("Failed to connect to OpenAI:", err);
+        setIsConnectedToOpenAI(false);
+        setHasOpenAIFailed(true);
+      }
+    };
+    
+    testOpenAIConnection();
   }, []);
 
   const updateBotTyping = throttle((isTyping: boolean) => {
@@ -71,11 +93,15 @@ export const useSupportChat = (): SupportChatState => {
     setIsTyping(true);
     
     try {
-      const { text: aiResponse, usedContext, documentReferences } = hasOpenAIFailed 
-        ? { text: getSmartResponse(userMessage.text), usedContext: false }
-        : await getOpenAIResponse(userMessage.text, previousMessagesRef.current, sessionId, useRAG);
+      if (hasOpenAIFailed) {
+        throw new Error("Using fallback due to previous OpenAI failure");
+      }
+      
+      const { text: aiResponse, usedContext, documentReferences } = 
+        await getOpenAIResponse(userMessage.text, previousMessagesRef.current, sessionId, useRAG);
       
       updateBotTyping(false);
+      setIsConnectedToOpenAI(true);
       
       const botMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -99,7 +125,10 @@ export const useSupportChat = (): SupportChatState => {
         });
       }
     } catch (error) {
+      console.error("OpenAI response error:", error);
       updateBotTyping(false);
+      setIsConnectedToOpenAI(false);
+      setHasOpenAIFailed(true);
       
       const fallbackResponse = getSmartResponse(userMessage.text);
       const botMessage: ChatMessage = {
@@ -138,6 +167,7 @@ export const useSupportChat = (): SupportChatState => {
     messageEndRef,
     useRAG,
     toggleRAG,
-    lastMessageStatus
+    lastMessageStatus,
+    isConnectedToOpenAI
   };
 };

@@ -21,6 +21,8 @@ export async function createChatSession(): Promise<string> {
     
     if (error) {
       console.error('Error creating chat session:', error);
+      // If RLS error occurs, still return the ID for client-side usage
+      // This allows the chat to function even without saving to database
     }
   } catch (err) {
     console.error('Failed to create session:', err);
@@ -52,6 +54,7 @@ export async function saveChatMessage(
     
     if (error) {
       console.error('Error saving chat message:', error);
+      // Continue execution even if saving fails
     }
   } catch (err) {
     console.error('Failed to save message:', err);
