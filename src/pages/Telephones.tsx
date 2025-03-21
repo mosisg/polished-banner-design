@@ -6,7 +6,9 @@ import PhoneHero from '@/components/phones/PhoneHero';
 import PhoneContent from '@/components/phones/PhoneContent';
 import PhoneStructuredData from '@/components/phones/PhoneStructuredData';
 import Footer from '@/components/layout/Footer';
-import { usePhones } from '@/hooks/usePhones';
+import { usePhonesFromSupabase } from '@/hooks/usePhonesFromSupabase';
+import { useToast } from '@/hooks/use-toast';
+import { useEffect } from 'react';
 
 const Telephones = () => {
   const {
@@ -32,10 +34,23 @@ const Telephones = () => {
     allPhones,
     filteredPhones,
     isLoading,
+    isFiltering,
     isError,
     // Functions
     toggleComparison
-  } = usePhones();
+  } = usePhonesFromSupabase();
+
+  const { toast } = useToast();
+  
+  useEffect(() => {
+    if (isError) {
+      toast({
+        title: "Erreur de chargement",
+        description: "Impossible de charger les téléphones. Veuillez réessayer plus tard.",
+        variant: "destructive"
+      });
+    }
+  }, [isError, toast]);
 
   return (
     <>
@@ -76,35 +91,43 @@ const Telephones = () => {
       <div className="flex flex-col min-h-screen">
         <Header />
         <PhoneHero />
-        <PhoneContent
-          // Filter state
-          priceRange={priceRange}
-          setPriceRange={setPriceRange}
-          selectedBrands={selectedBrands}
-          setSelectedBrands={setSelectedBrands}
-          selectedConditions={selectedConditions}
-          setSelectedConditions={setSelectedConditions}
-          selectedOS={selectedOS}
-          setSelectedOS={setSelectedOS}
-          selectedStorage={selectedStorage}
-          setSelectedStorage={setSelectedStorage}
-          ecoFriendly={ecoFriendly}
-          setEcoFriendly={setEcoFriendly}
-          sortOption={sortOption}
-          setSortOption={setSortOption}
-          filtersOpen={filtersOpen}
-          setFiltersOpen={setFiltersOpen}
-          // Data
-          allPhones={allPhones}
-          filteredPhones={filteredPhones}
-          isLoading={isLoading}
-          isError={isError}
-          // Comparison
-          comparisonList={comparisonList}
-          toggleComparison={toggleComparison}
-        />
-        <Footer />
+        
+        {isLoading && !isFiltering ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          </div>
+        ) : (
+          <PhoneContent
+            // Filter state
+            priceRange={priceRange}
+            setPriceRange={setPriceRange}
+            selectedBrands={selectedBrands}
+            setSelectedBrands={setSelectedBrands}
+            selectedConditions={selectedConditions}
+            setSelectedConditions={setSelectedConditions}
+            selectedOS={selectedOS}
+            setSelectedOS={setSelectedOS}
+            selectedStorage={selectedStorage}
+            setSelectedStorage={setSelectedStorage}
+            ecoFriendly={ecoFriendly}
+            setEcoFriendly={setEcoFriendly}
+            sortOption={sortOption}
+            setSortOption={setSortOption}
+            filtersOpen={filtersOpen}
+            setFiltersOpen={setFiltersOpen}
+            // Data
+            allPhones={allPhones}
+            filteredPhones={filteredPhones}
+            isLoading={isLoading || isFiltering}
+            isError={isError}
+            // Comparison
+            comparisonList={comparisonList}
+            toggleComparison={toggleComparison}
+          />
+        )}
+        
         {filteredPhones.length > 0 && <PhoneStructuredData phones={filteredPhones.slice(0, 10)} />}
+        <Footer />
       </div>
     </>
   );

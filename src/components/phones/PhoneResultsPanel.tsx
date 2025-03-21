@@ -6,6 +6,7 @@ import PhoneResults from './PhoneResults';
 import ViewerCounter from '../common/ViewerCounter';
 import ExpertInsight from '../common/ExpertInsight';
 import { Phone, SortOption } from '@/types/phones';
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface PhoneResultsPanelProps {
   phones: Phone[];
@@ -81,7 +82,12 @@ const PhoneResultsPanel = ({
         comparisonPhones={comparisonPhones}
       />
       
-      {featuredPhone && !isLoading && (
+      {isLoading ? (
+        <div className="space-y-4 mb-6">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      ) : featuredPhone && (
         <div className="space-y-4 mb-6">
           <ViewerCounter 
             operatorName={featuredPhone.trademark} 

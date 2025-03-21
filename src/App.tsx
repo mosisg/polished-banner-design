@@ -1,11 +1,10 @@
 
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import IndexPage from './pages/Index';
 import MobilePlans from './pages/MobilePlans';
 import InternetBoxes from './pages/InternetBoxes';
-import Telephones from './pages/Telephones';
 import Blog from './pages/Blog';
 import BlogArticle from './pages/BlogArticle';
 import CGV from './pages/CGV';
@@ -18,10 +17,15 @@ import { Toaster } from '@/components/ui/toaster';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 
+// Lazy load the Telephones page
+const Telephones = lazy(() => import('./pages/Telephones'));
+
 function App() {
   return (
     <div className="App">
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>}>
         <Routes>
           {/* Routes publiques */}
           <Route path="/" element={<Layout />}>

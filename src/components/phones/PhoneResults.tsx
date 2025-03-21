@@ -31,17 +31,43 @@ const PhoneResults = ({
 }: PhoneResultsProps) => {
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={viewType === 'grid' 
+        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" 
+        : "space-y-6"
+      }>
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="bg-card border border-border rounded-lg shadow-sm overflow-hidden">
-            <div className="p-4 h-full">
-              <Skeleton className="h-40 w-full mb-4" />
-              <Skeleton className="h-6 w-2/3 mb-2" />
-              <Skeleton className="h-4 w-1/2 mb-4" />
-              <Skeleton className="h-5 w-1/3 mb-2" />
-              <Skeleton className="h-10 w-full mt-4" />
+          viewType === 'grid' ? (
+            <div key={i} className="bg-card border border-border rounded-lg shadow-sm overflow-hidden">
+              <div className="p-4 h-full">
+                <Skeleton className="h-40 w-full mb-4" />
+                <Skeleton className="h-6 w-2/3 mb-2" />
+                <Skeleton className="h-4 w-1/2 mb-4" />
+                <Skeleton className="h-5 w-1/3 mb-2" />
+                <Skeleton className="h-10 w-full mt-4" />
+              </div>
             </div>
-          </div>
+          ) : (
+            <div key={i} className="bg-card border border-border rounded-lg shadow-sm overflow-hidden">
+              <div className="p-4 flex flex-col sm:flex-row gap-4">
+                <Skeleton className="h-40 w-40 sm:w-1/4" />
+                <div className="sm:w-2/4 flex-1 space-y-2">
+                  <Skeleton className="h-4 w-20 mb-2" />
+                  <Skeleton className="h-6 w-3/4 mb-2" />
+                  <div className="flex gap-1 mb-3">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-4 w-16" />
+                  </div>
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+                <div className="sm:w-1/4 space-y-2">
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                  <Skeleton className="h-10 w-full mt-4" />
+                </div>
+              </div>
+            </div>
+          )
         ))}
       </div>
     );
@@ -53,7 +79,10 @@ const PhoneResults = ({
   
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className={viewType === 'grid' 
+        ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" 
+        : "space-y-6"
+      }>
         {paginatedPhones.map((phone) => (
           <PhoneCard 
             key={phone.id}
