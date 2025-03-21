@@ -40,10 +40,20 @@ const Telephones = () => {
   return (
     <>
       <Helmet>
-        <title>Comparateur de Téléphones Mobiles | ComparePrix</title>
-        <meta name="description" content="Comparez les meilleurs téléphones mobiles du marché. Trouvez le smartphone idéal au meilleur prix avec notre comparateur téléphone." />
+        <title>Comparateur de Téléphones Mobiles | Les Meilleurs Smartphones | ComparePrix</title>
+        <meta name="description" content="Comparez les meilleurs smartphones du marché. Trouvez le téléphone mobile idéal au meilleur prix avec notre comparateur d'offres de téléphonie." />
+        <meta name="keywords" content="comparateur téléphones, smartphones, meilleur smartphone, téléphone mobile, comparateur mobile, téléphonie, téléphone pas cher" />
         <link rel="canonical" href="https://compareprix.fr/telephones" />
         <meta name="robots" content="index, follow" />
+        <meta property="og:title" content="Comparateur de Téléphones Mobiles | ComparePrix" />
+        <meta property="og:description" content="Comparez les smartphones et trouvez le téléphone idéal au meilleur prix." />
+        <meta property="og:url" content="https://compareprix.fr/telephones" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://compareprix.fr/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Comparateur de Téléphones Mobiles | ComparePrix" />
+        <meta name="twitter:description" content="Comparez et choisissez le smartphone idéal pour vos besoins." />
+        <meta name="twitter:image" content="https://compareprix.fr/og-image.png" />
       </Helmet>
 
       <div className="flex flex-col min-h-screen">

@@ -3,16 +3,16 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
 const IndexPageHead = () => {
-  // Structured data for the homepage
+  // Structured data for the homepage with improved SEO
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "url": "https://compareprix.fr/",
-    "name": "ComparePrix - Comparateur de forfaits mobiles en France",
-    "description": "Trouvez et comparez les meilleurs forfaits mobiles en France. Économisez sur votre forfait avec notre comparateur de prix indépendant.",
+    "name": "ComparePrix - Comparateur de forfaits mobiles et box internet en France",
+    "description": "Trouvez et comparez les meilleurs forfaits mobiles et offres box internet en France. Économisez jusqu'à 40% sur vos forfaits avec notre comparateur de prix indépendant.",
     "potentialAction": {
       "@type": "SearchAction",
-      "target": "https://compareprix.fr/mobile?search={search_term_string}",
+      "target": "https://compareprix.fr/search?q={search_term_string}",
       "query-input": "required name=search_term_string"
     }
   };
@@ -20,13 +20,25 @@ const IndexPageHead = () => {
   return (
     <Helmet>
       <html lang="fr" />
-      <title>ComparePrix - Comparez les meilleurs forfaits mobiles en France</title>
-      <meta name="description" content="Trouvez et comparez les meilleurs forfaits mobiles en France. Économisez sur votre forfait avec notre comparateur de prix indépendant." />
+      <title>ComparePrix - Comparateur de forfaits mobiles et box internet en France</title>
+      <meta name="description" content="Trouvez et comparez les meilleurs forfaits mobiles et offres box internet en France. Économisez jusqu'à 40% avec notre comparateur de prix indépendant." />
+      <meta name="keywords" content="comparateur forfait mobile, box internet, offre internet, forfait box et mobile, meilleurs forfaits mobile, forfait internet mobile, offre box fibre, comparateur internet" />
       <link rel="canonical" href="https://compareprix.fr/" />
       <meta name="robots" content="index, follow" />
       <script type="application/ld+json">
         {JSON.stringify(structuredData)}
       </script>
+      {/* OpenGraph tags */}
+      <meta property="og:title" content="ComparePrix - Comparateur de forfaits mobiles et box internet" />
+      <meta property="og:description" content="Comparez et économisez sur vos forfaits mobiles et box internet. Trouvez les meilleures offres des opérateurs français." />
+      <meta property="og:url" content="https://compareprix.fr/" />
+      <meta property="og:type" content="website" />
+      <meta property="og:image" content="https://compareprix.fr/og-image.png" />
+      {/* Twitter Card tags */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content="ComparePrix - Comparateur de forfaits" />
+      <meta name="twitter:description" content="Comparez et économisez sur vos forfaits mobiles et box internet." />
+      <meta name="twitter:image" content="https://compareprix.fr/og-image.png" />
       {/* Preconnect to critical domains */}
       <link rel="preconnect" href="https://ygzelivzpmrxsdqljskh.supabase.co" />
       <link rel="dns-prefetch" href="https://ygzelivzpmrxsdqljskh.supabase.co" />

@@ -49,10 +49,20 @@ const InternetBoxes = () => {
   return (
     <>
       <Helmet>
-        <title>Box Internet - Comparez les meilleures offres | ComparePrix</title>
-        <meta name="description" content="Comparez les box internet des principaux opérateurs. Trouvez la meilleure connexion fibre ou ADSL avec notre comparateur de box internet." />
+        <title>Comparateur Box Internet - Meilleures Offres Fibre et ADSL | ComparePrix</title>
+        <meta name="description" content="Comparez les meilleures box internet et offres fibre des principaux opérateurs. Trouvez la box internet parfaite avec notre comparateur indépendant." />
+        <meta name="keywords" content="box internet, offre box internet, forfait internet, comparateur box internet, comparateur internet, box internet sans engagement, offre box fibre, comparateur box internet fibre, comparateur internet fibre" />
         <link rel="canonical" href="https://compareprix.fr/internet" />
         <meta name="robots" content="index, follow" />
+        <meta property="og:title" content="Comparateur Box Internet - Meilleures Offres Fibre et ADSL" />
+        <meta property="og:description" content="Comparez les meilleures offres de box internet, fibre et ADSL des principaux opérateurs français." />
+        <meta property="og:url" content="https://compareprix.fr/internet" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://compareprix.fr/og-image.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Comparateur Box Internet | ComparePrix" />
+        <meta name="twitter:description" content="Comparez les meilleures offres de box internet et économisez." />
+        <meta name="twitter:image" content="https://compareprix.fr/og-image.png" />
       </Helmet>
 
       <div className="flex flex-col min-h-screen">
