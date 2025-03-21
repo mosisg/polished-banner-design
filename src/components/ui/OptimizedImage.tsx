@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { debounce } from '@/utils/performance';
 
 interface OptimizedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
@@ -28,41 +29,50 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    // If priority is true, image is already loaded
     if (priority) return;
     
-    // Reset loading state when src changes
     setIsLoading(true);
     setHasError(false);
     
+    // Use explicit width and height to prevent CLS
     const img = new Image();
-    img.src = src;
+    if (width) img.width = width;
+    if (height) img.height = height;
     
-    img.onload = () => {
+    // Add timestamp to prevent caching for development
+    const cacheBuster = process.env.NODE_ENV === 'development' ? `?t=${Date.now()}` : '';
+    img.src = src + cacheBuster;
+    
+    const handleLoad = () => {
       setImageSrc(src);
       setIsLoading(false);
     };
     
-    img.onerror = () => {
-      // On error, use a placeholder and set loading to false
+    const handleError = () => {
+      console.warn(`Failed to load image: ${src}`);
       setImageSrc('/placeholder.svg');
       setIsLoading(false);
       setHasError(true);
-      console.error(`Failed to load image: ${src}`);
     };
     
-    // Clean up
+    img.onload = handleLoad;
+    img.onerror = handleError;
+    
     return () => {
       img.onload = null;
       img.onerror = null;
     };
-  }, [src, priority]);
+  }, [src, priority, width, height]);
 
+  // Calculate aspect ratio to maintain consistent space
+  const aspectRatio = width && height ? `${width} / ${height}` : undefined;
+  
   // Set explicit dimensions to prevent layout shift
   const imgStyle = {
-    width: width ? `${width}px` : undefined,
+    width: width ? `${width}px` : '100%',
     height: height ? `${height}px` : undefined,
-    aspectRatio: width && height ? `${width} / ${height}` : undefined,
+    aspectRatio: aspectRatio,
+    display: 'block', // Removes bottom margin
   };
 
   if (isLoading) {
@@ -72,7 +82,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
         style={{
           width: width ? `${width}px` : '100%',
           height: height ? `${height}px` : '100%',
-          aspectRatio: width && height ? `${width} / ${height}` : undefined
+          aspectRatio: aspectRatio
         }}
         aria-label={`Chargement de l'image: ${alt}`}
       />
@@ -94,4 +104,4 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   );
 };
 
-export default OptimizedImage;
+export default memo(OptimizedImage);

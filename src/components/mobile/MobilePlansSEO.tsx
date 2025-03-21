@@ -58,4 +58,4 @@ const MobilePlansSEO = ({ filteredPlans }: MobilePlansSEOProps) => {
   );
 };
 
-export default MobilePlansSEO;
+export default React.memo(MobilePlansSEO);

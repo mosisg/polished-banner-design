@@ -1,11 +1,11 @@
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Smartphone } from 'lucide-react';
 import { motion } from 'framer-motion';
 import PromotionalBadge from './PromotionalBadge';
 import FloatingOffer from './FloatingOffer';
-import OptimizedImage from '@/components/ui/OptimizedImage';
 
+// Optimized banner illustration component that reduces unnecessary re-renders
 const BannerIllustration: React.FC = () => {
   return (
     <motion.div 
@@ -39,4 +39,5 @@ const BannerIllustration: React.FC = () => {
   );
 };
 
-export default React.memo(BannerIllustration);
+// Use React.memo to prevent unnecessary re-renders
+export default memo(BannerIllustration);

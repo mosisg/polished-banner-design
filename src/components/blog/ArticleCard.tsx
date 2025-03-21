@@ -62,4 +62,4 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
   );
 };
 
-export default ArticleCard;
+export default React.memo(ArticleCard);
