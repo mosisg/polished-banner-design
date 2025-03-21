@@ -14,6 +14,7 @@ const BannerIllustration: React.FC = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ delay: 0.2, duration: 0.6 }}
       style={{ willChange: 'transform' }}
+      aria-hidden="true" // This is decorative, not essential for understanding page content
     >
       <div className="relative w-64 h-64 md:w-72 md:h-72 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center p-4">
         <Smartphone className="w-40 h-40 text-white" />

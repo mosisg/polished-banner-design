@@ -13,7 +13,7 @@ const Layout: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <Header />
       {!isHomePage && <PageBreadcrumb />}
-      <main className="flex-grow">
+      <main className="flex-grow" id="main-content">
         <Outlet />
       </main>
       <Footer />

@@ -48,6 +48,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
       setImageSrc('/placeholder.svg');
       setIsLoading(false);
       setHasError(true);
+      console.error(`Failed to load image: ${src}`);
     };
     
     // Clean up
@@ -73,6 +74,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
           height: height ? `${height}px` : '100%',
           aspectRatio: width && height ? `${width} / ${height}` : undefined
         }}
+        aria-label={`Chargement de l'image: ${alt}`}
       />
     );
   }
@@ -80,7 +82,7 @@ const OptimizedImage: React.FC<OptimizedImageProps> = ({
   return (
     <img
       src={imageSrc}
-      alt={alt}
+      alt={alt || "Image"}
       width={width}
       height={height}
       loading={priority ? "eager" : "lazy"}

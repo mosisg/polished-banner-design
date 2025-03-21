@@ -23,15 +23,15 @@ const RelatedContent: React.FC<RelatedContentProps> = ({
   if (links.length === 0) return null;
   
   return (
-    <section className="py-8 bg-muted/20">
+    <section className="py-8 bg-muted/20" aria-labelledby="related-content-title">
       <div className="container">
-        <h2 className="text-2xl font-bold mb-4">{title}</h2>
+        <h2 id="related-content-title" className="text-2xl font-bold mb-4">{title}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {links.map((link, index) => (
             <Card key={index} className="hover:shadow-md transition-shadow">
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg">
-                  {link.icon && <span className="mr-2">{link.icon}</span>}
+                  {link.icon && <span className="mr-2" aria-hidden="true">{link.icon}</span>}
                   {link.label}
                 </CardTitle>
               </CardHeader>
@@ -42,8 +42,9 @@ const RelatedContent: React.FC<RelatedContentProps> = ({
                 <Link 
                   to={link.path} 
                   className="text-primary flex items-center text-sm font-medium hover:underline"
+                  aria-label={`En savoir plus sur ${link.label}`}
                 >
-                  En savoir plus <ArrowRight className="h-4 w-4 ml-1" />
+                  En savoir plus <ArrowRight className="h-4 w-4 ml-1" aria-hidden="true" />
                 </Link>
               </CardContent>
             </Card>

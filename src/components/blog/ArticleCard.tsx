@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Article } from '@/services/strapi';
+import OptimizedImage from '@/components/ui/OptimizedImage';
 
 interface ArticleCardProps {
   article: Article;
@@ -15,12 +16,15 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
       to={`/blog/${article.slug}`} 
       key={article.id}
       className="group rounded-xl overflow-hidden border border-border transition-all duration-300 hover:shadow-md flex flex-col h-full"
+      aria-label={`Article: ${article.title}`}
     >
       <div className="relative h-48 overflow-hidden">
         {article.cover?.url ? (
-          <img 
+          <OptimizedImage 
             src={article.cover.url} 
-            alt={article.title}
+            alt={article.cover.alternativeText || `Image pour l'article: ${article.title}`}
+            width={400}
+            height={225}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
@@ -49,7 +53,7 @@ const ArticleCard = ({ article }: ArticleCardProps) => {
               </span>
             )}
           </div>
-          <time className="text-xs text-muted-foreground">
+          <time className="text-xs text-muted-foreground" dateTime={article.publishedAt}>
             {format(new Date(article.publishedAt), 'dd MMM yyyy', { locale: fr })}
           </time>
         </div>

@@ -19,7 +19,7 @@ const MobilePlansSEO = ({ filteredPlans }: MobilePlansSEOProps) => {
         "item": {
           "@type": "Product",
           "name": `${plan.operator} ${plan.name}`,
-          "description": `Forfait mobile ${plan.data} avec ${plan.coverage}`,
+          "description": `Forfait mobile ${plan.data} avec ${plan.coverage} - ${plan.engagement ? 'Avec engagement' : 'Sans engagement'}`,
           "offers": {
             "@type": "Offer",
             "price": parseFloat(plan.price.match(/\d+\.\d+/)?.[0] || '0'),
@@ -31,12 +31,15 @@ const MobilePlansSEO = ({ filteredPlans }: MobilePlansSEOProps) => {
     };
   };
 
+  // Add specific longtail keywords for mobile plans
+  const longTailKeywords = "comparateur forfait mobile pas cher, forfait mobile sans engagement, forfait 5G illimité, meilleur forfait data, forfait mobile international, forfait famille";
+
   return (
     <Helmet>
       <html lang="fr" />
       <title>Comparateur de Forfaits Mobiles - Meilleures Offres 4G/5G | ComparePrix</title>
       <meta name="description" content="Comparez les forfaits mobiles des opérateurs français et trouvez le meilleur rapport qualité-prix. Forfaits 4G/5G, avec ou sans engagement, à petit prix." />
-      <meta name="keywords" content="comparateur forfait mobile, forfait mobile et box, offre internet mobile, meilleurs forfaits mobile, forfait box mobile, box mobile, offre box et mobile, forfaits mobiles, comparateur forfait internet" />
+      <meta name="keywords" content={`comparateur forfait mobile, forfait mobile et box, offre internet mobile, meilleurs forfaits mobile, forfait box mobile, box mobile, offre box et mobile, forfaits mobiles, comparateur forfait internet, ${longTailKeywords}`} />
       <link rel="canonical" href="https://compareprix.fr/mobile" />
       <meta name="robots" content="index, follow" />
       <meta property="og:title" content="Comparateur de Forfaits Mobiles - Meilleures Offres 4G/5G" />
