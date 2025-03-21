@@ -22,6 +22,14 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     chunkSizeWarningLimit: 600,
+    target: 'es2015',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -43,8 +51,29 @@ export default defineConfig(({ mode }) => ({
           'animation': ['framer-motion'],
           // Separate search and state management features
           'data-management': ['@tanstack/react-query'],
+          // Split components by feature area
+          'landing-components': [
+            '/src/components/home',
+            '/src/components/layout/Banner.tsx',
+            '/src/components/layout/NotificationBar.tsx',
+          ],
+          'product-components': [
+            '/src/components/mobile',
+            '/src/components/internet',
+            '/src/components/phones',
+          ],
         }
       }
     }
-  }
+  },
+  css: {
+    postcss: {
+      plugins: [
+        require('autoprefixer'),
+        require('cssnano')({
+          preset: 'default',
+        }),
+      ],
+    },
+  },
 }));

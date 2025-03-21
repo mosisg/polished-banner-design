@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { X, Send, Bot, User, Loader2, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { 
   Sheet,
@@ -30,21 +30,22 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
     }
   };
 
-  // Auto-focus the textarea when chat opens
+  // Auto-focus the textarea when chat opens - with delay to ensure animation completes
   useEffect(() => {
     if (isOpen) {
       const textarea = document.querySelector('textarea');
       if (textarea) {
-        setTimeout(() => {
+        const timer = setTimeout(() => {
           textarea.focus();
-        }, 100);
+        }, 300);
+        return () => clearTimeout(timer);
       }
     }
   }, [isOpen]);
   
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="sm:max-w-md p-0 flex flex-col h-[85vh] sm:h-[75vh] border-l dark:border-slate-800 right-0 fixed bottom-0 !rounded-t-xl !rounded-b-none !mt-auto !top-auto">
+      <SheetContent className="sm:max-w-md p-0 flex flex-col h-[70vh] sm:h-[65vh] border-l dark:border-slate-800 right-0 fixed bottom-0 !rounded-t-xl !rounded-b-none !mt-auto !top-auto">
         <SheetHeader className="px-4 py-2 border-b dark:border-slate-700 bg-primary/5 dark:bg-slate-900">
           <div className="flex items-center justify-between">
             <SheetTitle className="flex items-center gap-2">
@@ -134,7 +135,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Écrivez votre message..."
-              className="flex-1 min-h-[60px] max-h-[100px] resize-none focus-visible:ring-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 shadow-sm"
+              className="flex-1 min-h-[50px] max-h-[80px] resize-none focus-visible:ring-primary dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 shadow-sm"
               rows={2}
             />
             <Button 
@@ -147,7 +148,7 @@ const CustomerSupportChat: React.FC<CustomerSupportChatProps> = ({ isOpen, onClo
             </Button>
           </div>
           <div className="w-full text-xs text-muted-foreground mt-1">
-            Appuyez sur <kbd className="px-1 bg-muted dark:bg-slate-800 rounded">Entrée</kbd> pour envoyer, <kbd className="px-1 bg-muted dark:bg-slate-800 rounded">Maj+Entrée</kbd> pour une nouvelle ligne
+            Appuyez sur <kbd className="px-1 bg-muted dark:bg-slate-800 rounded">Entrée</kbd> pour envoyer
           </div>
         </div>
       </SheetContent>
