@@ -13,10 +13,8 @@ const Header = () => {
     isScrolled,
     isMobileMenuOpen,
     headerRef,
-    user,
     toggleMobileMenu,
-    handleCloseMobileMenu,
-    handleLogout
+    handleCloseMobileMenu
   } = useHeaderController();
 
   return (
@@ -39,8 +37,6 @@ const Header = () => {
 
           {/* Right Side Actions */}
           <HeaderActions 
-            user={user} 
-            handleLogout={handleLogout} 
             toggleMobileMenu={toggleMobileMenu} 
             isMobileMenuOpen={isMobileMenuOpen} 
           />
@@ -53,8 +49,6 @@ const Header = () => {
         isOpen={isMobileMenuOpen}
         headerHeight={headerRef.current?.offsetHeight}
         handleCloseMobileMenu={handleCloseMobileMenu}
-        user={user}
-        handleLogout={handleLogout}
       />
     </header>
   );

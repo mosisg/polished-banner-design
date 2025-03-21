@@ -1,54 +1,22 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Phone, Wifi, FileText, LogIn, LogOut, ShieldAlert } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { NavItem } from './types';
-import { useToast } from '@/components/ui/use-toast';
 
 interface MobileNavigationProps {
   navItems: NavItem[];
   isOpen: boolean;
   headerHeight: number | undefined;
   handleCloseMobileMenu: () => void;
-  user: any;
-  handleLogout: () => Promise<void>;
 }
 
 const MobileNavigation = ({
   navItems,
   isOpen,
   headerHeight,
-  handleCloseMobileMenu,
-  user,
-  handleLogout
+  handleCloseMobileMenu
 }: MobileNavigationProps) => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
-
-  const onLogout = async () => {
-    try {
-      console.log("MobileNavigation: Logout initiated");
-      await handleLogout();
-      handleCloseMobileMenu();
-      
-      // Force navigation to home page
-      navigate('/', { replace: true });
-      
-      toast({
-        title: "Déconnexion réussie",
-        description: "Vous avez été déconnecté avec succès."
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast({
-        title: "Erreur de déconnexion",
-        description: "Une erreur est survenue lors de la déconnexion.",
-        variant: "destructive"
-      });
-    }
-  };
-
   return (
     <>
       <div 
@@ -77,40 +45,24 @@ const MobileNavigation = ({
             </Link>
           ))}
           
-          {/* Admin link in mobile menu - showing for all logged in users */}
-          {user && (
-            <Link
-              to="/admin/knowledge-base"
-              className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer"
-              role="menuitem"
-              onClick={handleCloseMobileMenu}
-            >
-              <ShieldAlert className="w-5 h-5 mr-3" />
-              <span className="text-base">Admin</span>
-            </Link>
-          )}
+          {/* Admin links now accessible to anyone */}
+          <Link
+            to="/admin/knowledge-base"
+            className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer"
+            role="menuitem"
+            onClick={handleCloseMobileMenu}
+          >
+            <span className="text-base">Admin Base de Connaissances</span>
+          </Link>
           
-          {/* Auth links in mobile menu */}
-          {user ? (
-            <button
-              className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer w-full text-left"
-              role="menuitem"
-              onClick={onLogout}
-            >
-              <LogOut className="w-5 h-5 mr-3" />
-              <span className="text-base">Déconnexion</span>
-            </button>
-          ) : (
-            <Link
-              to="/login"
-              className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer"
-              role="menuitem"
-              onClick={handleCloseMobileMenu}
-            >
-              <LogIn className="w-5 h-5 mr-3" />
-              <span className="text-base">Connexion</span>
-            </Link>
-          )}
+          <Link
+            to="/admin/users"
+            className="py-3 px-4 rounded-lg hover:bg-muted/50 flex items-center text-foreground cursor-pointer"
+            role="menuitem"
+            onClick={handleCloseMobileMenu}
+          >
+            <span className="text-base">Admin Utilisateurs</span>
+          </Link>
         </nav>
       </div>
 

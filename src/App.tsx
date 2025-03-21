@@ -9,9 +9,6 @@ import { lazy, Suspense, useEffect } from 'react';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Analytics } from "@vercel/analytics/react";
 import KnowledgeBase from '@/pages/KnowledgeBase';
-import { AuthProvider } from '@/contexts/AuthContext';
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import Login from '@/pages/Login';
 import AdminUsers from '@/pages/AdminUsers';
 
 // Optimize lazy loading by using named chunks
@@ -78,53 +75,42 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <HelmetProvider>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <Router>
-              <ScrollToTop />
-              <Suspense fallback={<PageLoader />}>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/mobile" element={<MobilePlans />} />
-                  <Route path="/internet" element={<InternetBoxes />} />
-                  <Route path="/telephones" element={<Telephones />} />
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/blog/:slug" element={<BlogArticle />} />
-                  <Route path="/packages" element={<NotFound />} />
-                  
-                  {/* Policy Pages */}
-                  <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
-                  <Route path="/politique-cookies" element={<PolitiqueCookies />} />
-                  <Route path="/mentions-legales" element={<MentionsLegales />} />
-                  <Route path="/cgv" element={<CGV />} />
-                  
-                  {/* Sitemap routes */}
-                  <Route path="/sitemap.xml" element={<Sitemap />} />
-                  <Route path="/sitemap" element={<Sitemap />} />
-                  
-                  {/* Admin routes - protected */}
-                  <Route path="/admin/knowledge-base" element={
-                    <ProtectedRoute adminOnly>
-                      <KnowledgeBase />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/admin/users" element={
-                    <ProtectedRoute adminOnly>
-                      <AdminUsers />
-                    </ProtectedRoute>
-                  } />
-                  
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </Router>
-            <Analytics />
-          </TooltipProvider>
-        </AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Router>
+            <ScrollToTop />
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/mobile" element={<MobilePlans />} />
+                <Route path="/internet" element={<InternetBoxes />} />
+                <Route path="/telephones" element={<Telephones />} />
+                <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:slug" element={<BlogArticle />} />
+                <Route path="/packages" element={<NotFound />} />
+                
+                {/* Policy Pages */}
+                <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+                <Route path="/politique-cookies" element={<PolitiqueCookies />} />
+                <Route path="/mentions-legales" element={<MentionsLegales />} />
+                <Route path="/cgv" element={<CGV />} />
+                
+                {/* Sitemap routes */}
+                <Route path="/sitemap.xml" element={<Sitemap />} />
+                <Route path="/sitemap" element={<Sitemap />} />
+                
+                {/* Admin routes - no longer protected */}
+                <Route path="/admin/knowledge-base" element={<KnowledgeBase />} />
+                <Route path="/admin/users" element={<AdminUsers />} />
+                
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </Router>
+          <Analytics />
+        </TooltipProvider>
       </HelmetProvider>
     </QueryClientProvider>
   );

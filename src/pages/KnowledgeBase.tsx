@@ -1,38 +1,13 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import KnowledgeBaseManager from '@/components/admin/KnowledgeBaseManager';
 import SystemStatusChecker from '@/components/admin/SystemStatusChecker';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, AlertTriangle, LogOut, Home } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useToast } from '@/components/ui/use-toast';
+import { Home } from 'lucide-react';
 
 const KnowledgeBase = () => {
-  const { isAdmin, signOut } = useAuth();
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast({
-        title: "Déconnexion réussie",
-        description: "Vous avez été déconnecté avec succès.",
-      });
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la déconnexion.",
-        variant: "destructive"
-      });
-    }
-  };
-
   return (
     <>
       <Helmet>
@@ -57,34 +32,11 @@ const KnowledgeBase = () => {
               
               <Link to="/admin/users">
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  <ShieldCheck className="h-4 w-4" />
                   Gérer les administrateurs
                 </Button>
               </Link>
-              
-              <Button 
-                variant="destructive" 
-                size="sm" 
-                className="flex items-center gap-1"
-                onClick={handleSignOut}
-              >
-                <LogOut className="h-4 w-4" />
-                Déconnexion
-              </Button>
             </div>
           </div>
-          
-          {!isAdmin && (
-            <Alert variant="destructive" className="mb-6">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Accès limité</AlertTitle>
-              <AlertDescription>
-                Vous êtes connecté mais vous n'avez pas les droits d'administrateur. 
-                Certaines fonctionnalités peuvent être limitées. Contactez un administrateur 
-                pour obtenir des droits supplémentaires.
-              </AlertDescription>
-            </Alert>
-          )}
           
           <div className="mb-8">
             <SystemStatusChecker />

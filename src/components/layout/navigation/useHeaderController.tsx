@@ -1,7 +1,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
 
 export const useHeaderController = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -9,7 +8,6 @@ export const useHeaderController = () => {
   const headerRef = useRef<HTMLElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, signOut } = useAuth();
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -65,28 +63,13 @@ export const useHeaderController = () => {
     setIsMobileMenuOpen(false);
   };
 
-  // Handle logout
-  const handleLogout = async () => {
-    try {
-      console.log("Header controller: Initiating logout");
-      await signOut();
-      console.log("Header controller: Logout successful, navigating to home");
-      navigate('/', { replace: true });
-      return Promise.resolve();
-    } catch (error) {
-      console.error('Logout error:', error);
-      return Promise.reject(error);
-    }
-  };
-
   return {
     isScrolled,
     isMobileMenuOpen,
     headerRef,
-    user,
+    user: null,
     toggleMobileMenu,
     handleCloseMobileMenu,
-    handleNavigate,
-    handleLogout
+    handleNavigate
   };
 };
