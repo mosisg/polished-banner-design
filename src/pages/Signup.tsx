@@ -13,62 +13,75 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
-const Login = () => {
+const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, isAdmin, user, session } = useAuth();
+  const { user, session } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
 
-  // Get the intended destination from location state, or default to home/admin dashboard
-  const from = (location.state as { from?: string })?.from || '/';
-
   // Redirect if already logged in with valid session
   useEffect(() => {
-    console.log("Login page - Auth state:", { user, session, isAdmin, from });
     if (user && session) {
-      // If user is admin, redirect to admin page, otherwise redirect to the requested page or home
-      const targetPath = isAdmin ? '/admin/knowledge-base' : from;
-      console.log("Redirecting to:", targetPath);
-      navigate(targetPath, { replace: true });
+      navigate('/', { replace: true });
     }
-  }, [user, isAdmin, navigate, from, session]);
+  }, [user, navigate, session]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setError('Les mots de passe ne correspondent pas.');
+      return;
+    }
+
+    // Validate password length
+    if (password.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères.');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      console.log("Attempting login with:", email);
-      await signIn(email, password);
-      
-      // Success notification
-      toast({
-        title: "Connexion réussie",
-        description: "Vous êtes maintenant connecté.",
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
       });
-      
-      // Let the useEffect handle the redirect based on user state
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.user) {
+        toast({
+          title: "Inscription réussie",
+          description: "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.",
+        });
+        navigate('/login', { replace: true });
+      }
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('Signup error:', error);
       
-      // Improved error messages
       if (error instanceof Error) {
-        if (error.message.includes('Invalid login credentials')) {
-          setError('Identifiants incorrects. Veuillez vérifier votre email et mot de passe.');
+        if (error.message.includes('User already registered')) {
+          setError('Cet email est déjà utilisé. Veuillez vous connecter ou utiliser un autre email.');
         } else {
           setError(error.message);
         }
       } else {
-        setError('Une erreur est survenue lors de la connexion. Veuillez réessayer.');
+        setError('Une erreur est survenue lors de l\'inscription. Veuillez réessayer.');
       }
     } finally {
       setIsLoading(false);
@@ -78,16 +91,16 @@ const Login = () => {
   return (
     <>
       <Helmet>
-        <title>Connexion | ComparePrix</title>
+        <title>Inscription | ComparePrix</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
       <div className="flex min-h-screen items-center justify-center bg-background p-4 pt-20">
         <Card className="w-full max-w-md">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Connexion</CardTitle>
+            <CardTitle className="text-2xl font-bold">Inscription</CardTitle>
             <CardDescription>
-              Entrez vos identifiants pour accéder à votre compte
+              Créez un compte pour accéder à toutes les fonctionnalités
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -112,9 +125,7 @@ const Login = () => {
                 />
               </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="text-sm font-medium">Mot de passe</label>
-                </div>
+                <label htmlFor="password" className="text-sm font-medium">Mot de passe</label>
                 <Input
                   id="password"
                   type="password"
@@ -122,7 +133,20 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="••••••••"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="confirmPassword" className="text-sm font-medium">Confirmer le mot de passe</label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  placeholder="••••••••"
+                  autoComplete="new-password"
                   disabled={isLoading}
                 />
               </div>
@@ -130,30 +154,22 @@ const Login = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Connexion en cours...
+                    Inscription en cours...
                   </>
                 ) : (
-                  'Se connecter'
+                  'S\'inscrire'
                 )}
               </Button>
             </form>
           </CardContent>
           <CardFooter className="flex justify-between">
             <div className="text-sm text-muted-foreground">
-              Pas encore de compte?{' '}
+              Déjà un compte?{' '}
               <Link 
-                to="/signup" 
+                to="/login" 
                 className="text-primary hover:text-primary/90 transition-colors"
               >
-                S'inscrire
-              </Link>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              <Link 
-                to="/" 
-                className="text-primary hover:text-primary/90 transition-colors"
-              >
-                Retourner à l'accueil
+                Se connecter
               </Link>
             </div>
           </CardFooter>
@@ -163,4 +179,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;
