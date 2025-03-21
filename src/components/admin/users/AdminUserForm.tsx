@@ -32,12 +32,16 @@ const AdminUserForm = () => {
     setStatus('idle');
     
     try {
-      const { data: sessionData } = await supabase.auth.getSession();
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+
+      if (sessionError || !sessionData.session) {
+        throw new Error('Session non valide, veuillez vous reconnecter');
+      }
       
       const { data, error } = await supabase.functions.invoke('make-admin', {
         body: { email },
         headers: {
-          Authorization: `Bearer ${sessionData.session?.access_token}`,
+          Authorization: `Bearer ${sessionData.session.access_token}`,
         },
       });
       
