@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 
 export interface SystemStatus {
@@ -60,18 +59,22 @@ export const checkSystemStatus = async (abortSignal?: AbortSignal): Promise<Syst
       // Convert the array to a stringified JSON for the query_embedding parameter
       const zeroEmbedding = JSON.stringify(Array(1536).fill(0));
       
-      // The correct way to pass an abort signal to RPC calls
-      const options = abortSignal ? { signal: abortSignal } : undefined;
-      
+      // Call the RPC function without passing the abort signal directly to the third parameter
+      // as that parameter is for query options, not for controlling fetch behavior
       const { error: functionError } = await supabase.rpc(
         'match_documents',
         { 
           query_embedding: zeroEmbedding,
           match_threshold: 0.0,
           match_count: 1
-        },
-        options
+        }
       );
+      
+      // Check if the API call was aborted
+      if (abortSignal?.aborted) {
+        console.log("Function check aborted");
+        return status;
+      }
       
       status.functionExists = !functionError;
     } catch (err) {
