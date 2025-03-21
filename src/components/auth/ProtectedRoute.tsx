@@ -27,7 +27,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         description: "Votre session a expiré. Veuillez vous reconnecter.",
         variant: "destructive"
       });
-      navigate("/admin/login", { replace: true });
+      navigate("/admin/login", { replace: true, state: { from: location.pathname } });
       return;
     }
 
@@ -39,7 +39,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         variant: "destructive"
       });
     }
-  }, [user, isAdmin, adminOnly, isLoading, toast, session, navigate]);
+  }, [user, isAdmin, adminOnly, isLoading, toast, session, navigate, location]);
 
   console.log("ProtectedRoute state:", {
     isLoading,
@@ -58,7 +58,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  // No user or no valid session - redirect to admin login
+  // No user or no valid session - redirect to admin login with current path in state
   if (!user || !session) {
     return <Navigate to="/admin/login" state={{ from: location.pathname }} replace />;
   }

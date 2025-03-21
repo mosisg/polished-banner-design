@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { 
@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
@@ -30,12 +31,25 @@ const AdminLogin = () => {
   // Get the intended destination from location state, or default to admin dashboard
   const from = (location.state as { from?: string })?.from || '/admin/knowledge-base';
 
+  useEffect(() => {
+    // Check if we already have a session
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        navigate('/admin/knowledge-base', { replace: true });
+      }
+    };
+    
+    checkSession();
+  }, [navigate]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
 
     try {
+      console.log('Attempting to sign in with:', email);
       await signIn(email, password);
       
       toast({

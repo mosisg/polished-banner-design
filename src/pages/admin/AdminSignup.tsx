@@ -45,6 +45,7 @@ const AdminSignup = () => {
     setIsLoading(true);
 
     try {
+      console.log("Attempting to sign up with:", email);
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -53,6 +54,8 @@ const AdminSignup = () => {
       if (error) {
         throw error;
       }
+
+      console.log("Signup response:", data);
 
       if (data.user) {
         toast({
