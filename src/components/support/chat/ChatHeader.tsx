@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Bot, Database, WifiOff, X } from 'lucide-react';
 import { SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -29,7 +28,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       <div className="flex items-center justify-between">
         <SheetTitle className="flex items-center gap-2">
           <Bot className="h-5 w-5 text-primary" />
-          <span>Assistance ComparePrix</span>
+          <span>Prixo</span>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
