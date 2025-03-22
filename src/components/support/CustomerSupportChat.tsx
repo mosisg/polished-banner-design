@@ -54,6 +54,15 @@ const CustomerSupportChatInner: React.FC<CustomerSupportChatProps> = ({ isOpen, 
     }
   }, [isOpen]);
   
+  // Ensure messages are scrolled to bottom when chat opens
+  useEffect(() => {
+    if (isOpen && messageEndRef.current) {
+      setTimeout(() => {
+        messageEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      }, 100);
+    }
+  }, [isOpen, messageEndRef]);
+  
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="sm:max-w-md p-0 flex flex-col h-[70vh] sm:h-[65vh] border-l dark:border-slate-800 right-0 fixed bottom-0 !rounded-t-xl !rounded-b-none !mt-auto !top-auto">

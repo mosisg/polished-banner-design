@@ -106,6 +106,13 @@ export const SupportChatProvider: React.FC<{ children: ReactNode }> = ({ childre
     dispatch({ type: 'SET_IS_TYPING', payload: isTyping });
   }, 500);
 
+  // Ensure smooth scrolling to the bottom of messages
+  const scrollToBottom = (behavior: ScrollBehavior = 'smooth') => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior });
+    }
+  };
+
   // Add a user message to the conversation
   const addUserMessage = (text: string, sessionId: string): ChatMessage => {
     const userMessage: ChatMessage = {
@@ -122,7 +129,7 @@ export const SupportChatProvider: React.FC<{ children: ReactNode }> = ({ childre
     previousMessagesRef.current = newMessages;
     
     // Scroll to bottom
-    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => scrollToBottom(), 50);
     
     // Store this message for context
     conversationContextRef.current.push(`User: ${text}`);
@@ -152,8 +159,8 @@ export const SupportChatProvider: React.FC<{ children: ReactNode }> = ({ childre
     const newMessages = [...state.messages, botMessage];
     previousMessagesRef.current = newMessages;
     
-    // Scroll to bottom
-    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Scroll to bottom with a small delay to ensure rendering is complete
+    setTimeout(() => scrollToBottom(), 50);
     
     // Store the AI response for context
     conversationContextRef.current.push(`Assistant: ${text}`);

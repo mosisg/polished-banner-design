@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatMessage as ChatMessageType } from '@/types/support';
 import ChatMessage from './ChatMessage';
@@ -19,8 +19,20 @@ const MessageList: React.FC<MessageListProps> = ({
   messageEndRef,
   lastMessageStatus
 }) => {
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  
+  // Scroll to bottom when messages change or when typing starts/stops
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isTyping]);
+
   return (
-    <ScrollArea className="flex-1 px-4 py-3 bg-background dark:bg-slate-900">
+    <ScrollArea 
+      className="flex-1 px-4 py-3 bg-background dark:bg-slate-900"
+      ref={scrollAreaRef}
+    >
       <div className="space-y-3 pb-2">
         {messages.map((message, index) => (
           <ChatMessage
