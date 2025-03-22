@@ -20,7 +20,8 @@ export const useSupportChat = (): SupportChatState => {
     hasOpenAIFailed, 
     setIsConnectedToOpenAI, 
     setHasOpenAIFailed,
-    incrementRetryCount 
+    incrementRetryCount,
+    resetRetryCount
   } = useOpenAIConnection();
   const { 
     messages, 
@@ -39,29 +40,35 @@ export const useSupportChat = (): SupportChatState => {
   const { toast } = useToast();
 
   const sendMessage = async () => {
-    if (!inputText.trim()) return;
+    const trimmedInput = inputText.trim();
+    if (!trimmedInput) return;
     
     // Add user message to the conversation
-    addUserMessage(inputText, sessionId);
+    addUserMessage(trimmedInput, sessionId);
     setInputText('');
     
+    // Indicate bot is typing
     setIsTyping(true);
     
     try {
-      if (hasOpenAIFailed) {
-        throw new Error("Using fallback due to previous OpenAI failure");
+      // Reset failed state if this is a retry after multiple failures
+      if (hasOpenAIFailed && isConnectedToOpenAI) {
+        setHasOpenAIFailed(false);
       }
       
       const { text: aiResponse, usedContext, documentReferences } = 
-        await getOpenAIResponse(inputText, previousMessagesRef.current, sessionId, useRAG);
+        await getOpenAIResponse(trimmedInput, previousMessagesRef.current, sessionId, useRAG);
       
+      // Update UI states
       updateBotTyping(false);
       setIsConnectedToOpenAI(true);
       setHasOpenAIFailed(false);
+      resetRetryCount();
       
       // Add bot message to the conversation
       addBotMessage(aiResponse, sessionId, usedContext, documentReferences);
       
+      // Show toast for context usage if relevant
       if (usedContext) {
         toast({
           title: "Contextualisation activée",
@@ -79,10 +86,10 @@ export const useSupportChat = (): SupportChatState => {
       
       // Generate a contextual fallback response based on conversation history
       const conversationContext = conversationContextRef.current.join("\n");
-      const fallbackPrompt = `${conversationContext}\nUser: ${inputText}\nAssistant:`;
+      const fallbackPrompt = `${conversationContext}\nUser: ${trimmedInput}`;
       
       // Get a smart response that tries to maintain context
-      const fallbackResponse = getSmartResponse(inputText, fallbackPrompt);
+      const fallbackResponse = getSmartResponse(trimmedInput, fallbackPrompt);
       
       // Add bot message with fallback response
       addBotMessage(fallbackResponse, sessionId);

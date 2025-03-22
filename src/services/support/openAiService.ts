@@ -33,13 +33,22 @@ export async function getOpenAIResponse(
   try {
     const systemMessage = getAssistantSystemMessage();
     
-    // Include more context from chat history (up to last 10 messages)
-    const relevantHistory = chatHistory.slice(-10);
+    // Limit context window to avoid token limits
+    // Take first message (usually system intro) and last 8 messages for context
+    const relevantHistory = chatHistory.length <= 9 
+      ? chatHistory 
+      : [chatHistory[0], ...chatHistory.slice(-8)];
     
     const formattedHistory = relevantHistory.map(msg => ({
       role: msg.sender === 'user' ? 'user' : 'assistant',
       content: msg.text
     } as const));
+    
+    // Add conversation history fingerprint to avoid repetition
+    const historyFingerprint = chatHistory
+      .slice(-3)
+      .map(msg => `${msg.sender}:${msg.text.substring(0, 50)}`)
+      .join('|');
     
     const aiMessages = [
       systemMessage,
@@ -47,22 +56,24 @@ export async function getOpenAIResponse(
       { role: 'user', content: userMessage } as const
     ];
     
+    console.log(`Sending message to OpenAI with ${aiMessages.length} messages in context`);
+    console.log(`Using RAG: ${useRAG}`);
+    
     const response = await getChatCompletion(aiMessages, { 
       sessionId, 
       model: 'gpt-4-turbo',
       temperature: 0.7,
-      maxTokens: 1500, // Increased token limit for more comprehensive responses
+      maxTokens: 1500,
       query: userMessage,
-      useRag: useRAG
+      useRag: useRAG,
+      historyFingerprint // Pass fingerprint to avoid repetition
     });
     
-    // Create document references array if context is returned from the Edge Function
+    // Create document references array if context is returned
     let documentReferences: DocumentReference[] = [];
     
     // Check if the response has context information
     if (response.used_context && response.context_count && response.context_count > 0) {
-      // Since context_documents is not available in the response type,
-      // we'll handle the case where documents are available but not properly typed
       const contextDocuments = (response as any).context_documents;
       
       if (contextDocuments && Array.isArray(contextDocuments)) {
@@ -82,8 +93,9 @@ export async function getOpenAIResponse(
   } catch (error) {
     console.error('Error getting OpenAI response:', error);
     
-    // Create a conversation context string
+    // Create a conversation context string for fallback
     const conversationContext = chatHistory
+      .slice(-5) // Only use last 5 messages for fallback context
       .map(msg => `${msg.sender === 'user' ? 'User' : 'Assistant'}: ${msg.text}`)
       .join('\n');
     

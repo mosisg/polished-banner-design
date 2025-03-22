@@ -20,6 +20,7 @@ interface ChatCompletionRequest {
   session_id?: string;
   query?: string; // For RAG search
   use_rag?: boolean; // Whether to use RAG
+  history_fingerprint?: string; // To avoid repetitions
   health_check?: boolean; // For system status check
 }
 
@@ -36,6 +37,16 @@ async function findRelevantDocuments(
   limit = 5
 ): Promise<Document[]> {
   try {
+    // Check if OpenAI is available
+    if (!openaiApiKey) {
+      console.error('OpenAI API key not configured, skipping document lookup')
+      return []
+    }
+    
+    const openai = new OpenAI({
+      apiKey: openaiApiKey
+    })
+    
     // Generate embedding for the query
     const embeddingResponse = await openai.embeddings.create({
       model: 'text-embedding-3-small',
@@ -59,6 +70,7 @@ async function findRelevantDocuments(
       return []
     }
     
+    console.log(`Found ${documents?.length || 0} relevant documents`)
     return documents || []
   } catch (error) {
     console.error('Error in findRelevantDocuments:', error)
@@ -134,13 +146,15 @@ Deno.serve(async (req) => {
       max_tokens = 1200, 
       session_id, 
       query, 
-      use_rag = false 
+      use_rag = false,
+      history_fingerprint
     } = payload
 
     // Enhanced context from vector database if RAG is enabled
     let enhancedMessages = [...messages]
     let contextDocuments: Document[] = []
     
+    // Only perform RAG if explicitly enabled
     if (use_rag && query) {
       contextDocuments = await findRelevantDocuments(supabase, query)
       
@@ -157,16 +171,25 @@ Deno.serve(async (req) => {
           // Insert after the existing system message
           enhancedMessages.splice(systemMessageIndex + 1, 0, {
             role: 'system',
-            content: `Here is some relevant context that may help you answer the user's question:\n\n${contextText}`,
+            content: `Voici des informations pertinentes tirées de notre base de connaissances qui pourront t'aider à répondre à la question de l'utilisateur:\n\n${contextText}`,
           })
         } else {
           // No system message found, add context as first system message
           enhancedMessages.unshift({
             role: 'system',
-            content: `Here is some relevant context that may help you answer the user's question:\n\n${contextText}`,
+            content: `Voici des informations pertinentes tirées de notre base de connaissances qui pourront t'aider à répondre à la question de l'utilisateur:\n\n${contextText}`,
           })
         }
       }
+    }
+    
+    // If we have a history fingerprint, add an instruction to avoid repetition
+    if (history_fingerprint) {
+      // Add a note to avoid repetition based on recent history
+      enhancedMessages.push({
+        role: 'system',
+        content: 'IMPORTANT: Veille à formuler ta réponse de manière unique et différente des réponses précédentes. Évite les répétitions même si le contenu est similaire.'
+      })
     }
 
     // Get OpenAI response

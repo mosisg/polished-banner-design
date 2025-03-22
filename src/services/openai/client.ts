@@ -18,6 +18,7 @@ interface ChatCompletionRequest {
   session_id?: string;
   query?: string; // For RAG search
   use_rag?: boolean; // Whether to use RAG
+  history_fingerprint?: string; // To avoid repetitions
 }
 
 interface ChatCompletionResponse {
@@ -47,6 +48,7 @@ export async function getChatCompletion(
     maxTokens?: number;
     query?: string; // The query for RAG lookup
     useRag?: boolean; // Whether to use RAG
+    historyFingerprint?: string; // To avoid repetition
   } = {}
 ): Promise<ChatCompletionResponse> {
   const {
@@ -56,9 +58,12 @@ export async function getChatCompletion(
     maxTokens = 1200,
     query,
     useRag = false,
+    historyFingerprint,
   } = options;
 
   try {
+    console.log(`Sending request to OpenAI with model: ${model}`);
+    
     const payload: ChatCompletionRequest = {
       messages,
       model,
@@ -67,6 +72,7 @@ export async function getChatCompletion(
       session_id: sessionId,
       query: query || messages[messages.length - 1]?.content, // Use the last user message as query if not provided
       use_rag: useRag,
+      history_fingerprint: historyFingerprint,
     };
 
     // Call the Supabase Edge Function
@@ -111,6 +117,7 @@ Ton style de communication:
 - Utilise un ton professionnel mais convivial
 - Propose des suggestions précises basées sur les besoins exprimés
 - Réponds en français
+- IMPORTANT: Évite de répéter les mêmes informations ou phrases que tu as déjà utilisées
     
 Rappelle-toi que tu ne peux pas effectuer d'actions comme souscrire à un forfait. Tu dois rediriger vers le comparateur approprié du site.`
   };
