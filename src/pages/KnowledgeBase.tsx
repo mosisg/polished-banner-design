@@ -14,9 +14,9 @@ const KnowledgeBase = () => {
       </Helmet>
       <div className="container mx-auto px-4 py-8">
         <PageBreadcrumb 
-          items={[
-            { label: 'Accueil', href: '/' },
-            { label: 'Base de connaissances', href: '/knowledge-base' }
+          customPaths={[
+            { path: '/', label: 'Accueil' },
+            { path: '/knowledge-base', label: 'Base de connaissances' }
           ]} 
         />
         <h1 className="text-3xl font-bold mb-6">Base de connaissances de Prixo</h1>
