@@ -1,8 +1,8 @@
-
 import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import Layout from './components/layout/Layout';
+import CookieConsentComponent from './components/common/CookieConsent';
 
 // Eager load the index page for fast initial loading
 import IndexPage from './pages/Index';
@@ -112,6 +112,7 @@ function App() {
         </Routes>
       </Suspense>
       <Toaster />
+      <CookieConsentComponent />
     </div>
   );
 }
