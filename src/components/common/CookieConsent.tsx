@@ -1,6 +1,9 @@
 
 import React, { useEffect } from 'react';
-import * as CookieConsent from 'cookieconsent';
+import 'cookieconsent/build/cookieconsent.min.css';
+
+// Import the library correctly
+const CookieConsent = require('cookieconsent');
 
 const CookieConsentComponent: React.FC = () => {
   useEffect(() => {
